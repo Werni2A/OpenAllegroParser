@@ -49,6 +49,14 @@ cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.c
 cmake --build build
 ```
 
+## Dependencies
+
+- Compiler with C++17 Support
+- [CMake](https://cmake.org/) >= 2.8.12
+- [vcpkg](https://vcpkg.io/en/index.html)
+- [Boost](https://www.boost.org/) - Program Options
+- [libzippp](https://github.com/ctabin/libzippp)
+
 ---
 
 # Usage
@@ -69,14 +77,6 @@ Extract ZIP file: file.pad/file.zip
 Extract from ZIP, 4200 Byte file: out/file.pad/Users/%USERNAME%/AppData/Local/Temp/#Taaaaaa00765.tmp
 Closing file: file.pad
 ```
-
-## Dependencies
-
-- Compiler with C++17 Support
-- [CMake](https://cmake.org/) >= 2.8.12
-- [vcpkg](https://vcpkg.io/en/index.html)
-- [Boost](https://www.boost.org/) - Program Options
-- [libzippp](https://github.com/ctabin/libzippp)
 
 ---
 
