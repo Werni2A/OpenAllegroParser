@@ -21,6 +21,20 @@ See [OrCAD Allegro Files Extension and their Contents](https://vjguptapcb.blogsp
 
 ---
 
+# Documentation
+
+1. `*.brd` Board Database
+2. `*.mdd` Module Definition
+3. `*.dra` Drawing
+4. `*.psm` Package Symbol
+5. `*.ssm` Shape Symbol
+6. `*.fsm` Flash Symbol
+7. `*.osm` Format Symbol
+8. `*.bsm` Mechanical Symbol
+9. `*.pad` Padstack
+
+---
+
 # Current State &mdash; October 2021
 
 - Working on padstack parser.
@@ -59,9 +73,9 @@ Closing file: file.pad
 ## Dependencies
 
 - Compiler with C++17 Support
-- CMake >= 2.8.12
-- vcpkg
-- Boost - Program Options
+- [CMake](https://cmake.org/) >= 2.8.12
+- [vcpkg](https://vcpkg.io/en/index.html)
+- [Boost](https://www.boost.org/) - Program Options
 - [libzippp](https://github.com/ctabin/libzippp)
 
 ---
