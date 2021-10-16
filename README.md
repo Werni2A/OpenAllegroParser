@@ -21,9 +21,54 @@ See [OrCAD Allegro Files Extension and their Contents](https://vjguptapcb.blogsp
 
 ---
 
-# Current State
+# Current State &mdash; October 2021
 
 - Working on padstack parser.
+
+---
+
+# Build
+
+```bash
+mkdir build
+cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake
+cmake --build build
+```
+
+---
+
+# Usage
+
+```bash
+./OpenAllegroParser --help
+Allowed options:
+  -h [ --help ]         produce help message
+  -e [ --extract ]      extract files from within the binary
+  -i [ --input ] arg    input file to parse
+  -o [ --output ] arg   output path (required iff extract is set)
+
+./OpenAllegroParser --input file.pad --extract --output out/
+Opening file: file.pad
+File contains 4960 byte.
+File found at 0x00000abc: file.zip
+Extract ZIP file: file.pad/file.zip
+Extract from ZIP, 4200 Byte file: out/file.pad/Users/%USERNAME%/AppData/Local/Temp/#Taaaaaa00765.tmp
+Closing file: file.pad
+```
+
+## Dependencies
+
+- Compiler with C++17 Support
+- CMake >= 2.8.12
+- vcpkg
+- Boost - Program Options
+- [libzippp](https://github.com/ctabin/libzippp)
+
+---
+
+# Related Projects
+
+[kicad-allegro](https://github.com/system76/kicad-allegro) (Rust based Allegro Extract (ASCII) to KiCad Converter and Viewer)
 
 ---
 
