@@ -8,13 +8,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - name: Setup dependencies
+    - name: Set up vcpkg
       run: |
         sudo apt update
-        sudo apt install -y libboost-program-options-dev
+        sudo apt install -y cmake
         git clone https://github.com/microsoft/vcpkg.git
         ./vcpkg/bootstrap-vcpkg.sh
-        ./vcpkg/vcpkg install libzippp
 
     - name: Build application
       run: |

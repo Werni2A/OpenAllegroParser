@@ -47,5 +47,6 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
 
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
                       ${Boost_LIBRARIES}
+                      libzip::zip
                       libzippp::libzippp
 )
