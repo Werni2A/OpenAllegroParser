@@ -117,6 +117,8 @@ public:
 
     std::vector<uint8_t> readBytes(size_t aLen);
 
+    void padTo4ByteBoundary();
+
     /**
      * @brief Read string that has null byte termination.
      *

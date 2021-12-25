@@ -27,14 +27,16 @@ find_package(libzippp CONFIG REQUIRED)
 set(SOURCES
    ${SOURCES}
    ${CMAKE_CURRENT_SOURCE_DIR}/src/DataStream.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/src/Pad.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/src/Parser.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
 )
 
 set(HEADERS
    ${HEADERS}
-   ${CMAKE_CURRENT_SOURCE_DIR}/src/DataStream.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/src/DataStream.hpp
    ${CMAKE_CURRENT_SOURCE_DIR}/src/General.hpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/src/Pad.hpp
    ${CMAKE_CURRENT_SOURCE_DIR}/src/Parser.hpp
 )
 
@@ -50,3 +52,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
                       libzip::zip
                       libzippp::libzippp
 )
+
+# add_library( ${CMAKE_PROJECT_NAME} INTERFACE )
+
+# target_include_directories( ${CMAKE_PROJECT_NAME} INTERFACE ${CMAKE_CURRENT_SOURCE_DIR} )

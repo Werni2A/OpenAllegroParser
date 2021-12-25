@@ -3,24 +3,19 @@
 
 
 #include <cstdint>
+#include <ctime>
 #include <iostream>
 #include <string>
 
 
 /**
  * @brief Version of the file format.
- * @warning This is not an official version but was introduced
- *          by myself as I don't know how or where the acutal
- *          version number is stored.
  */
 enum class FileFormatVersion
 {
     Unknown,
-    A, // Oldest version
-    B,
-    C  // Latest Version
+    V17_4_S012 // 10/18/2020 - pad3898010/18
 };
-
 
 enum class FileType
 {
@@ -47,14 +42,109 @@ template<typename T>
 }
 
 
-// [[maybe_unused]]
-// void expectStr(const std::string& str, const std::string& ref)
-// {
-//     if(str != ref)
-//     {
-//         throw std::runtime_error("Exptected string '" + ref + "' but got '" + str + "'!");
-//     }
-// }
+[[maybe_unused]]
+static void expectStr(const std::string& str, const std::string& ref)
+{
+    if(str != ref)
+    {
+        throw std::runtime_error("Exptected string '" + ref + "' but got '" + str + "'!");
+    }
+}
+
+
+[[maybe_unused]]
+static std::string DateTimeToStr(const time_t& unixts)
+{
+    return std::string(std::ctime(&unixts));
+}
+
+
+[[maybe_unused]]
+static std::time_t ToTime(uint32_t aTime)
+{
+    std::time_t time = static_cast<time_t>(aTime);
+
+    // Cadence Systems was founded in 1988, therefore all files
+    // can not date back to earlier years.
+    std::tm tm{}; // Zero initialise
+    tm.tm_year  = 1988 - 1900; // 1960
+
+    std::time_t earliestTime = std::mktime(&tm);
+    std::time_t latestTime   = std::time(nullptr);
+
+    if(time < earliestTime || time > latestTime)
+    {
+        throw std::runtime_error("Time musst be in between "
+             + DateTimeToStr(earliestTime) + " <= " + DateTimeToStr(time) + " <= " + DateTimeToStr(latestTime) + "!");
+    }
+
+    return time;
+}
+
+
+/**
+ * @brief Convert fix point coordinate to floating point.
+ * @note Allegro stores floating point values as fixed point value
+ *       instead of the actual floating point representation.
+ *
+ * @param point Fix point coordiante.
+ * @return double Floating point coordinate.
+ */
+[[maybe_unused]]
+static double ToFP(int16_t point)
+{
+    return static_cast<double>(point) / 100.0;
+}
+
+
+[[maybe_unused]]
+static std::string newLine()
+{
+    return "\n";
+}
+
+
+#include <vector>
+
+
+[[maybe_unused]]
+static std::string indent(std::string str, size_t level)
+{
+    const std::string indent = "  ";
+    const std::string delimiter = newLine();
+
+    std::vector<std::string> lines;
+
+    size_t pos = 0;
+    std::string token;
+    while ((pos = str.find(delimiter)) != std::string::npos)
+    {
+        token = str.substr(0, pos);
+        lines.push_back(std::move(token) + newLine());
+        str.erase(0, pos + delimiter.length());
+    }
+
+    lines.push_back(std::move(str));
+
+    std::string indentedStr;
+    for(auto&& line : lines)
+    {
+        for(size_t i = 0u; i < level; ++i)
+        {
+            indentedStr += indent;
+        }
+        indentedStr += line;
+    }
+
+    return indentedStr;
+}
+
+
+[[maybe_unused]]
+static std::string indent(size_t level)
+{
+    return indent("", level);
+}
 
 
 #endif // GENERAL_H

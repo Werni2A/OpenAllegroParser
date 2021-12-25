@@ -9,6 +9,7 @@
 
 #include "DataStream.hpp"
 #include "General.hpp"
+#include "Pad.hpp"
 
 
 namespace fs = std::filesystem;
@@ -23,6 +24,23 @@ public:
     ~Parser();
 
     FileType getFileTypeByExtension(const fs::path& aFile) const;
+
+    // @todo We use this structure for passing informations that must
+    //       be stored in the file but we do not yet know where. As a
+    //       workaround one can pass hardcoded values for e.g. testcases.
+    struct unknownParam
+    {
+        bool   unknownFlag;
+        size_t numUserLayers;
+        size_t additionalStr2;
+    };
+
+    size_t getCurrentOffset()
+    {
+        return mDs.getCurrentOffset();
+    }
+
+    void readPadFile(unknownParam uparam);
 
     /**
      * @brief Get the files that are stored inside the binary.
@@ -72,6 +90,7 @@ private:
      */
     void exportZip(const fs::path& aOutputPath, size_t aComprZipSize = 0u);
 
+    Pad readPad();
 
     FileType mFileType;
     FileFormatVersion mFileFormatVersion;

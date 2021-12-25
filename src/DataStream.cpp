@@ -27,11 +27,19 @@ std::vector<uint8_t> DataStream::readBytes(size_t aLen)
 }
 
 
+void DataStream::padTo4ByteBoundary()
+{
+    const size_t padLen = (4u - getCurrentOffset() % 4u) % 4u;
+
+    assumeZero(padLen, "Expected 0x00 for padding bytes!");
+}
+
+
 std::string DataStream::readStringZeroTerm()
 {
     std::string str;
 
-    const size_t max_chars = 400u;
+    const size_t max_chars = 2000u;
 
     for(size_t i = 0u; i < max_chars; ++i)
     {
@@ -225,9 +233,11 @@ std::ostream& DataStream::printData(std::ostream& aOs, const std::vector<uint8_t
     std::string line;
     for(size_t i = 0u; i < aData.size(); ++i)
     {
+        const size_t offset = getCurrentOffset() - aData.size() + i;
+
         if(i % line_width == 0u)
         {
-            preamble = "0x" + ToHex(getCurrentOffset(), 8) + ": ";
+            preamble = "0x" + ToHex(offset, 8) + ": ";
         }
 
         char c = static_cast<char>(aData[i]);

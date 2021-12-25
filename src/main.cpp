@@ -10,7 +10,7 @@ namespace fs = std::filesystem;
 namespace po = boost::program_options;
 
 
-void parseArgs(int argc, char* argv[], fs::path& input, bool& extract, fs::path& output)
+void parseArgs(int argc, char* argv[], fs::path& input, bool& extract, fs::path& output, Parser::unknownParam& uparam)
 {
     po::options_description desc("Allowed options");
     desc.add_options()
@@ -18,11 +18,21 @@ void parseArgs(int argc, char* argv[], fs::path& input, bool& extract, fs::path&
         ("extract,e", po::bool_switch()->default_value(false), "extract files from within the binary")
         ("input,i",   po::value<std::string>(),                "input file to parse")
         ("output,o",  po::value<std::string>(),                "output path (required iff extract is set)")
+
+        ("unknownFlag",    po::bool_switch()->default_value(false), "activate some dynamic feature in the file")
+        ("numUserLayers",  po::value<int>(),                        "number of user layers")
+        ("additionalStr2", po::value<int>(),                        "number of additional strings in list")
     ;
 
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
     po::notify(vm);
+
+
+    uparam.unknownFlag    = vm.count("unknownFlag")    ? vm["unknownFlag"].as<bool>()   : false;
+    uparam.numUserLayers  = vm.count("numUserLayers")  ? vm["numUserLayers"].as<int>()  : 0u;
+    uparam.additionalStr2 = vm.count("additionalStr2") ? vm["additionalStr2"].as<int>() : 0u;
+
 
     if(vm.count("help"))
     {
@@ -91,7 +101,9 @@ int main(int argc, char* argv[])
     bool     extract;
     fs::path outputPath;
 
-    parseArgs(argc, argv, inputFile, extract, outputPath);
+    Parser::unknownParam uparam;
+
+    parseArgs(argc, argv, inputFile, extract, outputPath, uparam);
 
     try
     {
@@ -111,9 +123,21 @@ int main(int argc, char* argv[])
         {
             parser.exportZipFiles(outputPath);
         }
+        else
+        {
+            try
+            {
+                parser.readPadFile(uparam);
+            }
+            catch(const std::exception& e)
+            {
+                throw std::runtime_error(std::string(e.what()) + "\r\nAt file offset 0x" + ToHex(parser.getCurrentOffset(), 8u));
+            }
+        }
     }
     catch(const std::exception& e)
     {
+        std::cerr << "--------ERROR REPORT--------" << std::endl;
         std::cerr << e.what() << std::endl;
         std::exit(-1);
     }
