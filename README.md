@@ -31,7 +31,7 @@ See [OrCAD Allegro Files Extension and their Contents](https://vjguptapcb.blogsp
 6. `*.fsm` Flash Symbol
 7. `*.osm` Format Symbol
 8. `*.bsm` Mechanical Symbol
-9. `*.pad` Padstack
+9. [`*.pad` Padstack](doc/pad.md)
 
 ---
 
