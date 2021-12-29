@@ -30,4 +30,5 @@ jobs:
 
     - name: Run unit tests
       run: |
-        ./unit_test/build/unit_tests
+        cd unit_test
+        ./build/unit_tests
