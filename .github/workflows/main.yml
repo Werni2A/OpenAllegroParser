@@ -20,3 +20,14 @@ jobs:
         mkdir build
         cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=vcpkg/scripts/buildsystems/vcpkg.cmake
         cmake --build build
+
+    - name: Build unit tests
+      run: |
+        cd unit_test
+        mkdir build
+        cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake
+        cmake --build build
+
+    - name: Run unit tests
+      run: |
+        ./unit_test/build/unit_tests

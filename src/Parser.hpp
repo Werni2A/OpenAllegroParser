@@ -10,6 +10,7 @@
 #include "DataStream.hpp"
 #include "General.hpp"
 #include "Pad.hpp"
+#include "PadFile.hpp"
 
 
 namespace fs = std::filesystem;
@@ -40,7 +41,7 @@ public:
         return mDs.getCurrentOffset();
     }
 
-    void readPadFile(unknownParam uparam);
+    PadFile readPadFile(unknownParam uparam);
 
     /**
      * @brief Get the files that are stored inside the binary.

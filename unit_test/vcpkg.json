@@ -1,0 +1,9 @@
+{
+  "name": "open-allegro-parser",
+  "version": "0.1.0",
+  "dependencies": [
+    "boost-program-options",
+    "catch2",
+    "libzippp"
+  ]
+}

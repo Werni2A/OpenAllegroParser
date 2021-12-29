@@ -385,15 +385,20 @@ std::vector<padTypeLayer> layerLst = {
 };
 
 
-
-void Parser::readPadFile(unknownParam uparam)
+PadFile Parser::readPadFile(unknownParam uparam)
 {
+    PadFile padFile;
+
+    // Specifies how many seconds are allowed to pass
+    // until two contiguous sections are generated.
+    const double maxTimeDiff = 2.0;
+
     mDs.printUnknownData(std::cout, 8, "unknown - 0");
 
     // mDs.assumeData({0x00, 0x05, 0x14, 0x00, 0x03, 0x00, 0x00, 0x00}, "Start Sequence - 0");
     mDs.assumeData({0x04, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00}, "Start Sequence - 1");
 
-    mDs.printUnknownData(std::cout, 36, "unknown - 0.5");
+    mDs.printUnknownData(std::cout, 36, "unknown - 1");
 
     // @todo This relates maybe to the standard layers in the padstack as we
     // have 25 of them and 1 of them is just rubbish, and can be ignored
@@ -401,7 +406,6 @@ void Parser::readPadFile(unknownParam uparam)
     for(size_t i = 0u; i < 24u; ++i)
     {
         const uint32_t some_idx = mDs.readUint32();
-
         const uint32_t some_val = mDs.readUint32();
 
         std::cout << "some_idx = " << some_idx << "; some_val = " << some_val << std::endl;
@@ -410,13 +414,12 @@ void Parser::readPadFile(unknownParam uparam)
     // @todo probably always number 1 and represents idx = 1?
     mDs.printUnknownData(std::cout, 4, "unkown - 2");
 
-    const std::string swVersion = mDs.readStrZeroTermBlock(60u);
-    std::cout << "swVersion = " << swVersion << std::endl;
+    padFile.swVersion = mDs.readStrZeroTermBlock(60u);
+    // std::cout << "swVersion = " << padFile.swVersion << std::endl;
 
-    mDs.printUnknownData(std::cout, 58, "unknown - 3.0");
+    mDs.printUnknownData(std::cout, 58, "unknown - 3");
 
-    const uint16_t accuracy = mDs.readUint16();
-    std::cout << "accuracy = " << accuracy << std::endl;
+    padFile.accuracy = mDs.readUint16();
 
     const int32_t some_val0 = mDs.readInt32();
     const int32_t some_val1 = mDs.readInt32();
@@ -428,18 +431,17 @@ void Parser::readPadFile(unknownParam uparam)
     std::cout << "some_val2 = " << some_val2 << std::endl;
     std::cout << "some_val3 = " << some_val3 << std::endl;
 
-    const uint16_t unit = mDs.readUint16();
-    std::cout << "unit = " << unit << std::endl;
+    padFile.unit = ToUnits(mDs.readUint16());
 
-    mDs.printUnknownData(std::cout, 227, "unknown - 3.2");
+    mDs.printUnknownData(std::cout, 227, "unknown - 4");
 
     const uint16_t additionalStr = mDs.readUint16();
 
-    mDs.printUnknownData(std::cout, 8, "unknown - 3.4");
+    mDs.printUnknownData(std::cout, 8, "unknown - 5");
 
-    mDs.assumeZero(449, "unknown - 3.5");
+    mDs.assumeZero(449, "unknown - 6");
 
-    mDs.printUnknownData(std::cout, 36, "unknown - 3.6");
+    mDs.printUnknownData(std::cout, 36, "unknown - 7");
 
     for(size_t i = 0u; i < 20u; ++i)
     {
@@ -449,179 +451,228 @@ void Parser::readPadFile(unknownParam uparam)
         std::cout << "sth0 = " << sth0 << "; sth1 = " << sth1 << std::endl;
     }
 
-    mDs.printUnknownData(std::cout, 20, "unknown - 3.7");
+    mDs.printUnknownData(std::cout, 20, "unknown - 8");
 
-    mDs.assumeZero(248, "unknown - 3.9");
+    mDs.assumeZero(248, "unknown - 9");
 
     for(size_t i = 0u; i < 7u + additionalStr + uparam.additionalStr2; ++i)
     {
-        const uint32_t    some_idx2 = mDs.readUint32();
-        const std::string some_str2 = mDs.readStrZeroTerm4BytePad();
+        const uint32_t    idx = mDs.readUint32();
+        const std::string str = mDs.readStrZeroTerm4BytePad();
 
-        std::cout << "some_idx2 = " << some_idx2 << "; some_str2 = " << some_str2 << std::endl;
+        padFile.idxStrPairLst.push_back(std::make_pair(idx, str));
+
+        std::cout << "idxStrPairLst[" << std::to_string(padFile.idxStrPairLst.size()) << "] : "
+                  << "idx = " << idx << "; str = " << str << std::endl;
     }
 
-    const uint32_t some_idx4 = mDs.readUint32();
+    // @todo Still unknown whether there is a string stored or just some
+    //       other info
+    {
+        const uint32_t idx    = mDs.readUint32();
 
-    std::cout << "some_idx4 = " << some_idx4 << std::endl;
-    mDs.printUnknownData(std::cout, 4, "unknown - 4.0");
+        mDs.printUnknownData(std::cout, 4, "unknown - 10");
+
+        const std::string str = "";
+
+        padFile.idxStrPairLst.push_back(std::make_pair(idx, str));
+
+        std::cout << "idxStrPairLst[" << std::to_string(padFile.idxStrPairLst.size()) << "] : "
+                  << "idx = " << idx << "; str = " << str << std::endl;
+    }
 
     // drillinfo
 
-    const uint32_t some_idx5 = mDs.readUint32();
-    const std::string drilltoolsize = mDs.readStrZeroTerm4BytePad();
+    // Contains drilltoolsize
+    {
+        const uint32_t idx    = mDs.readUint32();
+        const std::string str = mDs.readStrZeroTerm4BytePad();
 
-    std::cout << "some_idx5 = " << some_idx5 << "; drilltoolsize = " << drilltoolsize << std::endl;
+        padFile.drilltoolsize = str;
+
+        padFile.idxStrPairLst.push_back(std::make_pair(idx, str));
+
+        std::cout << "idxStrPairLst[" << std::to_string(padFile.idxStrPairLst.size()) << "] : "
+                  << "idx = " << idx << "; str = " << str << std::endl;
+    }
 
     // @todo Maybe Add the above two indicies and strings to the loop and increase the
     // limit from 7 to 9
 
     // @todo figure out, when it is set. It think it is somehow related to
-    //       drills or backdrills
+    //       drills, backdrills or multiple drill rows/columns
     if(uparam.unknownFlag)
     {
-        mDs.printUnknownData(std::cout, 8, "unknown - 4.4");
+        mDs.printUnknownData(std::cout, 8, "unknown - 11");
     }
 
-    mDs.printUnknownData(std::cout, 4, "unknown - 4.5");
+    mDs.printUnknownData(std::cout, 4, "unknown - 12");
 
-    const uint32_t strIdxPadName    = mDs.readUint32();
-    const uint32_t idxToSome_idx4   = mDs.readUint32();
-    const uint32_t idxDrillToolSize = mDs.readUint32();
+    padFile.strIdxPadName       = mDs.readUint32();
+    padFile.idxUnknown          = mDs.readUint32();
+    padFile.strIdxDrillToolSize = mDs.readUint32(); // Is 0 when no DrillToolSize is specified (empty string)
 
-    std::cout << "strIdxPadName    = " << strIdxPadName << std::endl;
-    std::cout << "idxToSome_idx4   = " << idxToSome_idx4 << std::endl;
-    std::cout << "idxDrillToolSize = " << idxDrillToolSize << std::endl;
+    // std::cout << "strIdxPadName       = " << padFile.strIdxPadName       << std::endl;
+    // std::cout << "idxUnknown          = " << padFile.idxUnknown          << std::endl;
+    // std::cout << "strIdxDrillToolSize = " << padFile.strIdxDrillToolSize << std::endl;
 
-    mDs.printUnknownData(std::cout, 12, "unknown - 5");
+    mDs.printUnknownData(std::cout, 5, "unknown - 13");
 
-    mDs.printUnknownData(std::cout, 1, "unknown - 6");
+    padFile.drillmethod = ToDrillmethod(mDs.readUint8());
+    // std::cout << "drillmethod = " << padFile.drillmethod << std::endl;
 
-    const Drillmethod drillmethod = ToDrillmethod(mDs.readUint8());
+    // Bit 0 = @todo Unknown
+    // Bit 3 = Multiple Drills @todo verify this (number of column/row drills)
+    // Bit 4 = Staggered Drills
+    // Bit 5 = Plated Drill Holes
+    const uint8_t bit_field = mDs.readUint8();
+    std::cout << "unknown bit_field: " << std::to_string(bit_field) << std::endl;
+    padFile.staggeredDrills = static_cast<bool>(bit_field & 0x10);
+    padFile.plated          = static_cast<bool>(bit_field & 0x20);
+    // std::cout << "plated = " << padFile.plated << std::endl;
 
-    std::cout << "drillmethod = " << drillmethod << std::endl;
+    // Check for unknown bits that are set
+    if(bit_field & ~0x30)
+    {
+        // throw std::runtime_error("Unknown bit in bit_field set! 0x" + ToHex(bit_field, 2));
+    }
 
-    const uint16_t type_bitmap = mDs.readUint16();
+    mDs.printUnknownData(std::cout, 2, "unknown - 14");
 
-    std::cout << "type_bitmap = " << type_bitmap << std::endl;
+    // Bit 0 = Not suppress not connected internal pads
+    const uint8_t bit_field2 = mDs.readUint8();
+    std::cout << "unknown bit_field2: " << std::to_string(bit_field2) << std::endl;
+    padFile.not_suppress_nc_internal_pads = static_cast<bool>(bit_field2 & 0x01);
+    padFile.isPolyVia                     = static_cast<bool>(bit_field2 & 0x02);
 
-    // @todo When enabling the padstackusage conversion all tests fail.
-    //       Its probably a bitmap or means something different
-    const uint16_t padstackusage = mDs.readUint16();
+    // Check for unknown bits that are set
+    if(bit_field2 & ~0x03)
+    {
+        throw std::runtime_error("Unknown bit in bit_field2 set! 0x" + ToHex(bit_field2, 2));
+    }
 
-    std::cout << "padstackusage = " << padstackusage << std::endl;
+    mDs.printUnknownData(std::cout, 4, "unknown - 15");
 
-    mDs.printUnknownData(std::cout, 6, "unknown - 7");
+    // @todo unknown
+    const uint16_t type_bitfield = mDs.readUint16();
+    std::cout << "type_bitfield = " << type_bitfield << std::endl;
+
+    padFile.padstackusage = ToPadstackUsage(mDs.readUint16());
+    std::cout << "padstackusage = " << padFile.padstackusage << std::endl;
 
     // multidrill
 
-    const uint16_t rows    = mDs.readUint16();
-    const uint16_t columns = mDs.readUint16();
+    padFile.drill_rows    = mDs.readUint16();
+    padFile.drill_columns = mDs.readUint16();
+    // std::cout << "rows = " << padFile.drill_rows << "; columns = " << padFile.drill_columns << std::endl;
 
-    std::cout << "rows = " << rows << "; columns = " << columns << std::endl;
+    uint8_t lock_layer_span = mDs.readUint8();
+    padFile.lock_layer_span = static_cast<bool>(lock_layer_span);
 
-    mDs.printUnknownData(std::cout, 4, "unknown - 8");
+    mDs.printData(std::cout, {lock_layer_span});
 
-    const int32_t offset_x = mDs.readInt32();
-    const int32_t offset_y = mDs.readInt32();
+    if(lock_layer_span > 1)
+    {
+        throw std::runtime_error("Epected boolean value!");
+    }
 
-    std::cout << "offset_x = " << offset_x << "; offset_y = " << offset_y << std::endl;
+    mDs.printUnknownData(std::cout, 1, "unknown - 16");
 
-    const uint32_t clearance_columns = mDs.readUint32();
-    const uint32_t clearance_rows    = mDs.readUint32();
+    padFile.offsetX = mDs.readInt32();
+    padFile.offsetY = mDs.readInt32();
+    // std::cout << "offsetX = " << padFile.offsetX << "; offsetY = " << padFile.offsetY << std::endl;
 
-    std::cout << "clearance_columns = " << clearance_columns << "; clearance_rows = " << clearance_rows << std::endl;
+    padFile.clearance_columns = mDs.readUint32();
+    padFile.clearance_rows    = mDs.readUint32();
+    // std::cout << "clearance_columns = " << padFile.clearance_columns << "; clearance_rows = " << padFile.clearance_rows << std::endl;
 
-    const int32_t finished_size = mDs.readInt32();
+    padFile.finished_size = mDs.readInt32();
+    // std::cout << "finished_size = " << padFile.finished_size << std::endl;
 
-    std::cout << "finished_size = " << finished_size << std::endl;
+    mDs.printUnknownData(std::cout, 0, "unknown - 17");
 
-    const int32_t positivetolerance = mDs.readInt32();
-    const int32_t negativetolerance = mDs.readInt32();
+    padFile.positivetolerance = mDs.readInt32();
+    padFile.negativetolerance = mDs.readInt32();
+    // std::cout << "positivetolerance = " << padFile.positivetolerance << "; negativetolerance = " << padFile.negativetolerance << std::endl;
 
-    std::cout << "positivetolerance = " << positivetolerance << "; negativetolerance = " << negativetolerance << std::endl;
+    mDs.printUnknownData(std::cout, 16, "unknown - 18");
 
-    // mDs.assumeZero(16, "unknown - 9");
-    mDs.printUnknownData(std::cout, 16, "unknown - 9");
+    padFile.width  = mDs.readUint32();
+    padFile.height = mDs.readUint32();
+    // std::cout << "width = " << padFile.width << "; height = " << padFile.height << std::endl;
 
-    const uint32_t width  = mDs.readUint32();
-    const uint32_t height = mDs.readUint32();
+    padFile.figure = ToFigure(mDs.readUint32());
 
-    std::cout << "width = " << width << "; height = " << height << std::endl;
+    padFile.characters = mDs.readStrZeroTerm4BytePad();
+    // std::cout << "characters = " << padFile.characters << std::endl;
 
-    const uint32_t maybe_figure = mDs.readUint32();
+    mDs.printUnknownData(std::cout, 12, "unknown - 19");
 
-    const std::string characters = mDs.readStrZeroTerm4BytePad();
+    // backdrill
 
-    // mDs.assumeZero(16, "unknown - 10");
-    mDs.printUnknownData(std::cout, 16, "unknown - 10");
+    padFile.back_drill_figure_width  = mDs.readUint32();
+    padFile.back_drill_figure_height = mDs.readUint32();
+
+    padFile.back_drill_figure = ToFigure(mDs.readUint32());
+
+    padFile.back_drill_characters = mDs.readStrZeroTerm4BytePad();
 
     // counterboresink
 
-    const uint32_t back_drill_figure_width  = mDs.readUint32();
-    const uint32_t back_drill_figure_height = mDs.readUint32();
+    padFile.counter_drill_diameter = mDs.readInt32();
+    padFile.counter_drill_positivetolerance = mDs.readInt32();
+    padFile.counter_drill_negativetolerance = mDs.readInt32();
 
-    // @todo maybe bit field?
-    const uint32_t maybe_back_drill_figure_type = mDs.readUint32();
-
-    const std::string back_drill_characters = mDs.readStrZeroTerm4BytePad();
-
-    const int32_t back_drill_diameter = mDs.readInt32();
-
-    const int32_t back_drill_positivetolerance = mDs.readInt32();
-    const int32_t back_drill_negativetolerance = mDs.readInt32();
-
-    const int32_t counterangle = mDs.readInt32();
-    std::cout << "counterangle = " << std::to_string(counterangle / 10000u) << std::endl;
+    padFile.counterangle = mDs.readInt32();
+    // std::cout << "counterangle = " << std::to_string(padFile.counterangle / 10000u) << std::endl;
 
     mDs.printUnknownData(std::cout, 8, "Something with counterdepth");
 
-    mDs.printUnknownData(std::cout, 20, "unknown - 11");
+    mDs.printUnknownData(std::cout, 32, "unknown - 20");
 
     for(size_t i = 0u; i < 25u; ++i)
     {
-        std::cout << "i = " << i << std::endl;
+        // std::cout << "i = " << i << std::endl;
         // @todo print layer and type
-        Pad pad = readPad();
-        std::cout << pad << std::endl;
+        padFile.genericLayers.push_back(readPad());
+        // std::cout << pad << std::endl;
     }
 
     std::cout << "Start user layers" << std::endl;
 
     for(size_t i = 0u; i < uparam.numUserLayers; ++i)
     {
-        std::cout << "i = " << i << std::endl;
+        // std::cout << "i = " << i << std::endl;
         const uint32_t idxLayerName = mDs.readUint32();
-        std::cout << "idxLayerName = " << idxLayerName << std::endl;
+        // std::cout << "idxLayerName = " << idxLayerName << std::endl;
 
         Pad pad = readPad();
-        std::cout << pad << std::endl;
+        // std::cout << pad << std::endl;
     }
 
     std::cout << "Exit loop";
 
-    mDs.printUnknownData(std::cout, 56, "unknown - 20");
+    mDs.printUnknownData(std::cout, 56, "unknown - 21");
 
-    const time_t dateTime = ToTime(mDs.readUint32());
+    padFile.dateTime1 = ToTime(mDs.readUint32());
+    // std::cout << "dateTime1 = " << DateTimeToStr(padFile.dateTime1) << std::endl;
 
-    std::cout << "dateTime = " << DateTimeToStr(dateTime) << std::endl;
-
-    mDs.printUnknownData(std::cout, 18, "unknown - 21.0");
+    mDs.printUnknownData(std::cout, 18, "unknown - 22");
 
     // @todo not sure about this one
     const size_t usernameLen = mDs.readUint32();
 
-    mDs.printUnknownData(std::cout, 2, "unknown - 21.3");
+    mDs.printUnknownData(std::cout, 2, "unknown - 23");
 
-    const std::string username = mDs.readStrZeroTerm4BytePad();
-    std::cout << "username = " << username << std::endl;
+    padFile.username = mDs.readStrZeroTerm4BytePad();
+    // std::cout << "username = " << padFile.username << std::endl;
 
-    if(username.size() + 1 != usernameLen) // +1 for terminating zero byte.
+    if(padFile.username.size() + 1 != usernameLen) // +1 for terminating zero byte.
     {
         throw std::runtime_error("Expected different text length!");
     }
 
-    mDs.printUnknownData(std::cout, 32, "unknown - 22");
+    mDs.printUnknownData(std::cout, 32, "unknown - 24");
 
     const size_t someTxtLen = mDs.readUint32();
 
@@ -634,15 +685,21 @@ void Parser::readPadFile(unknownParam uparam)
 
     expectStr(quickViews, quickViewsRef);
 
-    time_t dateTime2 = ToTime(mDs.readUint32());
+    const auto sanityCheckSectionTimeDiff = [] (time_t aStartTime, time_t aEndTime, double aMaxTimeDiff) -> void
+        {
+            // Sanity check that previous sections were created within maxSecDiff seconds.
+            if(std::difftime(aEndTime, aStartTime) > aMaxTimeDiff)
+            {
+                throw std::runtime_error("Difference in generation time must be lower than "
+                    + std::to_string(aMaxTimeDiff) + " seconds but date and time is start "
+                    + DateTimeToStr(aStartTime) + " and end " + DateTimeToStr(aEndTime) + "!");
+            }
+        };
 
-    // @todo Dates are not exactly equal. Orcad always uses the current time when writing this section.
-    //       I.e. the time might differ in a second. I should implement a valid timespan. E.g. 2 seconds
-    //       difference.
-    if(dateTime != dateTime2)
-    {
-        // throw std::runtime_error("Dates should be equal but is " + DateTimeToStr(dateTime) + " and " + DateTimeToStr(dateTime2) + "!");
-    }
+
+    padFile.dateTime2 = ToTime(mDs.readUint32());
+
+    sanityCheckSectionTimeDiff(padFile.dateTime1, padFile.dateTime2, maxTimeDiff);
 
     mDs.assumeZero(8, "unknown - 23");
 
@@ -655,7 +712,7 @@ void Parser::readPadFile(unknownParam uparam)
 
     // std::cout << "someTxt = " << someTxt << std::endl;
 
-    mDs.printUnknownData(std::cout, 8, "unknown - 24");
+    mDs.printUnknownData(std::cout, 8, "unknown - 25");
 
     const std::string quickViewGraph = mDs.readStrZeroTermBlock(128);
 
@@ -665,14 +722,11 @@ void Parser::readPadFile(unknownParam uparam)
 
     expectStr(quickViews, quickViewsRef);
 
-    dateTime2 = ToTime(mDs.readUint32());
+    padFile.dateTime3 = ToTime(mDs.readUint32());
 
-    if(dateTime != dateTime2)
-    {
-        // throw std::runtime_error("Dates should be equal but is " + DateTimeToStr(dateTime) + " and " + DateTimeToStr(dateTime2) + "!");
-    }
+    sanityCheckSectionTimeDiff(padFile.dateTime2, padFile.dateTime3, maxTimeDiff);
 
-    mDs.printUnknownData(std::cout, 36, "unknown - 25");
+    mDs.printUnknownData(std::cout, 36, "unknown - 26");
 
     const uint32_t zipSize = mDs.readUint32();
 
@@ -684,54 +738,45 @@ void Parser::readPadFile(unknownParam uparam)
 
     expectStr(quickViews, quickViewsRef);
 
-    dateTime2 = ToTime(mDs.readUint32());
+    padFile.dateTime4 = ToTime(mDs.readUint32());
 
-    if(dateTime != dateTime2)
-    {
-        // throw std::runtime_error("Dates should be equal but is " + DateTimeToStr(dateTime) + " and " + DateTimeToStr(dateTime2) + "!");
-    }
+    sanityCheckSectionTimeDiff(padFile.dateTime3, padFile.dateTime4, maxTimeDiff);
 
-    mDs.printUnknownData(std::cout, 8, "unknown - 26");
+    mDs.printUnknownData(std::cout, 8, "unknown - 27");
 
     exportZip(fs::temp_directory_path() / "OpenAllegroParser", zipSize);
 
-    mDs.printCurrentOffset(std::cout);
-
     mDs.padTo4ByteBoundary();
 
-    mDs.printUnknownData(std::cout, 8, "unknown - 27");
+    mDs.printUnknownData(std::cout, 8, "unknown - 28");
 
     const std::string newDbFeatures = mDs.readStrZeroTermBlock(160);
 
     expectStr(newDbFeatures, "NEW_DB_FEATURES");
 
-    dateTime2 = ToTime(mDs.readUint32());
+    padFile.dateTime5 = ToTime(mDs.readUint32());
 
-    if(dateTime != dateTime2)
-    {
-        // throw std::runtime_error("Dates should be equal but is " + DateTimeToStr(dateTime) + " and " + DateTimeToStr(dateTime2) + "!");
-    }
+    sanityCheckSectionTimeDiff(padFile.dateTime4, padFile.dateTime5, maxTimeDiff);
 
-    mDs.printUnknownData(std::cout, 20, "unknown - 28");
+    mDs.printUnknownData(std::cout, 20, "unknown - 29");
 
     const std::string allegroDesignWasLastSaved = mDs.readStrZeroTermBlock(160);
 
     expectStr(allegroDesignWasLastSaved, "ALLEGRO_DESIGN_WAS_LAST_SAVED");
 
-    dateTime2 = ToTime(mDs.readUint32());
+    padFile.dateTime6 = ToTime(mDs.readUint32());
 
-    if(dateTime != dateTime2)
-    {
-        // throw std::runtime_error("Dates should be equal but is " + DateTimeToStr(dateTime) + " and " + DateTimeToStr(dateTime2) + "!");
-    }
+    sanityCheckSectionTimeDiff(padFile.dateTime5, padFile.dateTime6, maxTimeDiff);
 
-    mDs.assumeZero(8, "unknown - 29");
+    mDs.assumeZero(8, "unknown - 30");
 
-    const std::string programAndVersion = mDs.readStrZeroTerm4BytePad();
-    std::cout << "programAndVersion = " << programAndVersion << std::endl;
+    padFile.programAndVersion = mDs.readStrZeroTerm4BytePad();
+    // std::cout << "programAndVersion = " << padFile.programAndVersion << std::endl;
 
     if(!mDs.isEoF())
     {
         throw std::runtime_error("Expected EoF!");
     }
+
+    return padFile;
 }
