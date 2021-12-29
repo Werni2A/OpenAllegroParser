@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<padstacks>
+    <padstack version="1.0">
+        <padstackname>0031</padstackname>
+        <padstackusage>THRU_PIN</padstackusage>
+        <units>mils</units>
+        <accuracy>1</accuracy>
+        <drillinfo>
+            <slothole>
+                <holetype>CIRCLE</holetype>
+                <plating>Y</plating>
+                <width>0.0</width>
+            </slothole>
+            <drillsymbol>
+                <figure>NONE</figure>
+                <width>0.0</width>
+            </drillsymbol>
+            <backdrill>
+                <diameter>3.4</diameter>
+                <drillsymbol>
+                    <figure>OCTAGON</figure>
+                    <characters>OCT</characters>
+                    <width>12.3</width>
+                    <height>24.5</height>
+                </drillsymbol>
+            </backdrill>
+        </drillinfo>
+        <pad>
+            <type>REGULAR_PAD</type>
+            <layer>BEGIN_LAYER</layer>
+            <figure>CIRCLE</figure>
+            <width>1.0</width>
+            <height>1.0</height>
+        </pad>
+    </padstack>
+</padstacks>

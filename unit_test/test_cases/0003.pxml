@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<padstacks>
+    <padstack version="1.0">
+        <padstackname>0003</padstackname>
+        <padstackusage>BBVIA</padstackusage>
+        <units>mils</units>
+        <accuracy>1</accuracy>
+        <drillinfo>
+            <slothole>
+                <holetype>CIRCLE</holetype>
+                <plating>Y</plating>
+                <width>0.0</width>
+            </slothole>
+            <drillsymbol>
+                <figure>HEXAGONX</figure>
+                <width>0.0</width>
+            </drillsymbol>
+        </drillinfo>
+        <pad>
+            <type>REGULAR_PAD</type>
+            <layer>BEGIN_LAYER</layer>
+            <figure>CIRCLE</figure>
+            <width>1.0</width>
+            <height>1.0</height>
+        </pad>
+    </padstack>
+</padstacks>

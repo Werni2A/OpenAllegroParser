@@ -1,7 +1,7 @@
 
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 2.9)
 
-project(OpenAllegroParser)
+project(unit_tests)
 
 if(CMAKE_BUILD_TYPE STREQUAL "")
     message(STATUS "CMAKE_BUILD_TYPE not defined, 'Debug' will be used")
@@ -21,24 +21,28 @@ endif()
 find_package(Boost COMPONENTS program_options REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 
+# Add Catch2 dependency
+find_package(Catch2 REQUIRED)
+
 # Add libzippp dependency
 find_package(libzippp CONFIG REQUIRED)
 
 set(SOURCES
    ${SOURCES}
-   ${CMAKE_CURRENT_SOURCE_DIR}/src/DataStream.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/src/Pad.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/src/Parser.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/../src/DataStream.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/../src/Pad.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/../src/Parser.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/src/catch_main.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/src/unit_tests.cpp
 )
 
 set(HEADERS
    ${HEADERS}
-   ${CMAKE_CURRENT_SOURCE_DIR}/src/DataStream.hpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/src/General.hpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/src/Pad.hpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/src/PadFile.hpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/src/Parser.hpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/../src/DataStream.hpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/../src/General.hpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/../src/Pad.hpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/../src/PadFile.hpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/../src/Parser.hpp
 )
 
 # Create executable file from sources
@@ -46,6 +50,7 @@ add_executable(${CMAKE_PROJECT_NAME} ${SOURCES} ${HEADERS})
 
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
                            ${Boost_INCLUDE_DIR}
+                           ${CMAKE_CURRENT_SOURCE_DIR}/../src/
 )
 
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<padstacks>
+    <padstack version="1.0">
+        <padstackname>0027</padstackname>
+        <padstackusage>THRU_PIN</padstackusage>
+        <units>mils</units>
+        <accuracy>3</accuracy>
+        <drillinfo>
+            <slothole>
+                <holetype>CIRCLE</holetype>
+                <plating>Y</plating>
+                <width>0.000</width>
+            </slothole>
+            <drillsymbol>
+                <figure>NONE</figure>
+                <width>0.000</width>
+            </drillsymbol>
+        </drillinfo>
+        <pad>
+            <type>REGULAR_PAD</type>
+            <layer>BEGIN_LAYER</layer>
+            <figure>CIRCLE</figure>
+            <width>1.000</width>
+            <height>1.000</height>
+        </pad>
+    </padstack>
+</padstacks>

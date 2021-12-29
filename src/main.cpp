@@ -127,7 +127,7 @@ int main(int argc, char* argv[])
         {
             try
             {
-                parser.readPadFile(uparam);
+                PadFile padFile = parser.readPadFile(uparam);
             }
             catch(const std::exception& e)
             {
