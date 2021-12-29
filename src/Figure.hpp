@@ -49,6 +49,8 @@ static Figure ToFigure(uint32_t val)
         case  7: figure = Figure::DIAMOND;             break;
         case 11: figure = Figure::OBLONGX;             break;
         case 12: figure = Figure::OBLONGY;             break;
+        case 15: figure = Figure::HEXAGONX;            break;
+        case 16: figure = Figure::HEXAGONY;            break;
         case 18: figure = Figure::TRIANGLE;            break;
         case 22: figure = Figure::SHAPE_SYMBOL;        break;
         case 23: figure = Figure::FLASH;               break;
@@ -83,6 +85,8 @@ static std::string to_string(const Figure& figure)
         case Figure::DIAMOND:             str = "DIAMOND";             break;
         case Figure::OBLONGX:             str = "OBLONGX";             break;
         case Figure::OBLONGY:             str = "OBLONGY";             break;
+        case Figure::HEXAGONX:            str = "HEXAGONX";            break;
+        case Figure::HEXAGONY:            str = "HEXAGONY";            break;
         case Figure::TRIANGLE:            str = "TRIANGLE";            break;
         case Figure::SHAPE_SYMBOL:        str = "SHAPE_SYMBOL";        break;
         case Figure::FLASH:               str = "FLASH";               break;
