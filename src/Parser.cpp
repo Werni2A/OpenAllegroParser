@@ -555,10 +555,11 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     // @todo unknown
     const uint16_t type_bitfield = mDs.readUint16();
-    std::cout << "type_bitfield = " << type_bitfield << std::endl;
+    // std::cout << "type_bitfield = " << type_bitfield << std::endl;
 
+    // @todo this is completly wrong! padstackusage is stored somewhere else but not here!
     padFile.padstackusage = ToPadstackUsage(mDs.readUint16());
-    std::cout << "padstackusage = " << padFile.padstackusage << std::endl;
+    // std::cout << "padstackusage = " << padFile.padstackusage << std::endl;
 
     // multidrill
 
