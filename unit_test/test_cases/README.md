@@ -89,3 +89,13 @@
 ## Unit Test: 0043 Drill Symbol Figure Type - Oblong y
 
 ## Unit Test: 0044 Drill Symbol Figure Type - Rectangle
+
+## Unit Test: 0045 Drill Hole Type - None
+
+## Unit Test: 0046 Drill Hole Type - Circle
+
+## Unit Test: 0047 Drill Hole Type - Square
+
+## Unit Test: 0048 Drill Hole Type - Oval Slot
+
+## Unit Test: 0049 Drill Hole Type - Rectangular Slot

@@ -3,224 +3,225 @@
 
 #include <catch2/catch.hpp>
 
-#include <Parser.hpp>
 #include <Drillmethod.hpp>
+#include <HoleType.hpp>
+#include <Parser.hpp>
 
 
-// TEST_CASE("Check PadstackUsage - THRU_PIN", "[PadstackUsage]")
-// {
-//     fs::path inputFile = "test_cases/0000.pad";
+TEST_CASE("Check PadstackUsage - THRU_PIN", "[PadstackUsage]")
+{
+    fs::path inputFile = "test_cases/0000.pad";
 
-//     Parser::unknownParam uparam;
+    Parser::unknownParam uparam;
 
-//     uparam.numUserLayers  = 0;
-//     uparam.unknownFlag    = false;
-//     uparam.additionalStr2 = 0;
+    uparam.numUserLayers  = 0;
+    uparam.unknownFlag    = false;
+    uparam.additionalStr2 = 0;
 
-//     Parser parser{inputFile};
+    Parser parser{inputFile};
 
-//     PadFile padFile = parser.readPadFile(uparam);
+    PadFile padFile = parser.readPadFile(uparam);
 
-//     REQUIRE(padFile.padstackusage == PadstackUsage::THRU_PIN);
-// }
+    REQUIRE(padFile.padstackusage == PadstackUsage::THRU_PIN);
+}
 
 
-// TEST_CASE("Check PadstackUsage - SMD_PIN", "[PadstackUsage]")
-// {
-//     fs::path inputFile = "test_cases/0001.pad";
+TEST_CASE("Check PadstackUsage - SMD_PIN", "[PadstackUsage]")
+{
+    fs::path inputFile = "test_cases/0001.pad";
 
-//     Parser::unknownParam uparam;
+    Parser::unknownParam uparam;
 
-//     uparam.numUserLayers  = 0;
-//     uparam.unknownFlag    = false;
-//     uparam.additionalStr2 = 0;
+    uparam.numUserLayers  = 0;
+    uparam.unknownFlag    = false;
+    uparam.additionalStr2 = 0;
 
-//     Parser parser{inputFile};
+    Parser parser{inputFile};
 
-//     PadFile padFile = parser.readPadFile(uparam);
+    PadFile padFile = parser.readPadFile(uparam);
 
-//     REQUIRE(padFile.padstackusage == PadstackUsage::SMD_PIN);
-// }
+    REQUIRE(padFile.padstackusage == PadstackUsage::SMD_PIN);
+}
 
 
-// TEST_CASE("Check PadstackUsage - VIA", "[PadstackUsage]")
-// {
-//     fs::path inputFile = "test_cases/0002.pad";
+TEST_CASE("Check PadstackUsage - VIA", "[PadstackUsage]")
+{
+    fs::path inputFile = "test_cases/0002.pad";
 
-//     Parser::unknownParam uparam;
+    Parser::unknownParam uparam;
 
-//     uparam.numUserLayers  = 0;
-//     uparam.unknownFlag    = false;
-//     uparam.additionalStr2 = 0;
+    uparam.numUserLayers  = 0;
+    uparam.unknownFlag    = false;
+    uparam.additionalStr2 = 0;
 
-//     Parser parser{inputFile};
+    Parser parser{inputFile};
 
-//     PadFile padFile = parser.readPadFile(uparam);
+    PadFile padFile = parser.readPadFile(uparam);
 
-//     REQUIRE(padFile.padstackusage == PadstackUsage::VIA);
-// }
+    REQUIRE(padFile.padstackusage == PadstackUsage::VIA);
+}
 
 
-// TEST_CASE("Check PadstackUsage - BBVIA", "[PadstackUsage]")
-// {
-//     fs::path inputFile = "test_cases/0003.pad";
+TEST_CASE("Check PadstackUsage - BBVIA", "[PadstackUsage]")
+{
+    fs::path inputFile = "test_cases/0003.pad";
 
-//     Parser::unknownParam uparam;
+    Parser::unknownParam uparam;
 
-//     uparam.numUserLayers  = 0;
-//     uparam.unknownFlag    = false;
-//     uparam.additionalStr2 = 0;
+    uparam.numUserLayers  = 0;
+    uparam.unknownFlag    = false;
+    uparam.additionalStr2 = 0;
 
-//     Parser parser{inputFile};
+    Parser parser{inputFile};
 
-//     PadFile padFile = parser.readPadFile(uparam);
+    PadFile padFile = parser.readPadFile(uparam);
 
-//     REQUIRE(padFile.padstackusage == PadstackUsage::BBVIA);
-// }
+    REQUIRE(padFile.padstackusage == PadstackUsage::BBVIA);
+}
 
 
-// TEST_CASE("Check PadstackUsage - MICROVIA", "[PadstackUsage]")
-// {
-//     fs::path inputFile = "test_cases/0004.pad";
+TEST_CASE("Check PadstackUsage - MICROVIA", "[PadstackUsage]")
+{
+    fs::path inputFile = "test_cases/0004.pad";
 
-//     Parser::unknownParam uparam;
+    Parser::unknownParam uparam;
 
-//     uparam.numUserLayers  = 0;
-//     uparam.unknownFlag    = false;
-//     uparam.additionalStr2 = 0;
+    uparam.numUserLayers  = 0;
+    uparam.unknownFlag    = false;
+    uparam.additionalStr2 = 0;
 
-//     Parser parser{inputFile};
+    Parser parser{inputFile};
 
-//     PadFile padFile = parser.readPadFile(uparam);
+    PadFile padFile = parser.readPadFile(uparam);
 
-//     REQUIRE(padFile.padstackusage == PadstackUsage::MICROVIA);
-// }
+    REQUIRE(padFile.padstackusage == PadstackUsage::MICROVIA);
+}
 
 
-// TEST_CASE("Check PadstackUsage - SLOT", "[PadstackUsage]")
-// {
-//     fs::path inputFile = "test_cases/0005.pad";
+TEST_CASE("Check PadstackUsage - SLOT", "[PadstackUsage]")
+{
+    fs::path inputFile = "test_cases/0005.pad";
 
-//     Parser::unknownParam uparam;
+    Parser::unknownParam uparam;
 
-//     uparam.numUserLayers  = 0;
-//     uparam.unknownFlag    = false;
-//     uparam.additionalStr2 = 0;
+    uparam.numUserLayers  = 0;
+    uparam.unknownFlag    = false;
+    uparam.additionalStr2 = 0;
 
-//     Parser parser{inputFile};
+    Parser parser{inputFile};
 
-//     PadFile padFile = parser.readPadFile(uparam);
+    PadFile padFile = parser.readPadFile(uparam);
 
-//     REQUIRE(padFile.padstackusage == PadstackUsage::SLOT);
-// }
+    REQUIRE(padFile.padstackusage == PadstackUsage::SLOT);
+}
 
 
-// TEST_CASE("Check PadstackUsage - MECH_HOLE", "[PadstackUsage]")
-// {
-//     fs::path inputFile = "test_cases/0006.pad";
+TEST_CASE("Check PadstackUsage - MECH_HOLE", "[PadstackUsage]")
+{
+    fs::path inputFile = "test_cases/0006.pad";
 
-//     Parser::unknownParam uparam;
+    Parser::unknownParam uparam;
 
-//     uparam.numUserLayers  = 0;
-//     uparam.unknownFlag    = false;
-//     uparam.additionalStr2 = 0;
+    uparam.numUserLayers  = 0;
+    uparam.unknownFlag    = false;
+    uparam.additionalStr2 = 0;
 
-//     Parser parser{inputFile};
+    Parser parser{inputFile};
 
-//     PadFile padFile = parser.readPadFile(uparam);
+    PadFile padFile = parser.readPadFile(uparam);
 
-//     REQUIRE(padFile.padstackusage == PadstackUsage::MECH_HOLE);
-// }
+    REQUIRE(padFile.padstackusage == PadstackUsage::MECH_HOLE);
+}
 
 
-// TEST_CASE("Check PadstackUsage - TOOL_HOLE", "[PadstackUsage]")
-// {
-//     fs::path inputFile = "test_cases/0007.pad";
+TEST_CASE("Check PadstackUsage - TOOL_HOLE", "[PadstackUsage]")
+{
+    fs::path inputFile = "test_cases/0007.pad";
 
-//     Parser::unknownParam uparam;
+    Parser::unknownParam uparam;
 
-//     uparam.numUserLayers  = 0;
-//     uparam.unknownFlag    = false;
-//     uparam.additionalStr2 = 0;
+    uparam.numUserLayers  = 0;
+    uparam.unknownFlag    = false;
+    uparam.additionalStr2 = 0;
 
-//     Parser parser{inputFile};
+    Parser parser{inputFile};
 
-//     PadFile padFile = parser.readPadFile(uparam);
+    PadFile padFile = parser.readPadFile(uparam);
 
-//     REQUIRE(padFile.padstackusage == PadstackUsage::TOOL_HOLE);
-// }
+    REQUIRE(padFile.padstackusage == PadstackUsage::TOOL_HOLE);
+}
 
 
-// TEST_CASE("Check PadstackUsage - MOUNT_HOLE", "[PadstackUsage]")
-// {
-//     fs::path inputFile = "test_cases/0008.pad";
+TEST_CASE("Check PadstackUsage - MOUNT_HOLE", "[PadstackUsage]")
+{
+    fs::path inputFile = "test_cases/0008.pad";
 
-//     Parser::unknownParam uparam;
+    Parser::unknownParam uparam;
 
-//     uparam.numUserLayers  = 0;
-//     uparam.unknownFlag    = false;
-//     uparam.additionalStr2 = 0;
+    uparam.numUserLayers  = 0;
+    uparam.unknownFlag    = false;
+    uparam.additionalStr2 = 0;
 
-//     Parser parser{inputFile};
+    Parser parser{inputFile};
 
-//     PadFile padFile = parser.readPadFile(uparam);
+    PadFile padFile = parser.readPadFile(uparam);
 
-//     REQUIRE(padFile.padstackusage == PadstackUsage::MOUNT_HOLE);
-// }
+    REQUIRE(padFile.padstackusage == PadstackUsage::MOUNT_HOLE);
+}
 
 
-// TEST_CASE("Check PadstackUsage - FIDUCIAL", "[PadstackUsage]")
-// {
-//     fs::path inputFile = "test_cases/0009.pad";
+TEST_CASE("Check PadstackUsage - FIDUCIAL", "[PadstackUsage]")
+{
+    fs::path inputFile = "test_cases/0009.pad";
 
-//     Parser::unknownParam uparam;
+    Parser::unknownParam uparam;
 
-//     uparam.numUserLayers  = 0;
-//     uparam.unknownFlag    = false;
-//     uparam.additionalStr2 = 0;
+    uparam.numUserLayers  = 0;
+    uparam.unknownFlag    = false;
+    uparam.additionalStr2 = 0;
 
-//     Parser parser{inputFile};
+    Parser parser{inputFile};
 
-//     PadFile padFile = parser.readPadFile(uparam);
+    PadFile padFile = parser.readPadFile(uparam);
 
-//     REQUIRE(padFile.padstackusage == PadstackUsage::FIDUCIAL);
-// }
+    REQUIRE(padFile.padstackusage == PadstackUsage::FIDUCIAL);
+}
 
 
-// TEST_CASE("Check PadstackUsage - BOND_FINGER", "[PadstackUsage]")
-// {
-//     fs::path inputFile = "test_cases/0010.pad";
+TEST_CASE("Check PadstackUsage - BOND_FINGER", "[PadstackUsage]")
+{
+    fs::path inputFile = "test_cases/0010.pad";
 
-//     Parser::unknownParam uparam;
+    Parser::unknownParam uparam;
 
-//     uparam.numUserLayers  = 0;
-//     uparam.unknownFlag    = false;
-//     uparam.additionalStr2 = 0;
+    uparam.numUserLayers  = 0;
+    uparam.unknownFlag    = false;
+    uparam.additionalStr2 = 0;
 
-//     Parser parser{inputFile};
+    Parser parser{inputFile};
 
-//     PadFile padFile = parser.readPadFile(uparam);
+    PadFile padFile = parser.readPadFile(uparam);
 
-//     REQUIRE(padFile.padstackusage == PadstackUsage::BOND_FINGER);
-// }
+    REQUIRE(padFile.padstackusage == PadstackUsage::BOND_FINGER);
+}
 
 
-// TEST_CASE("Check PadstackUsage - DIE_PAD", "[PadstackUsage]")
-// {
-//     fs::path inputFile = "test_cases/0011.pad";
+TEST_CASE("Check PadstackUsage - DIE_PAD", "[PadstackUsage]")
+{
+    fs::path inputFile = "test_cases/0011.pad";
 
-//     Parser::unknownParam uparam;
+    Parser::unknownParam uparam;
 
-//     uparam.numUserLayers  = 0;
-//     uparam.unknownFlag    = false;
-//     uparam.additionalStr2 = 0;
+    uparam.numUserLayers  = 0;
+    uparam.unknownFlag    = false;
+    uparam.additionalStr2 = 0;
 
-//     Parser parser{inputFile};
+    Parser parser{inputFile};
 
-//     PadFile padFile = parser.readPadFile(uparam);
+    PadFile padFile = parser.readPadFile(uparam);
 
-//     REQUIRE(padFile.padstackusage == PadstackUsage::DIE_PAD);
-// }
+    REQUIRE(padFile.padstackusage == PadstackUsage::DIE_PAD);
+}
 
 
 TEST_CASE("Check DrillOffset - x", "[DrillOffset]")
@@ -771,4 +772,94 @@ TEST_CASE("Check Drill Symbol Figure Type - Rectangle", "[Drill Symbol Figure Ty
     PadFile padFile = parser.readPadFile(uparam);
 
     REQUIRE(padFile.figure == Figure::RECTANGLE);
+}
+
+
+TEST_CASE("Check Drill Hole Type - None", "[Drill Hole Type]")
+{
+    fs::path inputFile = "test_cases/0045.pad";
+
+    Parser::unknownParam uparam;
+
+    uparam.numUserLayers  = 0;
+    uparam.unknownFlag    = false;
+    uparam.additionalStr2 = 0;
+
+    Parser parser{inputFile};
+
+    PadFile padFile = parser.readPadFile(uparam);
+
+    REQUIRE(padFile.holeType == HoleType::NONE);
+}
+
+
+TEST_CASE("Check Drill Hole Type - Circle", "[Drill Hole Type]")
+{
+    fs::path inputFile = "test_cases/0046.pad";
+
+    Parser::unknownParam uparam;
+
+    uparam.numUserLayers  = 0;
+    uparam.unknownFlag    = false;
+    uparam.additionalStr2 = 0;
+
+    Parser parser{inputFile};
+
+    PadFile padFile = parser.readPadFile(uparam);
+
+    REQUIRE(padFile.holeType == HoleType::CIRCLE);
+}
+
+
+TEST_CASE("Check Drill Hole Type - Square", "[Drill Hole Type]")
+{
+    fs::path inputFile = "test_cases/0047.pad";
+
+    Parser::unknownParam uparam;
+
+    uparam.numUserLayers  = 0;
+    uparam.unknownFlag    = false;
+    uparam.additionalStr2 = 0;
+
+    Parser parser{inputFile};
+
+    PadFile padFile = parser.readPadFile(uparam);
+
+    REQUIRE(padFile.holeType == HoleType::SQUARE);
+}
+
+
+TEST_CASE("Check Drill Hole Type - Oval Slot", "[Drill Hole Type]")
+{
+    fs::path inputFile = "test_cases/0048.pad";
+
+    Parser::unknownParam uparam;
+
+    uparam.numUserLayers  = 0;
+    uparam.unknownFlag    = false;
+    uparam.additionalStr2 = 0;
+
+    Parser parser{inputFile};
+
+    PadFile padFile = parser.readPadFile(uparam);
+
+    REQUIRE(padFile.holeType == HoleType::OVAL_SLOT);
+}
+
+
+TEST_CASE("Check Drill Hole Type - Rectangular Slot", "[Drill Hole Type]")
+{
+    fs::path inputFile = "test_cases/0049.pad";
+
+    Parser::unknownParam uparam;
+
+    uparam.numUserLayers  = 0;
+    uparam.unknownFlag    = false;
+    uparam.additionalStr2 = 0;
+
+    Parser parser{inputFile};
+
+    PadFile padFile = parser.readPadFile(uparam);
+
+    REQUIRE(padFile.holeType == HoleType::RECT_SLOT);
 }
