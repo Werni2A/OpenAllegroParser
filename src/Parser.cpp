@@ -456,6 +456,15 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     mDs.assumeZero(248, "unknown - 9");
 
+    const std::array<std::string, 6> predefStrLst = {
+        "BEGIN LAYER",
+        "END LAYER",
+        "AIR",
+        "COPPER",
+        "FR-4",
+        "PRIMARY"
+    };
+
     for(size_t i = 0u; i < 7u + additionalStr + uparam.additionalStr2; ++i)
     {
         const uint32_t    idx = mDs.readUint32();
@@ -465,6 +474,12 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
         std::cout << "idxStrPairLst[" << std::to_string(padFile.idxStrPairLst.size()) << "] : "
                   << "idx = " << idx << "; str = " << str << std::endl;
+    }
+
+    // Sanity check
+    for(size_t i = 0u; i < predefStrLst.size(); ++i)
+    {
+        expectStr(padFile.idxStrPairLst.at(i).second, predefStrLst[i]);
     }
 
     // @todo Still unknown whether there is a string stored or just some
