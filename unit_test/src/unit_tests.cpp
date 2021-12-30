@@ -863,3 +863,55 @@ TEST_CASE("Check Drill Hole Type - Rectangular Slot", "[Drill Hole Type]")
 
     REQUIRE(padFile.holeType == HoleType::RECT_SLOT);
 }
+
+
+TEST_CASE("Check Drill Hole Type - Rectangular Slot - Complex", "[Complex]")
+{
+    fs::path inputFile = "test_cases/0050.pad";
+
+    Parser::unknownParam uparam;
+
+    uparam.numUserLayers  = 0;
+    uparam.unknownFlag    = false;
+    uparam.additionalStr2 = 0;
+
+    Parser parser{inputFile};
+
+    PadFile padFile = parser.readPadFile(uparam);
+
+    REQUIRE(padFile.holeType == HoleType::RECT_SLOT);
+    REQUIRE(padFile.slothole_width  == 50);
+    REQUIRE(padFile.slothole_height == 60);
+    REQUIRE(padFile.positivetolerance == 2);
+    REQUIRE(padFile.negativetolerance == 3);
+    REQUIRE(padFile.slothole_positivetolerancey == 4);
+    REQUIRE(padFile.slothole_negativetolerancey == 5);
+
+    REQUIRE(padFile.plated == true);
+}
+
+
+TEST_CASE("Check Drill Hole Type - Oval Slot - Complex", "[Complex]")
+{
+    fs::path inputFile = "test_cases/0051.pad";
+
+    Parser::unknownParam uparam;
+
+    uparam.numUserLayers  = 0;
+    uparam.unknownFlag    = false;
+    uparam.additionalStr2 = 0;
+
+    Parser parser{inputFile};
+
+    PadFile padFile = parser.readPadFile(uparam);
+
+    REQUIRE(padFile.holeType == HoleType::OVAL_SLOT);
+    REQUIRE(padFile.slothole_width  == 10);
+    REQUIRE(padFile.slothole_height == 20);
+    REQUIRE(padFile.positivetolerance == 1);
+    REQUIRE(padFile.negativetolerance == 2);
+    REQUIRE(padFile.slothole_positivetolerancey == 3);
+    REQUIRE(padFile.slothole_negativetolerancey == 4);
+
+    REQUIRE(padFile.plated == true);
+}

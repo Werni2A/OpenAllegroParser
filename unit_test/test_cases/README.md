@@ -99,3 +99,7 @@
 ## Unit Test: 0048 Drill Hole Type - Oval Slot
 
 ## Unit Test: 0049 Drill Hole Type - Rectangular Slot
+
+## Unit Test: 0050 Drill Hole Type - Rectangular Slot - Complex
+
+## Unit Test: 0051 Drill Hole Type - Oval Slot - Complex

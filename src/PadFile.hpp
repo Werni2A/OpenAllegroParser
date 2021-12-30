@@ -103,6 +103,11 @@ public:
     int32_t positivetolerance;
     int32_t negativetolerance;
 
+    uint32_t slothole_width;
+    uint32_t slothole_height;
+    int32_t slothole_positivetolerancey;
+    int32_t slothole_negativetolerancey;
+
     uint32_t width;
     uint32_t height;
 
@@ -180,6 +185,11 @@ static std::string to_string(const PadFile& padFile)
 
     str += indent(1) + "positivetolerance = " + std::to_string(padFile.positivetolerance) + newLine();
     str += indent(1) + "negativetolerance = " + std::to_string(padFile.negativetolerance) + newLine();
+
+    str += indent(1) + "slothole_width  = " + std::to_string(padFile.slothole_width) + newLine();
+    str += indent(1) + "slothole_height = " + std::to_string(padFile.slothole_height) + newLine();
+    str += indent(1) + "slothole_positivetolerancey = " + std::to_string(padFile.slothole_positivetolerancey) + newLine();
+    str += indent(1) + "slothole_negativetolerancey = " + std::to_string(padFile.slothole_negativetolerancey) + newLine();
 
     str += indent(1) + "width             = " + std::to_string(padFile.width) + newLine();
     str += indent(1) + "height            = " + std::to_string(padFile.height) + newLine();
