@@ -329,7 +329,7 @@ TEST_CASE("Check Drill - DrillHole - Complex", "[DrillHole]")
     PadFile padFile = parser.readPadFile(uparam);
 
 
-    REQUIRE(padFile.drilltoolsize == "TOOL_SIZE");
+    REQUIRE(padFile.getDrillToolSize() == "TOOL_SIZE");
     REQUIRE(padFile.drillmethod == Drillmethod::NONE);
 }
 

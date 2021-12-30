@@ -10,11 +10,12 @@ namespace fs = std::filesystem;
 namespace po = boost::program_options;
 
 
-void parseArgs(int argc, char* argv[], fs::path& input, bool& extract, fs::path& output, Parser::unknownParam& uparam)
+void parseArgs(int argc, char* argv[], fs::path& input, bool& print, bool& extract, fs::path& output, Parser::unknownParam& uparam)
 {
     po::options_description desc("Allowed options");
     desc.add_options()
         ("help,h",                                             "produce help message")
+        ("print,p",   po::bool_switch()->default_value(false), "print file content to terminal")
         ("extract,e", po::bool_switch()->default_value(false), "extract files from within the binary")
         ("input,i",   po::value<std::string>(),                "input file to parse")
         ("output,o",  po::value<std::string>(),                "output path (required iff extract is set)")
@@ -40,6 +41,7 @@ void parseArgs(int argc, char* argv[], fs::path& input, bool& extract, fs::path&
         std::exit(1);
     }
 
+    print   = vm.count("print") ? vm["print"].as<bool>() : false;
     extract = vm.count("extract") ? vm["extract"].as<bool>() : false;
 
     if(vm.count("input"))
@@ -98,12 +100,13 @@ void parseArgs(int argc, char* argv[], fs::path& input, bool& extract, fs::path&
 int main(int argc, char* argv[])
 {
     fs::path inputFile;
+    bool     print;
     bool     extract;
     fs::path outputPath;
 
     Parser::unknownParam uparam;
 
-    parseArgs(argc, argv, inputFile, extract, outputPath, uparam);
+    parseArgs(argc, argv, inputFile, print, extract, outputPath, uparam);
 
     try
     {
@@ -128,6 +131,14 @@ int main(int argc, char* argv[])
             try
             {
                 PadFile padFile = parser.readPadFile(uparam);
+
+                if(print)
+                {
+                    std::cout << "\r\n-----------------------------------------------" << std::endl;
+                    std::cout << "--------------- File Content ------------------" << std::endl;
+                    std::cout << "-----------------------------------------------" << std::endl;
+                    std::cout << padFile << std::endl;
+                }
             }
             catch(const std::exception& e)
             {

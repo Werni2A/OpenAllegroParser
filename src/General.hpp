@@ -129,11 +129,15 @@ static std::string indent(std::string str, size_t level)
     std::string indentedStr;
     for(auto&& line : lines)
     {
-        for(size_t i = 0u; i < level; ++i)
+        if(!line.empty())
         {
-            indentedStr += indent;
+            for(size_t i = 0u; i < level; ++i)
+            {
+                indentedStr += indent;
+            }
+
+            indentedStr += line;
         }
-        indentedStr += line;
     }
 
     return indentedStr;
@@ -143,7 +147,15 @@ static std::string indent(std::string str, size_t level)
 [[maybe_unused]]
 static std::string indent(size_t level)
 {
-    return indent("", level);
+    const std::string indent = "  ";
+
+    std::string retIndent;
+
+    for(size_t i = 0u; i < level; ++i)
+    {
+        retIndent += indent;
+    }
+    return retIndent;
 }
 
 
