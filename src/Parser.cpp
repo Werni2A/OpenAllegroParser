@@ -591,6 +591,9 @@ PadFile Parser::readPadFile(unknownParam uparam)
     padFile.positivetolerance = mDs.readInt32();
     padFile.negativetolerance = mDs.readInt32();
 
+    // @todo Slot types have positivetolerancey and negativetolerancey for tolerances in x and y direction
+    //       The x direction is probably covered by the upper two lines but y should cover 8 bytes in the following line...
+    //       The values should always be zero when holeType != (OVAL_SLOT || RECT_SLOT)
     mDs.printUnknownData(std::cout, 16, "unknown - 18");
 
     padFile.width  = mDs.readUint32();
