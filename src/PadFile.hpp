@@ -114,6 +114,8 @@ public:
     Figure figure;
     std::string characters;
 
+    uint32_t diameter;
+
     uint32_t back_drill_figure_width;
     uint32_t back_drill_figure_height;
 
@@ -196,6 +198,8 @@ static std::string to_string(const PadFile& padFile)
 
     str += indent(1) + "figure            = " + to_string(padFile.figure) + newLine();
     str += indent(1) + "characters        = " + padFile.characters + newLine();
+
+    str += indent(1) + "diameter          = " + std::to_string(padFile.diameter) + newLine();
 
     str += indent(1) + "back_drill_figure_width  = " + std::to_string(padFile.back_drill_figure_width) + newLine();
     str += indent(1) + "back_drill_figure_height = " + std::to_string(padFile.back_drill_figure_height) + newLine();

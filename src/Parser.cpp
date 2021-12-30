@@ -607,9 +607,12 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     padFile.characters = mDs.readStrZeroTerm4BytePad();
 
-    mDs.printUnknownData(std::cout, 12, "unknown - 19");
-
     // backdrill
+
+    padFile.diameter = mDs.readUint32();
+
+    // mDs.printUnknownData(std::cout, 12, "unknown - 19");
+    mDs.assumeZero(8, "unknown - 19");
 
     padFile.back_drill_figure_width  = mDs.readUint32();
     padFile.back_drill_figure_height = mDs.readUint32();
