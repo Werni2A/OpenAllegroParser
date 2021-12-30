@@ -416,7 +416,6 @@ PadFile Parser::readPadFile(unknownParam uparam)
     mDs.printUnknownData(std::cout, 4, "unkown - 2");
 
     padFile.swVersion = mDs.readStrZeroTermBlock(60u);
-    // std::cout << "swVersion = " << padFile.swVersion << std::endl;
 
     mDs.printUnknownData(std::cout, 58, "unknown - 3");
 
@@ -504,8 +503,6 @@ PadFile Parser::readPadFile(unknownParam uparam)
         const uint32_t idx    = mDs.readUint32();
         const std::string str = mDs.readStrZeroTerm4BytePad();
 
-        padFile.drilltoolsize = str;
-
         padFile.idxStrPairLst.push_back(std::make_pair(idx, str));
 
         std::cout << "idxStrPairLst[" << std::to_string(padFile.idxStrPairLst.size()) << "] : "
@@ -528,19 +525,13 @@ PadFile Parser::readPadFile(unknownParam uparam)
     padFile.idxUnknown          = mDs.readUint32();
     padFile.strIdxDrillToolSize = mDs.readUint32(); // Is 0 when no DrillToolSize is specified (empty string)
 
-    // std::cout << "strIdxPadName       = " << padFile.strIdxPadName       << std::endl;
-    // std::cout << "idxUnknown          = " << padFile.idxUnknown          << std::endl;
-    // std::cout << "strIdxDrillToolSize = " << padFile.strIdxDrillToolSize << std::endl;
-
     mDs.printUnknownData(std::cout, 4, "unknown - 13");
 
     // @todo padstackusage is probably a bit field where the first two
     //       bits are something different. See PadstackUsage.hpp for more info.
     padFile.padstackusage = ToPadstackUsage(mDs.readUint8());
-    // std::cout << "padstackusage = " << padFile.padstackusage << std::endl;
 
     padFile.drillmethod = ToDrillmethod(mDs.readUint8());
-    // std::cout << "drillmethod = " << padFile.drillmethod << std::endl;
 
     // Bit 0 - 2 = Drill Hole Type
     // Bit     3 = Multiple Drills @todo verify this (number of column/row drills)
@@ -549,10 +540,8 @@ PadFile Parser::readPadFile(unknownParam uparam)
     const uint8_t bit_field = mDs.readUint8();
 
     padFile.holeType        = ToHoleType(bit_field & 0x07);
-    // std::cout << "holeType = " << padFile.holeType << std::endl;
     padFile.staggeredDrills = static_cast<bool>(bit_field & 0x10);
     padFile.plated          = static_cast<bool>(bit_field & 0x20);
-    // std::cout << "plated = " << padFile.plated << std::endl;
 
     // Check for unknown bits that are set
     if(bit_field & ~0x3f)
@@ -580,9 +569,8 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     padFile.drill_rows    = mDs.readUint16();
     padFile.drill_columns = mDs.readUint16();
-    // std::cout << "rows = " << padFile.drill_rows << "; columns = " << padFile.drill_columns << std::endl;
 
-    uint8_t lock_layer_span = mDs.readUint8();
+    const uint8_t lock_layer_span = mDs.readUint8();
     padFile.lock_layer_span = static_cast<bool>(lock_layer_span);
 
     if(lock_layer_span > 1)
@@ -594,31 +582,23 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     padFile.offsetX = mDs.readInt32();
     padFile.offsetY = mDs.readInt32();
-    // std::cout << "offsetX = " << padFile.offsetX << "; offsetY = " << padFile.offsetY << std::endl;
 
     padFile.clearance_columns = mDs.readUint32();
     padFile.clearance_rows    = mDs.readUint32();
-    // std::cout << "clearance_columns = " << padFile.clearance_columns << "; clearance_rows = " << padFile.clearance_rows << std::endl;
 
-    padFile.finished_size = mDs.readInt32();
-    // std::cout << "finished_size = " << padFile.finished_size << std::endl;
-
-    mDs.printUnknownData(std::cout, 0, "unknown - 17");
+    padFile.finished_size     = mDs.readInt32();
 
     padFile.positivetolerance = mDs.readInt32();
     padFile.negativetolerance = mDs.readInt32();
-    // std::cout << "positivetolerance = " << padFile.positivetolerance << "; negativetolerance = " << padFile.negativetolerance << std::endl;
 
     mDs.printUnknownData(std::cout, 16, "unknown - 18");
 
     padFile.width  = mDs.readUint32();
     padFile.height = mDs.readUint32();
-    // std::cout << "width = " << padFile.width << "; height = " << padFile.height << std::endl;
 
     padFile.figure = ToFigure(mDs.readUint32());
 
     padFile.characters = mDs.readStrZeroTerm4BytePad();
-    // std::cout << "characters = " << padFile.characters << std::endl;
 
     mDs.printUnknownData(std::cout, 12, "unknown - 19");
 
@@ -646,22 +626,16 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     for(size_t i = 0u; i < 25u; ++i)
     {
-        // std::cout << "i = " << i << std::endl;
-        // @todo print layer and type
         padFile.genericLayers.push_back(readPad());
-        // std::cout << pad << std::endl;
     }
 
     std::cout << "Start user layers" << std::endl;
 
     for(size_t i = 0u; i < uparam.numUserLayers; ++i)
     {
-        // std::cout << "i = " << i << std::endl;
         const uint32_t idxLayerName = mDs.readUint32();
-        // std::cout << "idxLayerName = " << idxLayerName << std::endl;
 
         Pad pad = readPad();
-        // std::cout << pad << std::endl;
     }
 
     std::cout << "Exit loop";
@@ -669,7 +643,6 @@ PadFile Parser::readPadFile(unknownParam uparam)
     mDs.printUnknownData(std::cout, 56, "unknown - 21");
 
     padFile.dateTime1 = ToTime(mDs.readUint32());
-    // std::cout << "dateTime1 = " << DateTimeToStr(padFile.dateTime1) << std::endl;
 
     mDs.printUnknownData(std::cout, 18, "unknown - 22");
 
@@ -679,7 +652,6 @@ PadFile Parser::readPadFile(unknownParam uparam)
     mDs.printUnknownData(std::cout, 2, "unknown - 23");
 
     padFile.username = mDs.readStrZeroTerm4BytePad();
-    // std::cout << "username = " << padFile.username << std::endl;
 
     if(padFile.username.size() + 1 != usernameLen) // +1 for terminating zero byte.
     {
@@ -785,7 +757,6 @@ PadFile Parser::readPadFile(unknownParam uparam)
     mDs.assumeZero(8, "unknown - 30");
 
     padFile.programAndVersion = mDs.readStrZeroTerm4BytePad();
-    // std::cout << "programAndVersion = " << padFile.programAndVersion << std::endl;
 
     if(!mDs.isEoF())
     {
