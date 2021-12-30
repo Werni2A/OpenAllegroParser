@@ -13,6 +13,7 @@
 #include "Drillmethod.hpp"
 #include "Figure.hpp"
 #include "General.hpp"
+#include "HoleType.hpp"
 #include "Pad.hpp"
 #include "PadstackUsage.hpp"
 #include "Units.hpp"
@@ -41,8 +42,9 @@ public:
 
     Drillmethod drillmethod;
 
-    bool staggeredDrills;
-    bool plated;
+    HoleType holeType;
+    bool     staggeredDrills;
+    bool     plated;
 
     bool not_suppress_nc_internal_pads;
     bool isPolyVia;
