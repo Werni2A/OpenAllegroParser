@@ -11,11 +11,11 @@
 
 enum class HoleType
 {
-    NONE      =  0, // @todo needs verification
-    CIRCLE    = 33, // @todo needs verification
-    // SQUARE   = , // @todo figure out the value
-    OVAL_SLOT = 35,
-    RECT_SLOT = 36
+    NONE      = 0,
+    CIRCLE    = 1,
+    SQUARE    = 2,
+    OVAL_SLOT = 3,
+    RECT_SLOT = 4
 };
 
 
@@ -26,10 +26,11 @@ static HoleType ToHoleType(uint32_t val)
 
     switch(val)
     {
-        case  0: holeType = HoleType::NONE;      break;
-        case 33: holeType = HoleType::CIRCLE;    break;
-        case 35: holeType = HoleType::OVAL_SLOT; break;
-        case 36: holeType = HoleType::RECT_SLOT; break;
+        case 0: holeType = HoleType::NONE;      break;
+        case 1: holeType = HoleType::CIRCLE;    break;
+        case 2: holeType = HoleType::SQUARE;    break;
+        case 3: holeType = HoleType::OVAL_SLOT; break;
+        case 4: holeType = HoleType::RECT_SLOT; break;
         default:
             std::string errorMsg = "HoleType with value " + std::to_string(val)
                                  + " is not implemented!";
@@ -50,6 +51,7 @@ static std::string to_string(const HoleType& holeType)
     {
         case HoleType::NONE:      str = "NONE";      break;
         case HoleType::CIRCLE:    str = "CIRCLE";    break;
+        case HoleType::SQUARE:    str = "SQUARE";    break;
         case HoleType::OVAL_SLOT: str = "OVAL_SLOT"; break;
         case HoleType::RECT_SLOT: str = "RECT_SLOT"; break;
         default:

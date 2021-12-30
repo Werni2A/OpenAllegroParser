@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<padstacks>
+    <padstack version="1.0">
+        <padstackname>0049</padstackname>
+        <padstackusage>SLOT</padstackusage>
+        <units>mils</units>
+        <accuracy>1</accuracy>
+        <drillinfo>
+            <slothole>
+                <holetype>RECT_SLOT</holetype>
+                <plating>Y</plating>
+                <width>5.0</width>
+                <height>6.0</height>
+                <positivetolerance>0.2</positivetolerance>
+                <negativetolerance>0.3</negativetolerance>
+                <positivetolerancey>0.4</positivetolerancey>
+                <negativetolerancey>0.5</negativetolerancey>
+            </slothole>
+            <drillsymbol>
+                <figure>OBLONGX</figure>
+                <width>0.1</width>
+                <height>0.1</height>
+            </drillsymbol>
+        </drillinfo>
+        <pad>
+            <type>REGULAR_PAD</type>
+            <layer>BEGIN_LAYER</layer>
+            <figure>CIRCLE</figure>
+            <width>1.0</width>
+            <height>1.0</height>
+        </pad>
+    </padstack>
+</padstacks>

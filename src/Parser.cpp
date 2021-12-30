@@ -12,6 +12,7 @@
 #include "DataStream.hpp"
 #include "Drillmethod.hpp"
 #include "General.hpp"
+#include "HoleType.hpp"
 #include "PadstackUsage.hpp"
 #include "Parser.hpp"
 
@@ -455,6 +456,15 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     mDs.assumeZero(248, "unknown - 9");
 
+    const std::array<std::string, 6> predefStrLst = {
+        "BEGIN LAYER",
+        "END LAYER",
+        "AIR",
+        "COPPER",
+        "FR-4",
+        "PRIMARY"
+    };
+
     for(size_t i = 0u; i < 7u + additionalStr + uparam.additionalStr2; ++i)
     {
         const uint32_t    idx = mDs.readUint32();
@@ -464,6 +474,12 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
         std::cout << "idxStrPairLst[" << std::to_string(padFile.idxStrPairLst.size()) << "] : "
                   << "idx = " << idx << "; str = " << str << std::endl;
+    }
+
+    // Sanity check
+    for(size_t i = 0u; i < predefStrLst.size(); ++i)
+    {
+        expectStr(padFile.idxStrPairLst.at(i).second, predefStrLst[i]);
     }
 
     // @todo Still unknown whether there is a string stored or just some
@@ -516,32 +532,39 @@ PadFile Parser::readPadFile(unknownParam uparam)
     // std::cout << "idxUnknown          = " << padFile.idxUnknown          << std::endl;
     // std::cout << "strIdxDrillToolSize = " << padFile.strIdxDrillToolSize << std::endl;
 
-    mDs.printUnknownData(std::cout, 5, "unknown - 13");
+    mDs.printUnknownData(std::cout, 4, "unknown - 13");
+
+    // @todo padstackusage is probably a bit field where the first two
+    //       bits are something different. See PadstackUsage.hpp for more info.
+    padFile.padstackusage = ToPadstackUsage(mDs.readUint8());
+    // std::cout << "padstackusage = " << padFile.padstackusage << std::endl;
 
     padFile.drillmethod = ToDrillmethod(mDs.readUint8());
     // std::cout << "drillmethod = " << padFile.drillmethod << std::endl;
 
-    // Bit 0 = @todo Unknown
-    // Bit 3 = Multiple Drills @todo verify this (number of column/row drills)
-    // Bit 4 = Staggered Drills
-    // Bit 5 = Plated Drill Holes
+    // Bit 0 - 2 = Drill Hole Type
+    // Bit     3 = Multiple Drills @todo verify this (number of column/row drills)
+    // Bit     4 = Staggered Drills
+    // Bit     5 = Plated Drill Holes
     const uint8_t bit_field = mDs.readUint8();
-    std::cout << "unknown bit_field: " << std::to_string(bit_field) << std::endl;
+
+    padFile.holeType        = ToHoleType(bit_field & 0x07);
+    // std::cout << "holeType = " << padFile.holeType << std::endl;
     padFile.staggeredDrills = static_cast<bool>(bit_field & 0x10);
     padFile.plated          = static_cast<bool>(bit_field & 0x20);
     // std::cout << "plated = " << padFile.plated << std::endl;
 
     // Check for unknown bits that are set
-    if(bit_field & ~0x30)
+    if(bit_field & ~0x3f)
     {
-        // throw std::runtime_error("Unknown bit in bit_field set! 0x" + ToHex(bit_field, 2));
+        throw std::runtime_error("Unknown bit in bit_field set! 0x" + ToHex(bit_field, 2));
     }
 
     mDs.printUnknownData(std::cout, 2, "unknown - 14");
 
     // Bit 0 = Not suppress not connected internal pads
     const uint8_t bit_field2 = mDs.readUint8();
-    std::cout << "unknown bit_field2: " << std::to_string(bit_field2) << std::endl;
+
     padFile.not_suppress_nc_internal_pads = static_cast<bool>(bit_field2 & 0x01);
     padFile.isPolyVia                     = static_cast<bool>(bit_field2 & 0x02);
 
@@ -551,15 +574,7 @@ PadFile Parser::readPadFile(unknownParam uparam)
         throw std::runtime_error("Unknown bit in bit_field2 set! 0x" + ToHex(bit_field2, 2));
     }
 
-    mDs.printUnknownData(std::cout, 4, "unknown - 15");
-
-    // @todo unknown
-    const uint16_t type_bitfield = mDs.readUint16();
-    // std::cout << "type_bitfield = " << type_bitfield << std::endl;
-
-    // @todo this is completly wrong! padstackusage is stored somewhere else but not here!
-    padFile.padstackusage = ToPadstackUsage(mDs.readUint16());
-    // std::cout << "padstackusage = " << padFile.padstackusage << std::endl;
+    mDs.printUnknownData(std::cout, 8, "unknown - 15");
 
     // multidrill
 
@@ -570,11 +585,9 @@ PadFile Parser::readPadFile(unknownParam uparam)
     uint8_t lock_layer_span = mDs.readUint8();
     padFile.lock_layer_span = static_cast<bool>(lock_layer_span);
 
-    mDs.printData(std::cout, {lock_layer_span});
-
     if(lock_layer_span > 1)
     {
-        throw std::runtime_error("Epected boolean value!");
+        throw std::runtime_error("Epected boolean value! 0x" + ToHex(lock_layer_span, 2));
     }
 
     mDs.printUnknownData(std::cout, 1, "unknown - 16");

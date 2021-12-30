@@ -17,10 +17,6 @@ if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
 endif()
 
-# Add Boost dependency
-find_package(Boost COMPONENTS program_options REQUIRED)
-include_directories(${Boost_INCLUDE_DIR})
-
 # Add Catch2 dependency
 find_package(Catch2 REQUIRED)
 
@@ -49,12 +45,10 @@ set(HEADERS
 add_executable(${CMAKE_PROJECT_NAME} ${SOURCES} ${HEADERS})
 
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
-                           ${Boost_INCLUDE_DIR}
                            ${CMAKE_CURRENT_SOURCE_DIR}/../src/
 )
 
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
-                      ${Boost_LIBRARIES}
                       libzip::zip
                       libzippp::libzippp
 )
