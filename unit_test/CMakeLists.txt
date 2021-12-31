@@ -26,6 +26,7 @@ find_package(libzippp CONFIG REQUIRED)
 set(SOURCES
    ${SOURCES}
    ${CMAKE_CURRENT_SOURCE_DIR}/../src/DataStream.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/../src/LayerStuff.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/../src/Pad.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/../src/Parser.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/src/catch_main.cpp
@@ -36,6 +37,7 @@ set(HEADERS
    ${HEADERS}
    ${CMAKE_CURRENT_SOURCE_DIR}/../src/DataStream.hpp
    ${CMAKE_CURRENT_SOURCE_DIR}/../src/General.hpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/../src/LayerStuff.hpp
    ${CMAKE_CURRENT_SOURCE_DIR}/../src/Pad.hpp
    ${CMAKE_CURRENT_SOURCE_DIR}/../src/PadFile.hpp
    ${CMAKE_CURRENT_SOURCE_DIR}/../src/Parser.hpp

@@ -91,7 +91,7 @@ private:
      */
     void exportZip(const fs::path& aOutputPath, size_t aComprZipSize = 0u);
 
-    Pad readPad();
+    Pad readPad(size_t aIdx, bool aIsUsrLayer);
 
     FileType mFileType;
     FileFormatVersion mFileFormatVersion;

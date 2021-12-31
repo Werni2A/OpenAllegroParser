@@ -9,25 +9,25 @@
 #include "Pad.hpp"
 
 
-void Pad::setType(uint32_t aType)
+void Pad::setType(Type aType)
 {
     mType = aType;
 }
 
 
-uint32_t Pad::getType() const
+Type Pad::getType() const
 {
     return mType;
 }
 
 
-void Pad::setLayer(uint32_t aLayer)
+void Pad::setLayer(Layer aLayer)
 {
     mLayer = aLayer;
 }
 
 
-uint32_t Pad::getLayer() const
+Layer Pad::getLayer() const
 {
     return mLayer;
 }

@@ -10,26 +10,27 @@
 
 #include "Figure.hpp"
 #include "General.hpp"
+#include "LayerStuff.hpp"
 
 
 class Pad
 {
 public:
 
-    Pad() :
-        mType{0u}, mLayer{0u}, mFigure{Figure::NONE},
+    Pad(Type aType, Layer aLayer) :
+        mType{aType}, mLayer{aLayer}, mFigure{Figure::NONE},
         mOffsetX{0}, mOffsetY(0), mWidth{0}, mHeight{0},
         mNsides{0u}, mCorner{0}, mSpecialCorners{0}
     { }
 
-    void setType(uint32_t aType);
+    void setType(Type aType);
 
-    uint32_t getType() const;
+    Type getType() const;
 
 
-    void setLayer(uint32_t aLayer);
+    void setLayer(Layer aLayer);
 
-    uint32_t getLayer() const;
+    Layer getLayer() const;
 
 
     void setFigure(uint32_t aFigure);
@@ -102,8 +103,14 @@ public:
 
 private:
 
-    uint32_t mType;
-    uint32_t mLayer;
+    Type  mType;
+    Layer mLayer;
+
+// @todo fix
+public:
+    std::string mUsrStr; // Name of layer, when it's user specific
+private:
+
     Figure   mFigure;
 
     // The XML combines both of them in a
@@ -159,8 +166,17 @@ static std::string to_string(const Pad& pad)
     std::string str;
 
     str += "Pad:" + newLine();
-    str += indent(1) + "type   = " + std::to_string(pad.getType())  + newLine();
-    str += indent(1) + "layer  = " + std::to_string(pad.getLayer()) + newLine();
+    str += indent(1) + "type   = " + to_string(pad.getType())  + newLine(); // @todo use shift operator
+
+    if(pad.getType() == Type::USER_MASK)
+    {
+        str += indent(1) + "layer  = " + pad.mUsrStr+ newLine();
+    }
+    else
+    {
+        str += indent(1) + "layer  = " + to_string(pad.getLayer()) + newLine(); // @todo use shift operator
+    }
+
     str += indent(1) + "figure = " + to_string(pad.getFigure())     + newLine();
     str += indent(1) + "offset = " + pad.getOffsetStr() + newLine();
     str += indent(1) + "width  = " + std::to_string(pad.getWidthFp())  + newLine();

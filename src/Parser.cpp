@@ -13,6 +13,7 @@
 #include "Drillmethod.hpp"
 #include "General.hpp"
 #include "HoleType.hpp"
+#include "LayerStuff.hpp"
 #include "PadstackUsage.hpp"
 #include "Parser.hpp"
 
@@ -282,9 +283,28 @@ void Parser::exportZip(const fs::path& aOutputPath, size_t aComprZipSize)
 }
 
 
-Pad Parser::readPad()
+Pad Parser::readPad(size_t aIdx, bool aIsUsrLayer)
 {
-    Pad pad;
+    Type  type;
+    Layer layer;
+
+    if(!aIsUsrLayer)
+    {
+        type  = layerLst.at(aIdx).type;
+        layer = layerLst.at(aIdx).layer;
+    }
+    else
+    {
+        type  = Type::USER_MASK;
+        layer = Layer::USR_STR;
+    }
+
+    Pad pad{type, layer};
+
+    if(aIsUsrLayer)
+    {
+        pad.mUsrStr = ""; // @todo set real value. Pass it somehow to this method
+    }
 
     pad.setFigure(mDs.readUint16());
     pad.setSpecialCorners(mDs.readUint16());
@@ -307,83 +327,6 @@ Pad Parser::readPad()
 
     return pad;
 }
-
-
-enum class Type
-{
-    REGULAR_PAD,
-    THERMAL_PAD,
-    ANTIPAD_PAD,
-    KEEPOUT,
-    USER_MASK,
-    UNKNOWN // @todo remove
-};
-
-enum class Layer
-{
-    DEFAULT_INTERNAL,
-    END_LAYER,
-    ADJACENT_KEEPOUT,
-    TOP_SOLDER_MASK_PAD,
-    BOTTOM_SOLDER_MASK_PAD,
-    TOP_PASTE_MASK_PAD,
-    BOTTOM_PASTE_MASK_PAD,
-    TOP_FILM_MASK_PAD,
-    BOTTOM_FILM_MASK_PAD,
-    TOP_COVERLAY_PAD,
-    BOTTOM_COVERLAY_PAD,
-    BACKDRILL_SOLDERMASK,
-    UNKNOWN // @todo remove
-};
-
-struct padTypeLayer
-{
-    Type  type;
-    Layer layer;
-};
-
-std::vector<padTypeLayer> layerLst = {
-    // @todo figure out. This one is weird.
-    //       Maybe its not a pad but some other info?
-    { Type::UNKNOWN,     Layer::UNKNOWN                }, // Index  0
-
-    { Type::ANTIPAD_PAD, Layer::DEFAULT_INTERNAL       }, // Index  1
-    { Type::THERMAL_PAD, Layer::DEFAULT_INTERNAL       }, // Index  2
-    { Type::REGULAR_PAD, Layer::DEFAULT_INTERNAL       }, // Index  3
-    { Type::KEEPOUT,     Layer::DEFAULT_INTERNAL       }, // Index  4
-
-    // @todo Probably Begin layer
-    //       Maybe it must also be swapped with the upper INTERNAL layers
-    { Type::UNKNOWN,     Layer::UNKNOWN                }, // Index  5
-    { Type::UNKNOWN,     Layer::UNKNOWN                }, // Index  6
-    { Type::UNKNOWN,     Layer::UNKNOWN                }, // Index  7
-    { Type::UNKNOWN,     Layer::UNKNOWN                }, // Index  8
-
-    { Type::REGULAR_PAD, Layer::BACKDRILL_SOLDERMASK   }, // Index  9
-
-    { Type::REGULAR_PAD, Layer::TOP_COVERLAY_PAD       }, // Index 10
-    { Type::REGULAR_PAD, Layer::BOTTOM_COVERLAY_PAD    }, // Index 11
-
-    // @todo figure out
-    { Type::UNKNOWN,     Layer::UNKNOWN                }, // Index 12
-    { Type::UNKNOWN,     Layer::UNKNOWN                }, // Index 13
-
-    { Type::REGULAR_PAD, Layer::TOP_SOLDER_MASK_PAD    }, // Index 14
-    { Type::REGULAR_PAD, Layer::BOTTOM_SOLDER_MASK_PAD }, // Index 15
-
-    { Type::REGULAR_PAD, Layer::TOP_PASTE_MASK_PAD     }, // Index 16
-    { Type::REGULAR_PAD, Layer::BOTTOM_PASTE_MASK_PAD  }, // Index 17
-
-    { Type::REGULAR_PAD, Layer::TOP_FILM_MASK_PAD      }, // Index 18
-    { Type::REGULAR_PAD, Layer::BOTTOM_FILM_MASK_PAD   }, // Index 19
-
-    { Type::KEEPOUT,     Layer::ADJACENT_KEEPOUT       }, // Index 20
-
-    { Type::ANTIPAD_PAD, Layer::END_LAYER              }, // Index 21
-    { Type::THERMAL_PAD, Layer::END_LAYER              }, // Index 22
-    { Type::REGULAR_PAD, Layer::END_LAYER              }, // Index 23
-    { Type::KEEPOUT,     Layer::END_LAYER              }  // Index 24
-};
 
 
 PadFile Parser::readPadFile(unknownParam uparam)
@@ -636,19 +579,19 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     for(size_t i = 0u; i < 25u; ++i)
     {
-        padFile.genericLayers.push_back(readPad());
+        padFile.preDefLayers.push_back(readPad(i, false));
     }
-
-    std::cout << "Start user layers" << std::endl;
 
     for(size_t i = 0u; i < uparam.numUserLayers; ++i)
     {
         const uint32_t idxLayerName = mDs.readUint32();
 
-        Pad pad = readPad();
-    }
+        Pad pad = readPad(i, true);
 
-    std::cout << "Exit loop";
+        pad.mUsrStr = padFile.getStrLstEntryByIdx(idxLayerName);
+
+        padFile.usrDefLayers.push_back(pad);
+    }
 
     mDs.printUnknownData(std::cout, 56, "unknown - 21");
 
@@ -691,7 +634,6 @@ PadFile Parser::readPadFile(unknownParam uparam)
                     + DateTimeToStr(aStartTime) + " and end " + DateTimeToStr(aEndTime) + "!");
             }
         };
-
 
     padFile.dateTime2 = ToTime(mDs.readUint32());
 

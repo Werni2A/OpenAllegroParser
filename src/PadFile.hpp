@@ -23,43 +23,36 @@ class PadFile
 {
 public:
 
-    std::string getPadName() const
+    std::string getStrLstEntryByIdx(size_t aIdx) const
     {
-        const uint32_t idx = strIdxPadName;
-
-        const auto findEntry = [idx] (std::pair<int, std::string> aIdxStrPair) -> bool
+        const auto findEntry = [aIdx] (std::pair<int, std::string> aIdxStrPair) -> bool
             {
-                return aIdxStrPair.first == idx;
+                return aIdxStrPair.first == aIdx;
             };
 
         const auto it = std::find_if(idxStrPairLst.cbegin(), idxStrPairLst.cend(), findEntry);
 
         if(it == idxStrPairLst.cend())
         {
-            throw std::runtime_error("Index " + std::to_string(idx) + " not found!");
+            throw std::runtime_error("Index " + std::to_string(aIdx) + " was not found in idxStrPairLst!");
         }
 
         return it->second;
     }
 
+    std::string getPadName() const
+    {
+        return getStrLstEntryByIdx(strIdxPadName);
+    }
 
     std::string getDrillToolSize() const
     {
-        const uint32_t idx = strIdxDrillToolSize;
-
-        const auto findEntry = [idx] (std::pair<int, std::string> aIdxStrPair) -> bool
-            {
-                return aIdxStrPair.first == idx;
-            };
-
-        const auto it = std::find_if(idxStrPairLst.cbegin(), idxStrPairLst.cend(), findEntry);
-
-        if(it == idxStrPairLst.cend())
+        if(strIdxDrillToolSize == 0)
         {
-            throw std::runtime_error("Index " + std::to_string(idx) + " not found!");
+            return "";
         }
 
-        return it->second;
+        return getStrLstEntryByIdx(strIdxDrillToolSize);
     }
 
 
@@ -131,7 +124,8 @@ public:
 
     int32_t counterangle;
 
-    std::vector<Pad> genericLayers;
+    std::vector<Pad> preDefLayers;
+    std::vector<Pad> usrDefLayers;
 
     time_t dateTime1;
 
@@ -213,11 +207,16 @@ static std::string to_string(const PadFile& padFile)
 
     str += indent(1) + "counterangle         = " + std::to_string(padFile.counterangle) + newLine();
 
-    // @todo Generic Layer information is still missing
-    str += indent(1) + "genericLayers:" + newLine();
-    for(size_t i = 0u; i < padFile.genericLayers.size(); ++i)
+    str += indent(1) + "preDefLayers:" + newLine();
+    for(size_t i = 0u; i < padFile.preDefLayers.size(); ++i)
     {
-        str += indent(std::to_string(i) + ": " + to_string(padFile.genericLayers[i]), 2);
+        str += indent(std::to_string(i) + ": " + to_string(padFile.preDefLayers[i]), 2);
+    }
+
+    str += indent(1) + "usrDefLayers:" + newLine();
+    for(size_t i = 0u; i < padFile.usrDefLayers.size(); ++i)
+    {
+        str += indent(std::to_string(i) + ": " + to_string(padFile.usrDefLayers[i]), 2);
     }
 
     str += indent(1) + "dateTime1         = " + DateTimeToStr(padFile.dateTime1) + newLine();
