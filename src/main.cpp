@@ -10,7 +10,7 @@ namespace fs = std::filesystem;
 namespace po = boost::program_options;
 
 
-void parseArgs(int argc, char* argv[], fs::path& input, bool& print, bool& extract, fs::path& output, Parser::unknownParam& uparam)
+void parseArgs(int argc, char* argv[], fs::path& input, bool& print, bool& extract, fs::path& output, unknownParam& uparam)
 {
     po::options_description desc("Allowed options");
     desc.add_options()
@@ -20,9 +20,10 @@ void parseArgs(int argc, char* argv[], fs::path& input, bool& print, bool& extra
         ("input,i",   po::value<std::string>(),                "input file to parse")
         ("output,o",  po::value<std::string>(),                "output path (required iff extract is set)")
 
-        ("unknownFlag",    po::bool_switch()->default_value(false), "activate some dynamic feature in the file")
+        ("unknownFlag",    po::bool_switch()->default_value(false), "flag for some unknown parameter 1")
+        ("unknownFlag2",   po::bool_switch()->default_value(false), "flag for some unknown parameter 2")
         ("numUserLayers",  po::value<int>(),                        "number of user layers")
-        ("additionalStr2", po::value<int>(),                        "number of additional strings in list")
+        ("additionalStr2", po::value<int>(),                        "number of additional strings e.g. symbol names")
     ;
 
     po::variables_map vm;
@@ -31,6 +32,7 @@ void parseArgs(int argc, char* argv[], fs::path& input, bool& print, bool& extra
 
 
     uparam.unknownFlag    = vm.count("unknownFlag")    ? vm["unknownFlag"].as<bool>()   : false;
+    uparam.unknownFlag2   = vm.count("unknownFlag2")   ? vm["unknownFlag2"].as<bool>()  : false;
     uparam.numUserLayers  = vm.count("numUserLayers")  ? vm["numUserLayers"].as<int>()  : 0u;
     uparam.additionalStr2 = vm.count("additionalStr2") ? vm["additionalStr2"].as<int>() : 0u;
 
@@ -104,7 +106,7 @@ int main(int argc, char* argv[])
     bool     extract;
     fs::path outputPath;
 
-    Parser::unknownParam uparam;
+    unknownParam uparam;
 
     parseArgs(argc, argv, inputFile, print, extract, outputPath, uparam);
 
