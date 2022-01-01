@@ -132,6 +132,9 @@ public:
     std::string username;
 
     time_t dateTime2;
+
+    std::string specification;
+
     time_t dateTime3;
     time_t dateTime4;
     time_t dateTime5;
@@ -224,10 +227,15 @@ static std::string to_string(const PadFile& padFile)
     str += indent(1) + "username          = " + padFile.username + newLine();
 
     str += indent(1) + "dateTime2         = " + DateTimeToStr(padFile.dateTime2) + newLine();
+
+    str += indent(1) + "specification:" + newLine() + padFile.specification + newLine();
+
     str += indent(1) + "dateTime3         = " + DateTimeToStr(padFile.dateTime3) + newLine();
     str += indent(1) + "dateTime4         = " + DateTimeToStr(padFile.dateTime4) + newLine();
     str += indent(1) + "dateTime5         = " + DateTimeToStr(padFile.dateTime5) + newLine();
     str += indent(1) + "dateTime6         = " + DateTimeToStr(padFile.dateTime6) + newLine();
+
+    str += indent(1) + "programAndVersion = " + padFile.programAndVersion + newLine();
 
     return str;
 }

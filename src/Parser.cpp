@@ -668,12 +668,12 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     if(padFile.username.size() + 1 != usernameLen) // +1 for terminating zero byte.
     {
-        throw std::runtime_error("Expected different text length!");
+        throw std::runtime_error("Expected different username text length!");
     }
 
     mDs.printUnknownData(std::cout, 32, "unknown - 24");
 
-    const size_t someTxtLen = mDs.readUint32();
+    const size_t specificationLen = mDs.readUint32();
 
     const std::string quickViewText = mDs.readStrZeroTermBlock(128);
 
@@ -701,14 +701,12 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     mDs.assumeZero(8, "unknown - 23");
 
-    const std::string someTxt = mDs.readStrZeroTerm4BytePad();
+    padFile.specification = mDs.readStrZeroTerm4BytePad();
 
-    if(someTxt.size() + 1 != someTxtLen) // +1 for terminating zero byte.
+    if(padFile.specification.size() + 1 != specificationLen) // +1 for terminating zero byte.
     {
-        throw std::runtime_error("Expected different text length!");
+        throw std::runtime_error("Expected different specification text length!");
     }
-
-    // std::cout << "someTxt = " << someTxt << std::endl;
 
     mDs.printUnknownData(std::cout, 8, "unknown - 25");
 
@@ -726,7 +724,7 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     mDs.printUnknownData(std::cout, 36, "unknown - 26");
 
-    const uint32_t zipSize = mDs.readUint32();
+    const size_t zipSize = mDs.readUint32();
 
     const std::string quickViewJson = mDs.readStrZeroTermBlock(128);
 
