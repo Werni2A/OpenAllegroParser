@@ -16,6 +16,21 @@
 namespace fs = std::filesystem;
 
 
+// @todo We use this structure for passing informations that must
+//       be stored in the file but we do not yet know where. As a
+//       workaround one can pass hardcoded values for e.g. testcases.
+struct unknownParam
+{
+    unknownParam() : unknownFlag{false}, unknownFlag2{false},
+                     numUserLayers{0}, additionalStr2{0}
+    { }
+
+    bool   unknownFlag;
+    bool   unknownFlag2;
+    size_t numUserLayers;
+    size_t additionalStr2;
+};
+
 class Parser
 {
 public:
@@ -25,17 +40,6 @@ public:
     ~Parser();
 
     FileType getFileTypeByExtension(const fs::path& aFile) const;
-
-    // @todo We use this structure for passing informations that must
-    //       be stored in the file but we do not yet know where. As a
-    //       workaround one can pass hardcoded values for e.g. testcases.
-    struct unknownParam
-    {
-        bool   unknownFlag;
-        bool   unknownFlag2;
-        size_t numUserLayers;
-        size_t additionalStr2;
-    };
 
     size_t getCurrentOffset()
     {
@@ -92,7 +96,7 @@ private:
      */
     void exportZip(const fs::path& aOutputPath, size_t aComprZipSize = 0u);
 
-    Pad readPad(size_t aIdx, bool aIsUsrLayer, const PadFile& aPadFile, const unknownParam& uparam);
+    Pad readPad(size_t aIdx, bool aIsUsrLayer, const PadFile& aPadFile, unknownParam uparam);
 
     FileType mFileType;
     FileFormatVersion mFileFormatVersion;

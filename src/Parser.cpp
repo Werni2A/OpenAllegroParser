@@ -283,7 +283,7 @@ void Parser::exportZip(const fs::path& aOutputPath, size_t aComprZipSize)
 }
 
 
-Pad Parser::readPad(size_t aIdx, bool aIsUsrLayer, const PadFile& aPadFile, const unknownParam& uparam)
+Pad Parser::readPad(size_t aIdx, bool aIsUsrLayer, const PadFile& aPadFile, unknownParam uparam)
 {
     Type  type;
     Layer layer;
@@ -635,18 +635,11 @@ PadFile Parser::readPadFile(unknownParam uparam)
     mDs.assumeZero(32, "unknown - 20");
     // mDs.printUnknownData(std::cout, 32, "unknown - 20");
 
+    const std::vector<padTypeLayer>& layerLst = (uparam.unknownFlag2 ? layerLst2 : layerLst1);
 
-    size_t beginLayers = 0u;
-
-    if(uparam.unknownFlag2)
-    {
-        beginLayers = 4u;
-    }
-
-    for(size_t i = 0u; i < 25u + beginLayers; ++i)
+    for(size_t i = 0u; i < layerLst.size(); ++i)
     {
         padFile.preDefLayers.push_back(readPad(i, false, padFile, uparam));
-
     }
 
     for(size_t i = 0u; i < uparam.numUserLayers; ++i)
