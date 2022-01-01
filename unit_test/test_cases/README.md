@@ -103,3 +103,9 @@
 ## Unit Test: 0050 Drill Hole Type - Rectangular Slot - Complex
 
 ## Unit Test: 0051 Drill Hole Type - Oval Slot - Complex
+
+## Unit Test: 0052 Predefined Design/Mask Layers - Complex
+
+## Unit Test: 0053 Predefined Design/Mask Layers with Backdrill - Complex
+
+## Unit Test: 0054 User defined Mask Layers - Complex
