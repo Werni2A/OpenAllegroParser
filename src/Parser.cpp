@@ -304,6 +304,8 @@ Pad Parser::readPad(size_t aIdx, bool aIsUsrLayer)
     if(aIsUsrLayer)
     {
         pad.mUsrStr = ""; // @todo set real value. Pass it somehow to this method
+                          //       At the moment it is set outside of this function
+                          //       in the returned Pad object
     }
 
     pad.setFigure(mDs.readUint16());
@@ -337,12 +339,14 @@ PadFile Parser::readPadFile(unknownParam uparam)
     // until two contiguous sections are generated.
     const double maxTimeDiff = 2.0;
 
-    mDs.printUnknownData(std::cout, 8, "unknown - 0");
+    mDs.assumeData({0x00, 0x05, 0x14, 0x00, 0x03, 0x00, 0x00, 0x00}, "Start Sequence - 0");
+    // mDs.printUnknownData(std::cout, 8, "unknown - 0");
 
-    // mDs.assumeData({0x00, 0x05, 0x14, 0x00, 0x03, 0x00, 0x00, 0x00}, "Start Sequence - 0");
     mDs.assumeData({0x04, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00}, "Start Sequence - 1");
 
-    mDs.printUnknownData(std::cout, 36, "unknown - 1");
+    mDs.assumeData({0x03, 0x00, 0x00, 0x00}, "Start Sequence - 2");
+
+    mDs.printUnknownData(std::cout, 32, "unknown - 1");
 
     // @todo This relates maybe to the standard layers in the padstack as we
     // have 25 of them and 1 of them is just rubbish, and can be ignored
@@ -356,7 +360,8 @@ PadFile Parser::readPadFile(unknownParam uparam)
     }
 
     // @todo probably always number 1 and represents idx = 1?
-    mDs.printUnknownData(std::cout, 4, "unkown - 2");
+    // mDs.printUnknownData(std::cout, 4, "unkown - 2");
+    mDs.assumeData({0x01, 0x00, 0x00, 0x00}, "unknown - 2");
 
     padFile.swVersion = mDs.readStrZeroTermBlock(60u);
 
@@ -364,18 +369,38 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     padFile.accuracy = mDs.readUint16();
 
-    const int32_t some_val0 = mDs.readInt32();
-    const int32_t some_val1 = mDs.readInt32();
-    const int32_t some_val2 = mDs.readInt32();
-    const int32_t some_val3 = mDs.readInt32();
+    // @todo What are those factors used for? Only for calculating angle = val / factor?
+    const int32_t factor0 = mDs.readInt32(); // = -10,000 * 10^accuracy
+    const int32_t factor1 = mDs.readInt32(); // = -10,000 * 10^accuracy
+    const int32_t factor2 = mDs.readInt32(); // =  10,000 * 10^accuracy
+    const int32_t factor3 = mDs.readInt32(); // =  10,000 * 10^accuracy
 
-    std::cout << "some_val0 = " << some_val0 << std::endl;
-    std::cout << "some_val1 = " << some_val1 << std::endl;
-    std::cout << "some_val2 = " << some_val2 << std::endl;
-    std::cout << "some_val3 = " << some_val3 << std::endl;
+    // Sanity checks
+    int32_t factor = 10000 * static_cast<int>(std::pow(10, padFile.accuracy));
+
+    if(factor0 != -factor)
+    {
+        throw std::runtime_error("Unexpected: factor0 != " + std::to_string(-factor));
+    }
+
+    if(factor0 != factor1)
+    {
+        throw std::runtime_error("Unexpected: factor0 != factor1");
+    }
+
+    if(factor2 != factor)
+    {
+        throw std::runtime_error("Unexpected: factor2 != " + std::to_string(factor));
+    }
+
+    if(factor2 != factor3)
+    {
+        throw std::runtime_error("Unexpected: factor2 != factor3");
+    }
 
     padFile.unit = ToUnits(mDs.readUint16());
 
+    // @todo somehow related to user defined layers with symbol/flash
     mDs.printUnknownData(std::cout, 227, "unknown - 4");
 
     const uint16_t additionalStr = mDs.readUint16();
@@ -468,21 +493,31 @@ PadFile Parser::readPadFile(unknownParam uparam)
     padFile.idxUnknown          = mDs.readUint32();
     padFile.strIdxDrillToolSize = mDs.readUint32(); // Is 0 when no DrillToolSize is specified (empty string)
 
-    mDs.printUnknownData(std::cout, 4, "unknown - 13");
+    // mDs.printUnknownData(std::cout, 4, "unknown - 13");
+    mDs.assumeZero(4, "unknown - 13");
 
     // @todo padstackusage is probably a bit field where the first two
     //       bits are something different. See PadstackUsage.hpp for more info.
-    padFile.padstackusage = ToPadstackUsage(mDs.readUint8());
+    const uint8_t tmpPadstackusage = mDs.readUint8();
+
+    if(tmpPadstackusage & 0x03 != 0x02)
+    {
+        throw std::runtime_error("New bit field value found in tmpPadstackusage");
+    }
+
+    padFile.padstackusage = ToPadstackUsage(tmpPadstackusage);
 
     padFile.drillmethod = ToDrillmethod(mDs.readUint8());
 
     // Bit 0 - 2 = Drill Hole Type
-    // Bit     3 = Multiple Drills @todo verify this (number of column/row drills)
+    // Bit     3 = @todo Unknown flag
     // Bit     4 = Staggered Drills
     // Bit     5 = Plated Drill Holes
     const uint8_t bit_field = mDs.readUint8();
 
     padFile.holeType        = ToHoleType(bit_field & 0x07);
+    const bool unknown_flag = static_cast<bool>(bit_field & 0x08);
+    std::cout << "unknown_flag = " << std::to_string(unknown_flag) << std::endl;
     padFile.staggeredDrills = static_cast<bool>(bit_field & 0x10);
     padFile.plated          = static_cast<bool>(bit_field & 0x20);
 
@@ -492,9 +527,19 @@ PadFile Parser::readPadFile(unknownParam uparam)
         throw std::runtime_error("Unknown bit in bit_field set! 0x" + ToHex(bit_field, 2));
     }
 
-    mDs.printUnknownData(std::cout, 2, "unknown - 14");
+    // @todo it's either 0x0100 or 0x0500
+    //       Somehow related to numUserLayers as its always 5 when
+    //       numUserLayers > 0. Maybe just a flag to indicate when user layers
+    //       are present?
+    uint16_t foo = mDs.readUint16();
+
+    if(foo != 0x0100 && foo != 0x0500)
+    {
+        throw std::runtime_error("New value found! 0x" + ToHex(foo, 2));
+    }
 
     // Bit 0 = Not suppress not connected internal pads
+    // Bit 1 = Poly Via
     const uint8_t bit_field2 = mDs.readUint8();
 
     padFile.not_suppress_nc_internal_pads = static_cast<bool>(bit_field2 & 0x01);
@@ -521,7 +566,8 @@ PadFile Parser::readPadFile(unknownParam uparam)
         throw std::runtime_error("Epected boolean value! 0x" + ToHex(lock_layer_span, 2));
     }
 
-    mDs.printUnknownData(std::cout, 1, "unknown - 16");
+    mDs.assumeZero(1, "unknown - 16");
+    // mDs.printUnknownData(std::cout, 1, "unknown - 16");
 
     padFile.offsetX = mDs.readInt32();
     padFile.offsetY = mDs.readInt32();
@@ -571,11 +617,14 @@ PadFile Parser::readPadFile(unknownParam uparam)
     padFile.counter_drill_negativetolerance = mDs.readInt32();
 
     padFile.counterangle = mDs.readInt32();
+    // @todo maybe the scaling factor 1/10000 depends on the factors defined at the beginning of the method
+    //       10,000 * 10^accuracy?
     // std::cout << "counterangle = " << std::to_string(padFile.counterangle / 10000u) << std::endl;
 
     mDs.printUnknownData(std::cout, 8, "Something with counterdepth");
 
-    mDs.printUnknownData(std::cout, 32, "unknown - 20");
+    mDs.assumeZero(32, "unknown - 20");
+    // mDs.printUnknownData(std::cout, 32, "unknown - 20");
 
     for(size_t i = 0u; i < 25u; ++i)
     {
@@ -696,7 +745,9 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     sanityCheckSectionTimeDiff(padFile.dateTime4, padFile.dateTime5, maxTimeDiff);
 
-    mDs.printUnknownData(std::cout, 20, "unknown - 29");
+    mDs.assumeZero(12, "unknown - 28.5");
+
+    mDs.printUnknownData(std::cout, 8, "unknown - 29");
 
     const std::string allegroDesignWasLastSaved = mDs.readStrZeroTermBlock(160);
 
