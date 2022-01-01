@@ -339,3 +339,17 @@ bool Pad::isUpperLeftCornerSpecial() const
 {
     return (mSpecialCorners & 0x8u) > 0u;
 }
+
+
+std::string Pad::getShapeSymbolName() const
+{
+    if(mIdxShapeSymolNameStr == 0)
+    {
+        return "";
+    }
+
+    return mShapeSymbolNameStr;
+
+    // @todo
+    // return mPadFile.getStrLstEntryByIdx(mIdxShapeSymolNameStr);
+}

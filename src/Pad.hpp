@@ -100,6 +100,7 @@ public:
 
     bool isUpperLeftCornerSpecial() const;
 
+    std::string getShapeSymbolName() const;
 
 private:
 
@@ -154,6 +155,11 @@ private:
     //  MSB 15 14 13 12 11 10  9  8 | 7  6  5  4  3  2  1  0 LSB
     //       0  0  0  0  0  0  0  0 | 0  0  0  0 ul ur lr ll
     uint16_t mSpecialCorners;
+
+public: // @todo fix
+    // Only set for Figure == SHAPE_SYMBOL
+    uint32_t    mIdxShapeSymolNameStr;
+    std::string mShapeSymbolNameStr; // @todo Retrieve this directly from mIdxShapeSymolNameStr
 };
 
 
@@ -201,6 +207,11 @@ static std::string to_string(const Pad& pad)
         str += indent(1) + "ur   = " + std::to_string(pad.isUpperRightCornerSpecial()) + newLine();
         str += indent(1) + "ll   = " + std::to_string(pad.isLowerLeftCornerSpecial())  + newLine();
         str += indent(1) + "lr   = " + std::to_string(pad.isLowerRightCornerSpecial()) + newLine();
+    }
+
+    if(pad.getFigure() == Figure::SHAPE_SYMBOL)
+    {
+        str += indent(1) + "mIdxShapeSymolNameStr = " + std::to_string(pad.mIdxShapeSymolNameStr) + " (" + pad.getShapeSymbolName() + ")" + newLine();
     }
 
     return str;

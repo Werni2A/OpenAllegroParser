@@ -283,7 +283,7 @@ void Parser::exportZip(const fs::path& aOutputPath, size_t aComprZipSize)
 }
 
 
-Pad Parser::readPad(size_t aIdx, bool aIsUsrLayer)
+Pad Parser::readPad(size_t aIdx, bool aIsUsrLayer, const PadFile& aPadFile)
 {
     Type  type;
     Layer layer;
@@ -323,9 +323,16 @@ Pad Parser::readPad(size_t aIdx, bool aIsUsrLayer)
 
     mDs.printUnknownData(std::cout, 4, "pad data - 0");
 
-    // @todo set only for SHAPE_SYMBOL
-    const uint32_t idxShapeSymolStr = mDs.readUint32();
-    std::cout << "idxShapeSymolStr = " << idxShapeSymolStr << std::endl;
+    pad.mIdxShapeSymolNameStr = mDs.readUint32();
+
+    if(pad.mIdxShapeSymolNameStr == 0)
+    {
+        pad.mShapeSymbolNameStr == "";
+    }
+    else
+    {
+        pad.mShapeSymbolNameStr = aPadFile.getStrLstEntryByIdx(pad.mIdxShapeSymolNameStr);
+    }
 
     return pad;
 }
@@ -628,14 +635,14 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     for(size_t i = 0u; i < 25u; ++i)
     {
-        padFile.preDefLayers.push_back(readPad(i, false));
+        padFile.preDefLayers.push_back(readPad(i, false, padFile));
     }
 
     for(size_t i = 0u; i < uparam.numUserLayers; ++i)
     {
         const uint32_t idxLayerName = mDs.readUint32();
 
-        Pad pad = readPad(i, true);
+        Pad pad = readPad(i, true, padFile);
 
         pad.mUsrStr = padFile.getStrLstEntryByIdx(idxLayerName);
 
