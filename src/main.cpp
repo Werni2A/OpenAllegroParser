@@ -21,6 +21,7 @@ void parseArgs(int argc, char* argv[], fs::path& input, bool& print, bool& extra
         ("output,o",  po::value<std::string>(),                "output path (required iff extract is set)")
 
         ("unknownFlag",    po::bool_switch()->default_value(false), "activate some dynamic feature in the file")
+        ("unknownFlag2",   po::bool_switch()->default_value(false), "activate some dynamic feature in the file")
         ("numUserLayers",  po::value<int>(),                        "number of user layers")
         ("additionalStr2", po::value<int>(),                        "number of additional strings in list")
     ;
@@ -31,6 +32,7 @@ void parseArgs(int argc, char* argv[], fs::path& input, bool& print, bool& extra
 
 
     uparam.unknownFlag    = vm.count("unknownFlag")    ? vm["unknownFlag"].as<bool>()   : false;
+    uparam.unknownFlag2   = vm.count("unknownFlag2")   ? vm["unknownFlag"].as<bool>()   : false;
     uparam.numUserLayers  = vm.count("numUserLayers")  ? vm["numUserLayers"].as<int>()  : 0u;
     uparam.additionalStr2 = vm.count("additionalStr2") ? vm["additionalStr2"].as<int>() : 0u;
 

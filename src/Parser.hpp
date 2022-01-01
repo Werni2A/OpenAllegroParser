@@ -32,6 +32,7 @@ public:
     struct unknownParam
     {
         bool   unknownFlag;
+        bool   unknownFlag2;
         size_t numUserLayers;
         size_t additionalStr2;
     };
@@ -91,7 +92,7 @@ private:
      */
     void exportZip(const fs::path& aOutputPath, size_t aComprZipSize = 0u);
 
-    Pad readPad(size_t aIdx, bool aIsUsrLayer, const PadFile& aPadFile);
+    Pad readPad(size_t aIdx, bool aIsUsrLayer, const PadFile& aPadFile, const unknownParam& uparam);
 
     FileType mFileType;
     FileFormatVersion mFileFormatVersion;
