@@ -5,8 +5,8 @@
 #include <stdexcept>
 #include <string>
 
-#include "General.hpp"
-#include "Pad.hpp"
+#include "../include/General.hpp"
+#include "../include/Pad.hpp"
 
 
 void Pad::setType(Type aType)

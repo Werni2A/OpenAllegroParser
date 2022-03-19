@@ -1,5 +1,5 @@
 
-#include "LayerStuff.hpp"
+#include "../include/LayerStuff.hpp"
 
 
 // @todo there is some weird dynamic behavior when, BEGIN_LAYER is used

@@ -35,7 +35,7 @@ See [OrCAD Allegro Files Extension and their Contents](https://vjguptapcb.blogsp
 
 ---
 
-# Current State &mdash; December 2021
+# Current State &mdash; March 2022
 
 - Working on padstack parser.
 - Setting up padstack unit tests.
@@ -45,7 +45,6 @@ See [OrCAD Allegro Files Extension and their Contents](https://vjguptapcb.blogsp
 # Build
 
 ```bash
-mkdir build
 cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake
 cmake --build build
 ```
@@ -53,10 +52,12 @@ cmake --build build
 ## Dependencies
 
 - Compiler with C++17 Support
-- [CMake](https://cmake.org/) >= 2.8.12
-- [vcpkg](https://vcpkg.io/en/index.html)
+- [CMake](https://cmake.org/) >= 3.5
 - [Boost](https://www.boost.org/) - Program Options
 - [libzippp](https://github.com/ctabin/libzippp)
+- [Magic Enum](https://github.com/Neargye/magic_enum)
+- [Nameof](https://github.com/Neargye/magic_enum)
+- [vcpkg](https://vcpkg.io/en/index.html)
 
 ---
 

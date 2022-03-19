@@ -334,6 +334,37 @@ TEST_CASE("Check Drill - DrillHole - Complex", "[DrillHole]")
 }
 
 
+// @todo implement test_cases/0018.pad
+// TEST_CASE("Check Generic Layers - Complex", "[Complex]")
+// {
+//     fs::path inputFile = "test_cases/0018.pad";
+
+//     unknownParam uparam;
+
+//     uparam.numUserLayers  = 0;
+//     uparam.unknownFlag    = false;
+//     uparam.additionalStr2 = 1;
+
+//     Parser parser{inputFile};
+
+//     PadFile padFile = parser.readPadFile(uparam);
+
+//     for(int i = 0; i < padFile.preDefLayers.size(); ++i)
+//     {
+//         const auto& pad = padFile.preDefLayers[i];
+
+//         switch(i)
+//         {
+//             case 3:
+//                 {
+//                     REQUIRE(pad.getWidth() == 11);
+//                 }
+//                 break;
+//         }
+//     }
+// }
+
+
 TEST_CASE("Check Unit - Mils", "[Unit]")
 {
     fs::path inputFile = "test_cases/0019.pad";
@@ -554,7 +585,6 @@ TEST_CASE("Check Accuracy - 4", "[Accuracy]")
 //     REQUIRE(padFile.clearance_columns == 12);
 //     REQUIRE(padFile.clearance_rows    == 23);
 // }
-
 
 
 TEST_CASE("Check Drill Symbol Figure Type - None", "[Drill Symbol Figure Type]")
