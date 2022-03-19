@@ -9,13 +9,13 @@
 
 #include <libzippp.h>
 
-#include "DataStream.hpp"
-#include "Drillmethod.hpp"
-#include "General.hpp"
-#include "HoleType.hpp"
-#include "LayerStuff.hpp"
-#include "PadstackUsage.hpp"
-#include "Parser.hpp"
+#include "../include/DataStream.hpp"
+#include "../include/Drillmethod.hpp"
+#include "../include/General.hpp"
+#include "../include/HoleType.hpp"
+#include "../include/LayerStuff.hpp"
+#include "../include/PadstackUsage.hpp"
+#include "../include/Parser.hpp"
 
 
 namespace fs = std::filesystem;

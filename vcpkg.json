@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "dependencies": [
     "boost-program-options",
-    "libzippp"
+    "catch2",
+    "libzippp",
+    "magic-enum",
+    "nameof"
   ]
 }

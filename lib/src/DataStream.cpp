@@ -3,8 +3,8 @@
 #include <fstream>
 #include <string>
 
-#include "DataStream.hpp"
-#include "General.hpp"
+#include "../include/DataStream.hpp"
+#include "../include/General.hpp"
 
 
 void DataStream::discardBytes(size_t aLen)

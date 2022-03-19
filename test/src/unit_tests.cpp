@@ -334,6 +334,37 @@ TEST_CASE("Check Drill - DrillHole - Complex", "[DrillHole]")
 }
 
 
+// @todo implement test_cases/0018.pad
+// TEST_CASE("Check Generic Layers - Complex", "[Complex]")
+// {
+//     fs::path inputFile = "test_cases/0018.pad";
+
+//     unknownParam uparam;
+
+//     uparam.numUserLayers  = 0;
+//     uparam.unknownFlag    = false;
+//     uparam.additionalStr2 = 1;
+
+//     Parser parser{inputFile};
+
+//     PadFile padFile = parser.readPadFile(uparam);
+
+//     for(int i = 0; i < padFile.preDefLayers.size(); ++i)
+//     {
+//         const auto& pad = padFile.preDefLayers[i];
+
+//         switch(i)
+//         {
+//             case 3:
+//                 {
+//                     REQUIRE(pad.getWidth() == 11);
+//                 }
+//                 break;
+//         }
+//     }
+// }
+
+
 TEST_CASE("Check Unit - Mils", "[Unit]")
 {
     fs::path inputFile = "test_cases/0019.pad";
@@ -556,6 +587,61 @@ TEST_CASE("Check Accuracy - 4", "[Accuracy]")
 // }
 
 
+TEST_CASE("Check - Complex", "[Complex]")
+{
+    fs::path inputFile = "/home/dom/Desktop/VM/pad/sup_y_lock_y.pad";
+
+    unknownParam uparam;
+
+    uparam.numUserLayers  = 5;
+    uparam.unknownFlag    = true;
+    uparam.additionalStr2 = 2;
+
+    Parser parser{inputFile};
+
+    PadFile padFile = parser.readPadFile(uparam);
+
+    REQUIRE(padFile.getPadName() == "SUP_Y_LOCK_Y");
+
+    REQUIRE(padFile.getDrillToolSize() == "Foo");
+
+    REQUIRE(padFile.drillmethod == Drillmethod::PHOTO);
+
+    REQUIRE(padFile.finished_size == 9);
+
+    REQUIRE(padFile.positivetolerance == 3);
+    REQUIRE(padFile.negativetolerance == 5);
+
+    REQUIRE(padFile.width  == 9);
+    REQUIRE(padFile.height == 9);
+    REQUIRE(padFile.figure == Figure::HEXAGONY);
+    REQUIRE(padFile.characters == "LF");
+
+    REQUIRE(padFile.drill_rows    == 1);
+    REQUIRE(padFile.drill_columns == 1);
+
+    REQUIRE(padFile.clearance_columns == 13);
+    REQUIRE(padFile.clearance_rows    == 15);
+
+    REQUIRE(padFile.back_drill_figure_width  == 55);
+    REQUIRE(padFile.back_drill_figure_height == 66);
+
+    REQUIRE(padFile.back_drill_figure == Figure::HEXAGONX);
+
+    REQUIRE(padFile.back_drill_characters == "ABC");
+
+    REQUIRE(padFile.counter_drill_diameter == 12570);
+    REQUIRE(padFile.counter_drill_positivetolerance == 578);
+    REQUIRE(padFile.counter_drill_negativetolerance == 123);
+    REQUIRE(padFile.counterangle == 70 * 1000);
+
+    REQUIRE(padFile.username == "domin");
+
+    REQUIRE(padFile.not_suppress_nc_internal_pads == true);
+    REQUIRE(padFile.lock_layer_span == true);
+
+    REQUIRE(padFile.staggeredDrills == false);
+}
 
 TEST_CASE("Check Drill Symbol Figure Type - None", "[Drill Symbol Figure Type]")
 {
