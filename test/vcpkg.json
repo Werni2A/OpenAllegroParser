@@ -1,8 +1,0 @@
-{
-  "name": "unit-tests",
-  "version": "0.1.0",
-  "dependencies": [
-    "catch2",
-    "libzippp"
-  ]
-}

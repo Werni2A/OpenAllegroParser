@@ -10,7 +10,7 @@ for numUserLayers in range(33):
     for unknownFlag in [True, False]:
         for unknownFlag2 in [True, False]:
             for additionalStr2 in range(33):
-                cmd = ['./build/OpenAllegroParser', '-i', file]
+                cmd = ['./build/cli/OpenAllegroParser-cli', '-i', file]
 
                 if numUserLayers > 0:
                     cmd += ['--numUserLayers', f'{numUserLayers}']
