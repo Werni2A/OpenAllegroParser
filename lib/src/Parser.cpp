@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <map>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -42,52 +43,32 @@ FileType Parser::getFileTypeByExtension(const fs::path& aFile) const
 {
     std::string extension = aFile.extension().string();
 
-    // Ignore case of extension.
+    // Ignore case of extension
     std::transform(extension.begin(), extension.end(), extension.begin(),
-            [](unsigned char c) { return std::tolower(c); }
-        );
+        [] (unsigned char c) { return std::tolower(c); });
+
+    const std::map<std::string, FileType> extensionFileTypeMap =
+        {
+            {".brd", FileType::brd},
+            {".mdd", FileType::mdd},
+            {".dra", FileType::dra},
+            {".psm", FileType::psm},
+            {".ssm", FileType::ssm},
+            {".fsm", FileType::fsm},
+            {".osm", FileType::osm},
+            {".bsm", FileType::bsm},
+            {".pad", FileType::pad},
+        };
 
     FileType fileType;
 
-    if(extension == ".brd")
+    try
     {
-        fileType = FileType::brd;
+        fileType = extensionFileTypeMap.at(extension);
     }
-    else if(extension == ".mdd")
+    catch(...)
     {
-        fileType = FileType::mdd;
-    }
-    else if(extension == ".dra")
-    {
-        fileType = FileType::dra;
-    }
-    else if(extension == ".psm")
-    {
-        fileType = FileType::psm;
-    }
-    else if(extension == ".ssm")
-    {
-        fileType = FileType::ssm;
-    }
-    else if(extension == ".fsm")
-    {
-        fileType = FileType::fsm;
-    }
-    else if(extension == ".osm")
-    {
-        fileType = FileType::osm;
-    }
-    else if(extension == ".bsm")
-    {
-        fileType = FileType::bsm;
-    }
-    else if(extension == ".pad")
-    {
-        fileType = FileType::pad;
-    }
-    else
-    {
-        throw std::runtime_error("Unknown file extension: " + extension);
+        throw std::runtime_error("Unknown file extension `" + extension + "`");
     }
 
     return fileType;
