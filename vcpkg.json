@@ -4,8 +4,10 @@
   "dependencies": [
     "boost-program-options",
     "catch2",
+    "fmt",
     "libzippp",
     "magic-enum",
-    "nameof"
+    "nameof",
+    "tinyxml2"
   ]
 }

@@ -2,10 +2,12 @@
 #define GENERAL_H
 
 
+#include <algorithm>
 #include <cstdint>
 #include <ctime>
 #include <iostream>
 #include <string>
+#include <vector>
 
 
 /**
@@ -90,8 +92,8 @@ static std::time_t ToTime(uint32_t aTime)
  * @param point Fix point coordiante.
  * @return double Floating point coordinate.
  */
-[[maybe_unused]]
-static double ToFP(int16_t point)
+template<typename T>
+static double ToFP(T point)
 {
     return static_cast<double>(point) / 100.0;
 }
@@ -102,9 +104,6 @@ static std::string newLine()
 {
     return "\n";
 }
-
-
-#include <vector>
 
 
 [[maybe_unused]]
@@ -156,6 +155,18 @@ static std::string indent(size_t level)
         retIndent += indent;
     }
     return retIndent;
+}
+
+
+[[maybe_unused]]
+static std::string to_lower(const std::string& aStr)
+{
+    std::string retVal{aStr};
+
+    std::transform(retVal.begin(), retVal.end(), retVal.begin(),
+        [] (unsigned char c) { return std::tolower(c); });
+
+    return retVal;
 }
 
 

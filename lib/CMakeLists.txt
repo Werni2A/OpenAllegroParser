@@ -1,3 +1,6 @@
+# Add fmt dependency
+find_package(fmt CONFIG REQUIRED)
+
 # Add libzippp dependency
 find_package(libzippp CONFIG REQUIRED)
 
@@ -7,12 +10,16 @@ find_package(magic_enum CONFIG REQUIRED)
 # Add Nameof dependency
 find_package(nameof CONFIG REQUIRED)
 
+# Add TinyXML2 dependency
+find_package(tinyxml2 CONFIG REQUIRED)
+
 set(SOURCES
    ${SOURCES}
    ${LIB_SRC_DIR}/DataStream.cpp
    ${LIB_SRC_DIR}/LayerStuff.cpp
    ${LIB_SRC_DIR}/Pad.cpp
    ${LIB_SRC_DIR}/Parser.cpp
+   ${LIB_SRC_DIR}/XmlGenerator.cpp
 )
 
 set(HEADERS
@@ -23,6 +30,7 @@ set(HEADERS
    ${LIB_INCLUDE_DIR}/Pad.hpp
    ${LIB_INCLUDE_DIR}/PadFile.hpp
    ${LIB_INCLUDE_DIR}/Parser.hpp
+   ${LIB_INCLUDE_DIR}/XmlGenerator.hpp
 )
 
 include(GenerateExportHeader)
@@ -34,8 +42,10 @@ target_include_directories(${NAME_LIB} PRIVATE
 )
 
 target_link_libraries(${NAME_LIB} PRIVATE
+                      fmt::fmt
                       libzip::zip
                       libzippp::libzippp
                       magic_enum::magic_enum
                       nameof::nameof
+                      tinyxml2::tinyxml2
 )

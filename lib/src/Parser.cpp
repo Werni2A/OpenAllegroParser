@@ -44,8 +44,7 @@ FileType Parser::getFileTypeByExtension(const fs::path& aFile) const
     std::string extension = aFile.extension().string();
 
     // Ignore case of extension
-    std::transform(extension.begin(), extension.end(), extension.begin(),
-        [] (unsigned char c) { return std::tolower(c); });
+    extension = to_lower(extension);
 
     const std::map<std::string, FileType> extensionFileTypeMap =
         {
@@ -568,7 +567,8 @@ PadFile Parser::readPadFile(unknownParam uparam)
     padFile.finished_size     = mDs.readInt32();
 
     // For holeType == (OVAL_SLOT || RECT_SLOT) this is
-    // the tolerance on x-axis.
+    // the tolerance on x-axis. Otherwise for symmetric
+    // holes this is the tolerance on x- and y-axis.
     padFile.positivetolerance = mDs.readInt32();
     padFile.negativetolerance = mDs.readInt32();
 
@@ -620,7 +620,9 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     for(size_t i = 0u; i < layerLst.size(); ++i)
     {
-        padFile.preDefLayers.push_back(readPad(i, false, padFile, uparam));
+        Pad pad = readPad(i, false, padFile, uparam);
+
+        padFile.preDefLayers.push_back(pad);
     }
 
     for(size_t i = 0u; i < uparam.numUserLayers; ++i)

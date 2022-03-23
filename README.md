@@ -54,9 +54,11 @@ cmake --build build
 - Compiler with C++17 Support
 - [CMake](https://cmake.org/) >= 3.5
 - [Boost](https://www.boost.org/) - Program Options
+- [fmt](https://github.com/fmtlib/fmt)
 - [libzippp](https://github.com/ctabin/libzippp)
 - [Magic Enum](https://github.com/Neargye/magic_enum)
 - [Nameof](https://github.com/Neargye/magic_enum)
+- [TinyXML2](https://github.com/leethomason/tinyxml2)
 - [vcpkg](https://vcpkg.io/en/index.html)
 
 ---
