@@ -11,6 +11,7 @@
 #include "General.hpp"
 #include "Pad.hpp"
 #include "PadFile.hpp"
+#include "Symbol.hpp"
 
 
 namespace fs = std::filesystem;
@@ -47,6 +48,8 @@ public:
     }
 
     PadFile readPadFile(unknownParam uparam);
+
+    Symbol readSymbol();
 
     /**
      * @brief Get the files that are stored inside the binary.

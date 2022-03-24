@@ -29,6 +29,10 @@ public:
 
     void exportToXml(const fs::path& aPathOut);
 
+    void appendSymbol(XMLElement* aParent, const Symbol& aObj);
+
+    void appendPad(XMLElement* aParent, const Pad& aObj, bool aUsrLayer);
+
 private:
 
     const PadFile& mPadFile;

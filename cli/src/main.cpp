@@ -153,6 +153,7 @@ int main(int argc, char* argv[])
                     std::cout << "Exporting XML to " << pathXmlOutput << " ..." << std::endl;
 
                     XmlGenerator xmlGenerator{padFile};
+                    xmlGenerator.generateXml();
                     xmlGenerator.exportToXml(pathXmlOutput);
                 }
             }

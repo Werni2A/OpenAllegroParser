@@ -102,6 +102,8 @@ public:
 
     std::string getShapeSymbolName() const;
 
+    std::string getFlashName() const;
+
 private:
 
     Type  mType;
@@ -156,7 +158,13 @@ private:
     //       0  0  0  0  0  0  0  0 | 0  0  0  0 ul ur lr ll
     uint16_t mSpecialCorners;
 
-public: // @todo fix
+public: // @todo don't make it public
+    // @todo fix
+    // Only set for Figure == Flash
+    uint32_t    mIdxFlashStr;
+    std::string mFlashStr; // @todo Retrieve this directly from mIdxShapeSymolNameStr
+
+    // @todo fix
     // Only set for Figure == SHAPE_SYMBOL
     uint32_t    mIdxShapeSymolNameStr;
     std::string mShapeSymbolNameStr; // @todo Retrieve this directly from mIdxShapeSymolNameStr

@@ -1,7 +1,7 @@
 
 # OpenAllegroParser
 
-Purpose of this project is to provide a C++17 library for parsing [Cadence](https://en.wikipedia.org/wiki/Cadence_Design_Systems)'s Allegro binary file formats. This library can be linked to other software for reading/modifying?/writing? Allegro binary files and reading?/writing? XML files.
+Purpose of this project is to provide a C++17 library for parsing [Cadence](https://en.wikipedia.org/wiki/Cadence_Design_Systems)'s Allegro binary file formats. This library can be linked to other software for reading Allegro's binary files and/or exporting them to XML files.
 
 **See also the complementary project [OpenOrCadParser](https://github.com/Werni2A/OpenOrCadParser).**
 

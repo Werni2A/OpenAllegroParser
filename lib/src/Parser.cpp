@@ -303,7 +303,16 @@ Pad Parser::readPad(size_t aIdx, bool aIsUsrLayer, const PadFile& aPadFile, unkn
     pad.setOffsetX(mDs.readInt32());
     pad.setOffsetY(mDs.readInt32());
 
-    mDs.printUnknownData(std::cout, 4, "pad data - 0");
+    pad.mIdxFlashStr = mDs.readUint32();
+
+    if(pad.mIdxFlashStr == 0)
+    {
+        pad.mFlashStr == "";
+    }
+    else
+    {
+        pad.mFlashStr = aPadFile.getStrLstEntryByIdx(pad.mIdxFlashStr);
+    }
 
     pad.mIdxShapeSymolNameStr = mDs.readUint32();
 
@@ -317,6 +326,21 @@ Pad Parser::readPad(size_t aIdx, bool aIsUsrLayer, const PadFile& aPadFile, unkn
     }
 
     return pad;
+}
+
+
+Symbol Parser::readSymbol()
+{
+    Symbol obj;
+
+    obj.width  = mDs.readUint32();
+    obj.height = mDs.readUint32();
+
+    obj.figure = ToFigure(mDs.readUint32());
+
+    obj.characters = mDs.readStrZeroTerm4BytePad();
+
+    return obj;
 }
 
 
@@ -579,12 +603,7 @@ PadFile Parser::readPadFile(unknownParam uparam)
     padFile.slothole_positivetolerancey = mDs.readInt32();
     padFile.slothole_negativetolerancey = mDs.readInt32();
 
-    padFile.width  = mDs.readUint32();
-    padFile.height = mDs.readUint32();
-
-    padFile.figure = ToFigure(mDs.readUint32());
-
-    padFile.characters = mDs.readStrZeroTerm4BytePad();
+    padFile.drillSymbol = readSymbol();
 
     // backdrill
 
@@ -593,12 +612,7 @@ PadFile Parser::readPadFile(unknownParam uparam)
     // mDs.printUnknownData(std::cout, 12, "unknown - 19");
     mDs.assumeZero(8, "unknown - 19");
 
-    padFile.back_drill_figure_width  = mDs.readUint32();
-    padFile.back_drill_figure_height = mDs.readUint32();
-
-    padFile.back_drill_figure = ToFigure(mDs.readUint32());
-
-    padFile.back_drill_characters = mDs.readStrZeroTerm4BytePad();
+    padFile.backDrillSymbol = readSymbol();
 
     // counterboresink
 

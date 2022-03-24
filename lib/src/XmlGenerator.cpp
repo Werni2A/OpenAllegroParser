@@ -51,14 +51,136 @@ bool is_xy_sym(const HoleType& aHoleType)
     }
 }
 
-
-void XmlGenerator::generateXml()
+void XmlGenerator::appendSymbol(XMLElement* aParent, const Symbol& aObj)
 {
     // @todo move outside into a function get_float_format
     // const std::string float_format = fmt::sprintf("%%.%dg", aPadFile.accuracy);
     const std::string float_format = "%g";
 
-    XMLDocument mXml;
+    XMLElement* eFigure = mXml.NewElement("figure");
+    eFigure->SetText(to_string(aObj.figure).c_str());
+    aParent->InsertEndChild(eFigure);
+
+    XMLElement* eCharacters = mXml.NewElement("characters");
+    eCharacters->SetText(aObj.characters.c_str());
+    aParent->InsertEndChild(eCharacters);
+
+    XMLElement* eWidth = mXml.NewElement("width");
+    eWidth->SetText(fmt::sprintf(float_format, new_to_fp(aObj.width, mPadFile)).c_str());
+    aParent->InsertEndChild(eWidth);
+
+    XMLElement* eHeight = mXml.NewElement("height");
+    eHeight->SetText(fmt::sprintf(float_format, new_to_fp(aObj.height, mPadFile)).c_str());
+    aParent->InsertEndChild(eHeight);
+}
+
+
+void XmlGenerator::appendPad(XMLElement* aParent, const Pad& aObj, bool aUsrLayer)
+{
+    // @todo move outside into a function get_float_format
+    // Fixed floating point accuracy
+    const std::string float_fmt_fix_acc = fmt::sprintf("%%.%df", mPadFile.accuracy);
+    // Adjusted floating point accuracy
+    const std::string float_fmt_adj_acc = "%g";
+
+
+    XMLElement* eType = mXml.NewElement("type");
+    eType->SetText(to_string(aObj.getType()).c_str());
+    aParent->InsertEndChild(eType);
+
+    XMLElement* eLayer = mXml.NewElement("layer");
+    const std::string layer = aUsrLayer ? aObj.mUsrStr.c_str() : to_string(aObj.getLayer());
+    eLayer->SetText(layer.c_str());
+    aParent->InsertEndChild(eLayer);
+
+    XMLElement* eFigure = mXml.NewElement("figure");
+    std::string figure = (aObj.getFigure() == Figure::OBLONGX) ? "OBLONG" : to_string(aObj.getFigure());
+    eFigure->SetText(figure.c_str());
+    aParent->InsertEndChild(eFigure);
+
+    if(aObj.getOffsetX() != 0 || aObj.getOffsetY() != 0)
+    {
+        XMLElement* eOffset = mXml.NewElement("offset");
+        const std::string offsetX = fmt::sprintf(float_fmt_adj_acc, new_to_fp(aObj.getOffsetX(), mPadFile));
+        const std::string offsetY = fmt::sprintf(float_fmt_adj_acc, new_to_fp(aObj.getOffsetY(), mPadFile));
+        const std::string offset  = "(" + offsetX + ";" + offsetY + ")";
+        eOffset->SetText(offset.c_str());
+        aParent->InsertEndChild(eOffset);
+    }
+
+    if(!aObj.getShapeSymbolName().empty())
+    {
+        XMLElement* eShapename = mXml.NewElement("shapename");
+        eShapename->SetText(aObj.getShapeSymbolName().c_str());
+        aParent->InsertEndChild(eShapename);
+    }
+
+    if(!aObj.getFlashName().empty())
+    {
+        XMLElement* eFlashname = mXml.NewElement("flashname");
+        eFlashname->SetText(aObj.getFlashName().c_str());
+        aParent->InsertEndChild(eFlashname);
+    }
+
+    XMLElement* eWidth = mXml.NewElement("width");
+    eWidth->SetText(fmt::sprintf(float_fmt_adj_acc, new_to_fp(aObj.getWidth(), mPadFile)).c_str());
+    aParent->InsertEndChild(eWidth);
+
+    XMLElement* eHeight = mXml.NewElement("height");
+    eHeight->SetText(fmt::sprintf(float_fmt_adj_acc, new_to_fp(aObj.getHeight(), mPadFile)).c_str());
+    aParent->InsertEndChild(eHeight);
+
+    if(aObj.getNsides() != 0)
+    {
+        XMLElement* eNsides = mXml.NewElement("nsides");
+        eNsides->SetText(std::to_string(aObj.getNsides()).c_str());
+        aParent->InsertEndChild(eNsides);
+    }
+
+    if(aObj.getCorner() != 0)
+    {
+        XMLElement* eCorner = mXml.NewElement("corner");
+        eCorner->SetText(fmt::sprintf(float_fmt_fix_acc, new_to_fp(aObj.getCorner(), mPadFile)).c_str());
+        aParent->InsertEndChild(eCorner);
+    }
+
+    if(aObj.isUpperLeftCornerSpecial())
+    {
+        XMLElement* eUl = mXml.NewElement("ul");
+        eUl->SetText(std::string{'Y'}.c_str());
+        aParent->InsertEndChild(eUl);
+    }
+
+    if(aObj.isUpperRightCornerSpecial())
+    {
+        XMLElement* eUr = mXml.NewElement("ur");
+        eUr->SetText(std::string{'Y'}.c_str());
+        aParent->InsertEndChild(eUr);
+    }
+
+    if(aObj.isLowerLeftCornerSpecial())
+    {
+        XMLElement* eLl = mXml.NewElement("ll");
+        eLl->SetText(std::string{'Y'}.c_str());
+        aParent->InsertEndChild(eLl);
+    }
+
+    if(aObj.isLowerRightCornerSpecial())
+    {
+        XMLElement* eLr = mXml.NewElement("lr");
+        eLr->SetText(std::string{'Y'}.c_str());
+        aParent->InsertEndChild(eLr);
+    }
+}
+
+
+void XmlGenerator::generateXml()
+{
+    // @todo move outside into a function get_float_format
+    // Fixed floating point accuracy
+    const std::string float_fmt_fix_acc = fmt::sprintf("%%.%df", mPadFile.accuracy);
+    // Adjusted floating point accuracy
+    const std::string float_fmt_adj_acc = "%g";
 
     XMLDeclaration* std_declaration = mXml.NewDeclaration();
 
@@ -88,308 +210,219 @@ void XmlGenerator::generateXml()
     eAccuracy->SetText(std::to_string(mPadFile.accuracy).c_str());
     ePadstack->InsertEndChild(eAccuracy);
 
-    XMLElement* eDrillinfo = mXml.NewElement("drillinfo");
-    ePadstack->InsertEndChild(eDrillinfo);
-
+    if(mPadFile.holeType != HoleType::NONE || mPadFile.drillSymbol.figure != Figure::NONE || mPadFile.backDrillSymbol.figure != Figure::NONE)
     {
-        // void slotholeToXml(XMLElement* aNode, const PadFile& mPadFile);
-        XMLElement* eSlothole = mXml.NewElement("slothole");
-        eDrillinfo->InsertEndChild(eSlothole);
+        XMLElement* eDrillinfo = mXml.NewElement("drillinfo");
+        ePadstack->InsertEndChild(eDrillinfo);
 
-        XMLElement* eHoletype = mXml.NewElement("holetype");
-        eHoletype->SetText(to_string(mPadFile.holeType).c_str());
-        eSlothole->InsertEndChild(eHoletype);
-
-        XMLElement* ePlating = mXml.NewElement("plating");
-        const std::string yes_no = mPadFile.plated ? "Y" : "N";
-        ePlating->SetText(yes_no.c_str());
-        eSlothole->InsertEndChild(ePlating);
-
-        XMLElement* eWidth = mXml.NewElement("width");
-        eWidth->SetText(fmt::sprintf(float_format, new_to_fp(mPadFile.slothole_width, mPadFile)).c_str());
-        eSlothole->InsertEndChild(eWidth);
-
-        // For symmetrical holes we need only the length in one dimension.
-        if(mPadFile.holeType != HoleType::NONE && !is_xy_sym(mPadFile.holeType))
+        if(mPadFile.holeType != HoleType::NONE)
         {
-            XMLElement* eHeight = mXml.NewElement("height");
-            eHeight->SetText(fmt::sprintf(float_format, new_to_fp(mPadFile.slothole_height, mPadFile)).c_str());
-            eSlothole->InsertEndChild(eHeight);
-        }
+            // void slotholeToXml(XMLElement* aNode, const PadFile& mPadFile);
+            XMLElement* eSlothole = mXml.NewElement("slothole");
+            eDrillinfo->InsertEndChild(eSlothole);
 
-        XMLElement* ePositivetolerance = mXml.NewElement("positivetolerance");
-        ePositivetolerance->SetText(fmt::sprintf(float_format, new_to_fp(mPadFile.positivetolerance, mPadFile)).c_str());
-        eSlothole->InsertEndChild(ePositivetolerance);
+            XMLElement* eHoletype = mXml.NewElement("holetype");
+            eHoletype->SetText(to_string(mPadFile.holeType).c_str());
+            eSlothole->InsertEndChild(eHoletype);
 
-        XMLElement* eNegativetolerance = mXml.NewElement("negativetolerance");
-        eNegativetolerance->SetText(fmt::sprintf(float_format, new_to_fp(mPadFile.negativetolerance, mPadFile)).c_str());
-        eSlothole->InsertEndChild(eNegativetolerance);
-
-        XMLElement* eOffset = mXml.NewElement("offset");
-        const std::string offsetX = fmt::sprintf(float_format, new_to_fp(mPadFile.offsetX, mPadFile));
-        const std::string offsetY = fmt::sprintf(float_format, new_to_fp(mPadFile.offsetY, mPadFile));
-        const std::string offset  = "(" + offsetX + ";" + offsetY + ")";
-        eOffset->SetText(offset.c_str());
-        eSlothole->InsertEndChild(eOffset);
-
-        XMLElement* eDrilltoolsize = mXml.NewElement("drilltoolsize");
-        eDrilltoolsize->SetText(mPadFile.getDrillToolSize().c_str());
-        eSlothole->InsertEndChild(eDrilltoolsize);
-
-        if(mPadFile.drillmethod != Drillmethod::NONE)
-        {
-            XMLElement* eDrillmethod = mXml.NewElement("drillmethod");
-            eDrillmethod->SetText(to_string(mPadFile.drillmethod).c_str());
-            eSlothole->InsertEndChild(eDrillmethod);
-        }
-    }
-
-    if(mPadFile.drill_rows > 0u && mPadFile.drill_columns > 0u)
-    {
-        XMLElement* eMultidrill = mXml.NewElement("multidrill");
-        eDrillinfo->InsertEndChild(eMultidrill);
-
-        XMLElement* eRows = mXml.NewElement("rows");
-        eRows->SetText(std::to_string(mPadFile.drill_rows).c_str());
-        eMultidrill->InsertEndChild(eRows);
-
-        XMLElement* eColumns = mXml.NewElement("columns");
-        eColumns->SetText(std::to_string(mPadFile.drill_columns).c_str());
-        eMultidrill->InsertEndChild(eColumns);
-
-        XMLElement* eClearance = mXml.NewElement("clearance");
-        const std::string clearanceRow = fmt::sprintf(float_format, new_to_fp(mPadFile.clearance_rows, mPadFile));
-        const std::string clearanceCol = fmt::sprintf(float_format, new_to_fp(mPadFile.clearance_columns, mPadFile));
-        const std::string clearance    = "(" + clearanceRow + ";" + clearanceCol + ")";
-        eClearance->SetText(clearance.c_str());
-        eMultidrill->InsertEndChild(eClearance);
-
-        XMLElement* eStagger = mXml.NewElement("stagger");
-        const std::string stagger = mPadFile.staggeredDrills ? "Y" : "N";
-        eStagger->SetText(stagger.c_str());
-        eMultidrill->InsertEndChild(eStagger);
-    }
-
-    {
-        XMLElement* eDrillsymbol = mXml.NewElement("drillsymbol");
-        eDrillinfo->InsertEndChild(eDrillsymbol);
-
-        XMLElement* eFigure = mXml.NewElement("figure");
-        eFigure->SetText(to_string(mPadFile.figure).c_str());
-        eDrillsymbol->InsertEndChild(eFigure);
-
-        XMLElement* eCharacters = mXml.NewElement("characters");
-        eCharacters->SetText(mPadFile.characters.c_str());
-        eDrillsymbol->InsertEndChild(eCharacters);
-
-        XMLElement* eWidth = mXml.NewElement("width");
-        eWidth->SetText(fmt::sprintf(float_format, new_to_fp(mPadFile.width, mPadFile)).c_str());
-        eDrillsymbol->InsertEndChild(eWidth);
-
-        XMLElement* eHeight = mXml.NewElement("height");
-        eHeight->SetText(fmt::sprintf(float_format, new_to_fp(mPadFile.height, mPadFile)).c_str());
-        eDrillsymbol->InsertEndChild(eHeight);
-    }
-
-    if(mPadFile.back_drill_figure != Figure::NONE)
-    {
-        XMLElement* eBackdrill = mXml.NewElement("backdrill");
-        eDrillinfo->InsertEndChild(eBackdrill);
-
-        // @todo implement
-        XMLElement* eDiameter = mXml.NewElement("diameter");
-        // eDiameter->SetText(fmt::sprintf(float_format, new_to_fp(mPadFile.back_drill_diameter, mPadFile)).c_str());
-        eDiameter->SetText("TODO");
-        eBackdrill->InsertEndChild(eDiameter);
-
-        {
-            XMLElement* eDrillsymbol = mXml.NewElement("drillsymbol");
-            eBackdrill->InsertEndChild(eDrillsymbol);
-
-            XMLElement* eFigure = mXml.NewElement("figure");
-            eFigure->SetText(to_string(mPadFile.back_drill_figure).c_str());
-            eDrillsymbol->InsertEndChild(eFigure);
-
-            XMLElement* eCharacters = mXml.NewElement("characters");
-            eCharacters->SetText(mPadFile.back_drill_characters.c_str());
-            eDrillsymbol->InsertEndChild(eCharacters);
+            if(mPadFile.plated)
+            {
+                XMLElement* ePlating = mXml.NewElement("plating");
+                const std::string yes_no = mPadFile.plated ? "Y" : "N";
+                ePlating->SetText(yes_no.c_str());
+                eSlothole->InsertEndChild(ePlating);
+            }
 
             XMLElement* eWidth = mXml.NewElement("width");
-            eWidth->SetText(fmt::sprintf(float_format, new_to_fp(mPadFile.back_drill_figure_width, mPadFile)).c_str());
-            eDrillsymbol->InsertEndChild(eWidth);
+            eWidth->SetText(fmt::sprintf(float_fmt_adj_acc, new_to_fp(mPadFile.slothole_width, mPadFile)).c_str());
+            eSlothole->InsertEndChild(eWidth);
 
-            XMLElement* eHeight = mXml.NewElement("height");
-            eHeight->SetText(fmt::sprintf(float_format, new_to_fp(mPadFile.back_drill_figure_height, mPadFile)).c_str());
-            eDrillsymbol->InsertEndChild(eHeight);
+            // For symmetrical holes we need only the length in one dimension.
+            if(mPadFile.holeType != HoleType::NONE && !is_xy_sym(mPadFile.holeType))
+            {
+                XMLElement* eHeight = mXml.NewElement("height");
+                eHeight->SetText(fmt::sprintf(float_fmt_adj_acc, new_to_fp(mPadFile.slothole_height, mPadFile)).c_str());
+                eSlothole->InsertEndChild(eHeight);
+            }
+
+            if(mPadFile.positivetolerance != 0)
+            {
+                XMLElement* ePositivetolerance = mXml.NewElement("positivetolerance");
+                ePositivetolerance->SetText(fmt::sprintf(float_fmt_fix_acc, new_to_fp(mPadFile.positivetolerance, mPadFile)).c_str());
+                eSlothole->InsertEndChild(ePositivetolerance);
+            }
+
+            if(mPadFile.negativetolerance != 0)
+            {
+                XMLElement* eNegativetolerance = mXml.NewElement("negativetolerance");
+                eNegativetolerance->SetText(fmt::sprintf(float_fmt_fix_acc, new_to_fp(mPadFile.negativetolerance, mPadFile)).c_str());
+                eSlothole->InsertEndChild(eNegativetolerance);
+            }
+
+            if(mPadFile.offsetX != 0 || mPadFile.offsetY != 0)
+            {
+                XMLElement* eOffset = mXml.NewElement("offset");
+                const std::string offsetX = fmt::sprintf(float_fmt_adj_acc, new_to_fp(mPadFile.offsetX, mPadFile));
+                const std::string offsetY = fmt::sprintf(float_fmt_adj_acc, new_to_fp(mPadFile.offsetY, mPadFile));
+                const std::string offset  = "(" + offsetX + ";" + offsetY + ")";
+                eOffset->SetText(offset.c_str());
+                eSlothole->InsertEndChild(eOffset);
+            }
+
+            if(!mPadFile.getDrillToolSize().empty())
+            {
+                XMLElement* eDrilltoolsize = mXml.NewElement("drilltoolsize");
+                eDrilltoolsize->SetText(mPadFile.getDrillToolSize().c_str());
+                eSlothole->InsertEndChild(eDrilltoolsize);
+            }
+
+            if(mPadFile.drillmethod != Drillmethod::NONE)
+            {
+                XMLElement* eDrillmethod = mXml.NewElement("drillmethod");
+                eDrillmethod->SetText(to_string(mPadFile.drillmethod).c_str());
+                eSlothole->InsertEndChild(eDrillmethod);
+            }
+        }
+
+        if(mPadFile.drill_rows != 1u || mPadFile.drill_columns != 1u)
+        {
+            XMLElement* eMultidrill = mXml.NewElement("multidrill");
+            eDrillinfo->InsertEndChild(eMultidrill);
+
+            if(mPadFile.drill_rows != 1u)
+            {
+                XMLElement* eRows = mXml.NewElement("rows");
+                eRows->SetText(std::to_string(mPadFile.drill_rows).c_str());
+                eMultidrill->InsertEndChild(eRows);
+            }
+
+            if(mPadFile.drill_columns != 1u)
+            {
+                XMLElement* eColumns = mXml.NewElement("columns");
+                eColumns->SetText(std::to_string(mPadFile.drill_columns).c_str());
+                eMultidrill->InsertEndChild(eColumns);
+            }
+
+            if(mPadFile.clearance_rows != 0 || mPadFile.clearance_columns != 0)
+            {
+                XMLElement* eClearance = mXml.NewElement("clearance");
+                const std::string clearanceRow = fmt::sprintf(float_fmt_fix_acc, new_to_fp(mPadFile.clearance_rows, mPadFile));
+                const std::string clearanceCol = fmt::sprintf(float_fmt_fix_acc, new_to_fp(mPadFile.clearance_columns, mPadFile));
+                const std::string clearance    = "(" + clearanceRow + ";" + clearanceCol + ")";
+                eClearance->SetText(clearance.c_str());
+                eMultidrill->InsertEndChild(eClearance);
+            }
+
+            if(mPadFile.staggeredDrills)
+            {
+                XMLElement* eStagger = mXml.NewElement("stagger");
+                const std::string stagger = mPadFile.staggeredDrills ? "Y" : "N";
+                eStagger->SetText(stagger.c_str());
+                eMultidrill->InsertEndChild(eStagger);
+            }
+        }
+
+        if(mPadFile.drillSymbol.figure != Figure::NONE)
+        {
+            XMLElement* eDrillsymbol = mXml.NewElement("drillsymbol");
+            eDrillinfo->InsertEndChild(eDrillsymbol);
+
+            appendSymbol(eDrillsymbol, mPadFile.drillSymbol);
+        }
+
+        if(mPadFile.backDrillSymbol.figure != Figure::NONE)
+        {
+            XMLElement* eBackdrill = mXml.NewElement("backdrill");
+            eDrillinfo->InsertEndChild(eBackdrill);
+
+            XMLElement* eDiameter = mXml.NewElement("diameter");
+            eDiameter->SetText(fmt::sprintf(float_fmt_adj_acc, new_to_fp(mPadFile.diameter, mPadFile)).c_str());
+            eBackdrill->InsertEndChild(eDiameter);
+
+            if(mPadFile.backDrillSymbol.figure != Figure::NONE)
+            {
+                XMLElement* eDrillsymbol = mXml.NewElement("drillsymbol");
+                eBackdrill->InsertEndChild(eDrillsymbol);
+
+                appendSymbol(eDrillsymbol, mPadFile.backDrillSymbol);
+            }
+        }
+
+        if(mPadFile.counter_drill_diameter != 0)
+        {
+            XMLElement* eCounterboresink = mXml.NewElement("counterboresink");
+            eDrillinfo->InsertEndChild(eCounterboresink);
+
+            XMLElement* eDiameter = mXml.NewElement("diameter");
+            eDiameter->SetText(fmt::sprintf(float_fmt_adj_acc, new_to_fp(mPadFile.counter_drill_diameter, mPadFile)).c_str());
+            eCounterboresink->InsertEndChild(eDiameter);
+
+            if(mPadFile.counter_drill_positivetolerance != 0)
+            {
+                XMLElement* ePositivetolerance = mXml.NewElement("positivetolerance");
+                ePositivetolerance->SetText(fmt::sprintf(float_fmt_fix_acc, new_to_fp(mPadFile.counter_drill_positivetolerance, mPadFile)).c_str());
+                eCounterboresink->InsertEndChild(ePositivetolerance);
+            }
+
+            if(mPadFile.counter_drill_negativetolerance != 0)
+            {
+                XMLElement* eNegativetolerance = mXml.NewElement("negativetolerance");
+                eNegativetolerance->SetText(fmt::sprintf(float_fmt_fix_acc, new_to_fp(mPadFile.counter_drill_negativetolerance, mPadFile)).c_str());
+                eCounterboresink->InsertEndChild(eNegativetolerance);
+            }
+
+            XMLElement* eCounterangle = mXml.NewElement("counterangle");
+            eCounterangle->SetText(fmt::sprintf(float_fmt_adj_acc, new_to_fp(mPadFile.counterangle, mPadFile)).c_str());
+            eCounterboresink->InsertEndChild(eCounterangle);
+
+            XMLElement* eCounterdepth = mXml.NewElement("counterdepth");
+            // @todo figur out where counterdepth is stored
+            // eCounterdepth->SetText(fmt::sprintf(float_fmt_adj_acc, new_to_fp(mPadFile.counterdepth, mPadFile)).c_str());
+            eCounterboresink->InsertEndChild(eCounterdepth);
         }
     }
 
     for(const auto& pad : mPadFile.preDefLayers)
     {
-        if(pad.getFigure() == Figure::NONE || pad.getType() == Type::UNKNOWN)
+        if(pad.getFigure() != Figure::NONE && pad.getType() != Type::UNKNOWN)
         {
-            continue;
-        }
+            XMLElement* ePad = mXml.NewElement("pad");
+            ePadstack->InsertEndChild(ePad);
 
-        XMLElement* ePad = mXml.NewElement("pad");
-        ePadstack->InsertEndChild(ePad);
-
-        XMLElement* eType = mXml.NewElement("type");
-        eType->SetText(to_string(pad.getType()).c_str());
-        ePad->InsertEndChild(eType);
-
-        XMLElement* eLayer = mXml.NewElement("layer");
-        eLayer->SetText(to_string(pad.getLayer()).c_str());
-        ePad->InsertEndChild(eLayer);
-
-        XMLElement* eFigure = mXml.NewElement("figure");
-        std::string figure = (pad.getFigure() == Figure::OBLONGX) ? "OBLONG" : to_string(pad.getFigure());
-        eFigure->SetText(figure.c_str());
-        ePad->InsertEndChild(eFigure);
-
-        if(pad.getOffsetX() != 0 || pad.getOffsetY() != 0)
-        {
-            XMLElement* eOffset = mXml.NewElement("offset");
-            const std::string offsetX = fmt::sprintf(float_format, new_to_fp(pad.getOffsetX(), mPadFile));
-            const std::string offsetY = fmt::sprintf(float_format, new_to_fp(pad.getOffsetY(), mPadFile));
-            const std::string offset  = "(" + offsetX + ";" + offsetY + ")";
-            eOffset->SetText(offset.c_str());
-            ePad->InsertEndChild(eOffset);
-        }
-
-        XMLElement* eWidth = mXml.NewElement("width");
-        eWidth->SetText(fmt::sprintf(float_format, new_to_fp(pad.getWidth(), mPadFile)).c_str());
-        ePad->InsertEndChild(eWidth);
-
-        XMLElement* eHeight = mXml.NewElement("height");
-        eHeight->SetText(fmt::sprintf(float_format, new_to_fp(pad.getHeight(), mPadFile)).c_str());
-        ePad->InsertEndChild(eHeight);
-
-        if(pad.getNsides() != 0)
-        {
-            XMLElement* eNsides = mXml.NewElement("nsides");
-            eNsides->SetText(std::to_string(pad.getNsides()).c_str());
-            ePad->InsertEndChild(eNsides);
-        }
-
-        if(pad.getCorner() != 0)
-        {
-            XMLElement* eCorner = mXml.NewElement("corner");
-            eCorner->SetText(fmt::sprintf(float_format, new_to_fp(pad.getCorner(), mPadFile)).c_str());
-            ePad->InsertEndChild(eCorner);
-        }
-
-        if(pad.isUpperLeftCornerSpecial())
-        {
-            XMLElement* eUl = mXml.NewElement("ul");
-            eUl->SetText(std::string{'Y'}.c_str());
-            ePad->InsertEndChild(eUl);
-        }
-
-        if(pad.isUpperRightCornerSpecial())
-        {
-            XMLElement* eUr = mXml.NewElement("ur");
-            eUr->SetText(std::string{'Y'}.c_str());
-            ePad->InsertEndChild(eUr);
-        }
-
-        if(pad.isLowerLeftCornerSpecial())
-        {
-            XMLElement* eLl = mXml.NewElement("ll");
-            eLl->SetText(std::string{'Y'}.c_str());
-            ePad->InsertEndChild(eLl);
-        }
-
-        if(pad.isLowerRightCornerSpecial())
-        {
-            XMLElement* eLr = mXml.NewElement("lr");
-            eLr->SetText(std::string{'Y'}.c_str());
-            ePad->InsertEndChild(eLr);
+            appendPad(ePad, pad, false);
         }
     }
 
-
     for(const auto& pad : mPadFile.usrDefLayers)
     {
-        if(pad.getFigure() == Figure::NONE || pad.getType() == Type::UNKNOWN)
+        if(pad.getFigure() != Figure::NONE && pad.getType() != Type::UNKNOWN)
         {
-            continue;
+            XMLElement* ePad = mXml.NewElement("pad");
+            ePadstack->InsertEndChild(ePad);
+
+            appendPad(ePad, pad, true);
+        }
+    }
+
+    if(mPadFile.isPolyVia || mPadFile.lock_layer_span)
+    {
+        XMLElement* eOptions = mXml.NewElement("options");
+        ePadstack->InsertEndChild(eOptions);
+
+        if(mPadFile.isPolyVia)
+        {
+            XMLElement* ePolyVia = mXml.NewElement("poly_via");
+            const std::string polyVia = mPadFile.isPolyVia ? "Y" : "N";
+            ePolyVia->SetText(polyVia.c_str());
+            eOptions->InsertEndChild(ePolyVia);
         }
 
-        XMLElement* ePad = mXml.NewElement("pad");
-        ePadstack->InsertEndChild(ePad);
-
-        XMLElement* eType = mXml.NewElement("type");
-        eType->SetText(to_string(pad.getType()).c_str());
-        ePad->InsertEndChild(eType);
-
-        XMLElement* eLayer = mXml.NewElement("layer");
-        eLayer->SetText(pad.mUsrStr.c_str());
-        ePad->InsertEndChild(eLayer);
-
-        XMLElement* eFigure = mXml.NewElement("figure");
-        std::string figure = (pad.getFigure() == Figure::OBLONGX) ? "OBLONG" : to_string(pad.getFigure());
-        eFigure->SetText(figure.c_str());
-        ePad->InsertEndChild(eFigure);
-
-        if(pad.getOffsetX() != 0 || pad.getOffsetY() != 0)
+        if(mPadFile.lock_layer_span)
         {
-            XMLElement* eOffset = mXml.NewElement("offset");
-            const std::string offsetX = fmt::sprintf(float_format, new_to_fp(pad.getOffsetX(), mPadFile));
-            const std::string offsetY = fmt::sprintf(float_format, new_to_fp(pad.getOffsetY(), mPadFile));
-            const std::string offset  = "(" + offsetX + ";" + offsetY + ")";
-            eOffset->SetText(offset.c_str());
-            ePad->InsertEndChild(eOffset);
-        }
-
-        XMLElement* eWidth = mXml.NewElement("width");
-        eWidth->SetText(fmt::sprintf(float_format, new_to_fp(pad.getWidth(), mPadFile)).c_str());
-        ePad->InsertEndChild(eWidth);
-
-        XMLElement* eHeight = mXml.NewElement("height");
-        eHeight->SetText(fmt::sprintf(float_format, new_to_fp(pad.getHeight(), mPadFile)).c_str());
-        ePad->InsertEndChild(eHeight);
-
-        if(pad.getNsides() != 0)
-        {
-            XMLElement* eNsides = mXml.NewElement("nsides");
-            eNsides->SetText(std::to_string(pad.getNsides()).c_str());
-            ePad->InsertEndChild(eNsides);
-        }
-
-        if(pad.getCorner() != 0)
-        {
-            XMLElement* eCorner = mXml.NewElement("corner");
-            eCorner->SetText(fmt::sprintf(float_format, new_to_fp(pad.getCorner(), mPadFile)).c_str());
-            ePad->InsertEndChild(eCorner);
-        }
-
-        if(pad.isUpperLeftCornerSpecial())
-        {
-            XMLElement* eUl = mXml.NewElement("ul");
-            eUl->SetText(std::string{'Y'}.c_str());
-            ePad->InsertEndChild(eUl);
-        }
-
-        if(pad.isUpperRightCornerSpecial())
-        {
-            XMLElement* eUr = mXml.NewElement("ur");
-            eUr->SetText(std::string{'Y'}.c_str());
-            ePad->InsertEndChild(eUr);
-        }
-
-        if(pad.isLowerLeftCornerSpecial())
-        {
-            XMLElement* eLl = mXml.NewElement("ll");
-            eLl->SetText(std::string{'Y'}.c_str());
-            ePad->InsertEndChild(eLl);
-        }
-
-        if(pad.isLowerRightCornerSpecial())
-        {
-            XMLElement* eLr = mXml.NewElement("lr");
-            eLr->SetText(std::string{'Y'}.c_str());
-            ePad->InsertEndChild(eLr);
+            XMLElement* eLockLayerSpan = mXml.NewElement("lock_layer_span");
+            const std::string lockLayerSpan = mPadFile.lock_layer_span ? "Y" : "N";
+            eLockLayerSpan->SetText(lockLayerSpan.c_str());
+            eOptions->InsertEndChild(eLockLayerSpan);
         }
     }
 }

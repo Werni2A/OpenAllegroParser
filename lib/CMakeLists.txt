@@ -25,11 +25,18 @@ set(SOURCES
 set(HEADERS
    ${HEADERS}
    ${LIB_INCLUDE_DIR}/DataStream.hpp
+   ${LIB_INCLUDE_DIR}/Drillmethod.hpp
+   ${LIB_INCLUDE_DIR}/Exception.hpp
+   ${LIB_INCLUDE_DIR}/Figure.hpp
    ${LIB_INCLUDE_DIR}/General.hpp
+   ${LIB_INCLUDE_DIR}/HoleType.hpp
    ${LIB_INCLUDE_DIR}/LayerStuff.hpp
    ${LIB_INCLUDE_DIR}/Pad.hpp
    ${LIB_INCLUDE_DIR}/PadFile.hpp
+   ${LIB_INCLUDE_DIR}/PadstackUsage.hpp
    ${LIB_INCLUDE_DIR}/Parser.hpp
+   ${LIB_INCLUDE_DIR}/Symbol.hpp
+   ${LIB_INCLUDE_DIR}/Units.hpp
    ${LIB_INCLUDE_DIR}/XmlGenerator.hpp
 )
 

@@ -8,6 +8,10 @@
 #include <stdexcept>
 #include <string>
 
+#include <magic_enum.hpp>
+
+#include "General.hpp"
+
 
 enum class Units
 {
@@ -20,56 +24,24 @@ enum class Units
 
 
 [[maybe_unused]]
-static Units ToUnits(uint32_t val)
+static constexpr Units ToUnits(uint32_t aVal)
 {
-    Units units;
-
-    switch(val)
-    {
-        case 1: units = Units::mils; break;
-        case 2: units = Units::inch; break;
-        case 3: units = Units::mm;   break;
-        case 4: units = Units::cm;   break;
-        case 5: units = Units::um;   break;
-        default:
-            std::string errorMsg = "Units with value " + std::to_string(val)
-                                 + " is not implemented!";
-            throw std::invalid_argument(errorMsg);
-            break;
-    }
-
-    return units;
+    return ToEnum<Units, decltype(aVal)>(aVal);
 }
 
 
 [[maybe_unused]]
-static std::string to_string(const Units& units)
+static std::string to_string(const Units& aVal)
 {
-    std::string str;
-
-    switch(units)
-    {
-        case Units::mils: str = "mils"; break;
-        case Units::inch: str = "inch"; break;
-        case Units::mm:   str = "mm";   break;
-        case Units::cm:   str = "cm";   break;
-        case Units::um:   str = "um";   break;
-        default:
-            std::string errorMsg = "Units " + std::to_string(static_cast<size_t>(units))
-                                 + " is not implemented!";
-            throw std::invalid_argument(errorMsg);
-            break;
-    }
-
-    return str;
+    return std::string{magic_enum::enum_name<decltype(aVal)>(aVal)};
 }
 
 
 [[maybe_unused]]
-static std::ostream& operator<<(std::ostream& os, const Units& units)
+static std::ostream& operator<<(std::ostream& aOs, const Units& aVal)
 {
-    os << to_string(units) << std::endl;
-    return os;
+    aOs << to_string(aVal);
+    return aOs;
 }
 
 

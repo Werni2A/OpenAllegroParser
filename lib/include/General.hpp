@@ -9,6 +9,10 @@
 #include <string>
 #include <vector>
 
+#include <magic_enum.hpp>
+
+#include "Exception.hpp"
+
 
 /**
  * @brief Version of the file format.
@@ -167,6 +171,20 @@ static std::string to_lower(const std::string& aStr)
         [] (unsigned char c) { return std::tolower(c); });
 
     return retVal;
+}
+
+
+template<typename TEnum, typename TVal>
+static constexpr TEnum ToEnum(TVal aVal)
+{
+    const auto enumEntry = magic_enum::enum_cast<TEnum>(aVal);
+
+    if(!enumEntry.has_value())
+    {
+        throw InvalidEnumEntry<TEnum, TVal>(aVal);
+    }
+
+    return enumEntry.value();
 }
 
 
