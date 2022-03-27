@@ -8,6 +8,10 @@
 #include <stdexcept>
 #include <string>
 
+#include <magic_enum.hpp>
+
+#include "General.hpp"
+
 
 enum class Figure
 {
@@ -34,82 +38,24 @@ enum class Figure
 
 
 [[maybe_unused]]
-static Figure ToFigure(uint32_t val)
+static constexpr Figure ToFigure(uint32_t aVal)
 {
-    Figure figure;
-
-    switch(val)
-    {
-        case  0: figure = Figure::NONE;                break;
-        case  2: figure = Figure::CIRCLE;              break;
-        case  3: figure = Figure::OCTAGON;             break;
-        case  4: figure = Figure::CROSS;               break;
-        case  5: figure = Figure::SQUARE;              break;
-        case  6: figure = Figure::RECTANGLE;           break;
-        case  7: figure = Figure::DIAMOND;             break;
-        case 11: figure = Figure::OBLONGX;             break;
-        case 12: figure = Figure::OBLONGY;             break;
-        case 15: figure = Figure::HEXAGONX;            break;
-        case 16: figure = Figure::HEXAGONY;            break;
-        case 18: figure = Figure::TRIANGLE;            break;
-        case 22: figure = Figure::SHAPE_SYMBOL;        break;
-        case 23: figure = Figure::FLASH;               break;
-        case 25: figure = Figure::DONUT;               break;
-        case 27: figure = Figure::ROUNDED_RECTANGLE;   break;
-        case 28: figure = Figure::CHAMFERED_RECTANGLE; break;
-        case 30: figure = Figure::NSIDED_POLYGON;      break;
-        default:
-            std::string errorMsg = "Figure with value " + std::to_string(val)
-                                 + " is not implemented!";
-            throw std::invalid_argument(errorMsg);
-            break;
-    }
-
-    return figure;
+    return ToEnum<Figure, decltype(aVal)>(aVal);
 }
 
 
 [[maybe_unused]]
-static std::string to_string(const Figure& figure)
+static std::string to_string(const Figure& aVal)
 {
-    std::string str;
-
-    switch(figure)
-    {
-        case Figure::NONE:                str = "NONE";                break;
-        case Figure::CIRCLE:              str = "CIRCLE";              break;
-        case Figure::OCTAGON:             str = "OCTAGON";             break;
-        case Figure::CROSS:               str = "CROSS";               break;
-        case Figure::SQUARE:              str = "SQUARE";              break;
-        case Figure::RECTANGLE:           str = "RECTANGLE";           break;
-        case Figure::DIAMOND:             str = "DIAMOND";             break;
-        case Figure::OBLONGX:             str = "OBLONGX";             break;
-        case Figure::OBLONGY:             str = "OBLONGY";             break;
-        case Figure::HEXAGONX:            str = "HEXAGONX";            break;
-        case Figure::HEXAGONY:            str = "HEXAGONY";            break;
-        case Figure::TRIANGLE:            str = "TRIANGLE";            break;
-        case Figure::SHAPE_SYMBOL:        str = "SHAPE_SYMBOL";        break;
-        case Figure::FLASH:               str = "FLASH";               break;
-        case Figure::DONUT:               str = "DONUT";               break;
-        case Figure::ROUNDED_RECTANGLE:   str = "ROUNDED_RECTANGLE";   break;
-        case Figure::CHAMFERED_RECTANGLE: str = "CHAMFERED_RECTANGLE"; break;
-        case Figure::NSIDED_POLYGON:      str = "NSIDED_POLYGON";      break;
-        default:
-            std::string errorMsg = "Figure " + std::to_string(static_cast<size_t>(figure))
-                                 + " is not implemented!";
-            throw std::invalid_argument(errorMsg);
-            break;
-    }
-
-    return str;
+    return std::string{magic_enum::enum_name<decltype(aVal)>(aVal)};
 }
 
 
 [[maybe_unused]]
-static std::ostream& operator<<(std::ostream& os, const Figure& figure)
+static std::ostream& operator<<(std::ostream& aOs, const Figure& aVal)
 {
-    os << to_string(figure) << std::endl;
-    return os;
+    aOs << to_string(aVal);
+    return aOs;
 }
 
 

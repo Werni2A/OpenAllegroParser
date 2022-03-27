@@ -274,7 +274,7 @@ TEST_CASE("Check Drill Characters", "[Drill Characters]")
 
     PadFile padFile = parser.readPadFile(uparam);
 
-    REQUIRE(padFile.characters == "FOO");
+    REQUIRE(padFile.drillSymbol.characters == "FOO");
 }
 
 
@@ -292,7 +292,7 @@ TEST_CASE("Check Drill Figure Width", "[Drill Figure Width]")
 
     PadFile padFile = parser.readPadFile(uparam);
 
-    REQUIRE(padFile.width == 1234); // 123.4
+    REQUIRE(padFile.drillSymbol.width == 1234); // 123.4
 }
 
 
@@ -601,7 +601,7 @@ TEST_CASE("Check Drill Symbol Figure Type - None", "[Drill Symbol Figure Type]")
 
     PadFile padFile = parser.readPadFile(uparam);
 
-    REQUIRE(padFile.figure == Figure::NONE);
+    REQUIRE(padFile.drillSymbol.figure == Figure::NONE);
 }
 
 
@@ -619,7 +619,7 @@ TEST_CASE("Check Drill Symbol Figure Type - Circle", "[Drill Symbol Figure Type]
 
     PadFile padFile = parser.readPadFile(uparam);
 
-    REQUIRE(padFile.figure == Figure::CIRCLE);
+    REQUIRE(padFile.drillSymbol.figure == Figure::CIRCLE);
 }
 
 
@@ -637,7 +637,7 @@ TEST_CASE("Check Drill Symbol Figure Type - Square", "[Drill Symbol Figure Type]
 
     PadFile padFile = parser.readPadFile(uparam);
 
-    REQUIRE(padFile.figure == Figure::SQUARE);
+    REQUIRE(padFile.drillSymbol.figure == Figure::SQUARE);
 }
 
 
@@ -655,7 +655,7 @@ TEST_CASE("Check Drill Symbol Figure Type - Hexagon x", "[Drill Symbol Figure Ty
 
     PadFile padFile = parser.readPadFile(uparam);
 
-    REQUIRE(padFile.figure == Figure::HEXAGONX);
+    REQUIRE(padFile.drillSymbol.figure == Figure::HEXAGONX);
 }
 
 
@@ -673,7 +673,7 @@ TEST_CASE("Check Drill Symbol Figure Type - Hexagon y", "[Drill Symbol Figure Ty
 
     PadFile padFile = parser.readPadFile(uparam);
 
-    REQUIRE(padFile.figure == Figure::HEXAGONY);
+    REQUIRE(padFile.drillSymbol.figure == Figure::HEXAGONY);
 }
 
 
@@ -691,7 +691,7 @@ TEST_CASE("Check Drill Symbol Figure Type - Octagon", "[Drill Symbol Figure Type
 
     PadFile padFile = parser.readPadFile(uparam);
 
-    REQUIRE(padFile.figure == Figure::OCTAGON);
+    REQUIRE(padFile.drillSymbol.figure == Figure::OCTAGON);
 }
 
 
@@ -709,7 +709,7 @@ TEST_CASE("Check Drill Symbol Figure Type - Cross", "[Drill Symbol Figure Type]"
 
     PadFile padFile = parser.readPadFile(uparam);
 
-    REQUIRE(padFile.figure == Figure::CROSS);
+    REQUIRE(padFile.drillSymbol.figure == Figure::CROSS);
 }
 
 
@@ -727,7 +727,7 @@ TEST_CASE("Check Drill Symbol Figure Type - Diamond", "[Drill Symbol Figure Type
 
     PadFile padFile = parser.readPadFile(uparam);
 
-    REQUIRE(padFile.figure == Figure::DIAMOND);
+    REQUIRE(padFile.drillSymbol.figure == Figure::DIAMOND);
 }
 
 
@@ -745,7 +745,7 @@ TEST_CASE("Check Drill Symbol Figure Type - Triangle", "[Drill Symbol Figure Typ
 
     PadFile padFile = parser.readPadFile(uparam);
 
-    REQUIRE(padFile.figure == Figure::TRIANGLE);
+    REQUIRE(padFile.drillSymbol.figure == Figure::TRIANGLE);
 }
 
 
@@ -783,7 +783,7 @@ TEST_CASE("Check Drill Symbol Figure Type - Oblong y", "[Drill Symbol Figure Typ
 
     PadFile padFile = parser.readPadFile(uparam);
 
-    REQUIRE(padFile.figure == Figure::OBLONGY);
+    REQUIRE(padFile.drillSymbol.figure == Figure::OBLONGY);
 }
 
 
@@ -801,7 +801,7 @@ TEST_CASE("Check Drill Symbol Figure Type - Rectangle", "[Drill Symbol Figure Ty
 
     PadFile padFile = parser.readPadFile(uparam);
 
-    REQUIRE(padFile.figure == Figure::RECTANGLE);
+    REQUIRE(padFile.drillSymbol.figure == Figure::RECTANGLE);
 }
 
 
@@ -1259,14 +1259,14 @@ TEST_CASE("0054: Check User defined Mask Layers - Complex", "[Complex]")
 
     PadFile padFile = parser.readPadFile(uparam);
 
-    // USER_MASK - USR_STR
+    // USER_MASK - USER_STR
     REQUIRE(padFile.usrDefLayers.at(0).mUsrStr == "FOO_TOP");
     REQUIRE(padFile.usrDefLayers.at(0).getFigure()  == Figure::SHAPE_SYMBOL);
     REQUIRE(padFile.usrDefLayers.at(0).getShapeSymbolName() == "sha_sot89");
     REQUIRE(padFile.usrDefLayers.at(0).getWidth()   == 41);
     REQUIRE(padFile.usrDefLayers.at(0).getHeight()  == 17);
 
-    // USER_MASK - USR_STR
+    // USER_MASK - USER_STR
     REQUIRE(padFile.usrDefLayers.at(1).mUsrStr == "FOO_BOTTOM");
     REQUIRE(padFile.usrDefLayers.at(1).getFigure()  == Figure::CIRCLE);
     REQUIRE(padFile.usrDefLayers.at(1).getWidth()   == 167);
@@ -1274,7 +1274,7 @@ TEST_CASE("0054: Check User defined Mask Layers - Complex", "[Complex]")
     REQUIRE(padFile.usrDefLayers.at(1).getOffsetX() == 0);
     REQUIRE(padFile.usrDefLayers.at(1).getOffsetY() == 0);
 
-    // USER_MASK - USR_STR
+    // USER_MASK - USER_STR
     REQUIRE(padFile.usrDefLayers.at(2).mUsrStr == "BAR_TOP");
     REQUIRE(padFile.usrDefLayers.at(2).getFigure()  == Figure::SHAPE_SYMBOL);
     REQUIRE(padFile.usrDefLayers.at(2).getShapeSymbolName() == "sha_sot89msk");

@@ -44,8 +44,7 @@ FileType Parser::getFileTypeByExtension(const fs::path& aFile) const
     std::string extension = aFile.extension().string();
 
     // Ignore case of extension
-    std::transform(extension.begin(), extension.end(), extension.begin(),
-        [] (unsigned char c) { return std::tolower(c); });
+    extension = to_lower(extension);
 
     const std::map<std::string, FileType> extensionFileTypeMap =
         {
@@ -279,7 +278,7 @@ Pad Parser::readPad(size_t aIdx, bool aIsUsrLayer, const PadFile& aPadFile, unkn
     else
     {
         type  = Type::USER_MASK;
-        layer = Layer::USR_STR;
+        layer = Layer::USER_STR;
     }
 
     Pad pad{type, layer};
@@ -304,7 +303,16 @@ Pad Parser::readPad(size_t aIdx, bool aIsUsrLayer, const PadFile& aPadFile, unkn
     pad.setOffsetX(mDs.readInt32());
     pad.setOffsetY(mDs.readInt32());
 
-    mDs.printUnknownData(std::cout, 4, "pad data - 0");
+    pad.mIdxFlashStr = mDs.readUint32();
+
+    if(pad.mIdxFlashStr == 0)
+    {
+        pad.mFlashStr == "";
+    }
+    else
+    {
+        pad.mFlashStr = aPadFile.getStrLstEntryByIdx(pad.mIdxFlashStr);
+    }
 
     pad.mIdxShapeSymolNameStr = mDs.readUint32();
 
@@ -318,6 +326,21 @@ Pad Parser::readPad(size_t aIdx, bool aIsUsrLayer, const PadFile& aPadFile, unkn
     }
 
     return pad;
+}
+
+
+Symbol Parser::readSymbol()
+{
+    Symbol obj;
+
+    obj.width  = mDs.readUint32();
+    obj.height = mDs.readUint32();
+
+    obj.figure = ToFigure(mDs.readUint32());
+
+    obj.characters = mDs.readStrZeroTerm4BytePad();
+
+    return obj;
 }
 
 
@@ -568,7 +591,8 @@ PadFile Parser::readPadFile(unknownParam uparam)
     padFile.finished_size     = mDs.readInt32();
 
     // For holeType == (OVAL_SLOT || RECT_SLOT) this is
-    // the tolerance on x-axis.
+    // the tolerance on x-axis. Otherwise for symmetric
+    // holes this is the tolerance on x- and y-axis.
     padFile.positivetolerance = mDs.readInt32();
     padFile.negativetolerance = mDs.readInt32();
 
@@ -579,12 +603,7 @@ PadFile Parser::readPadFile(unknownParam uparam)
     padFile.slothole_positivetolerancey = mDs.readInt32();
     padFile.slothole_negativetolerancey = mDs.readInt32();
 
-    padFile.width  = mDs.readUint32();
-    padFile.height = mDs.readUint32();
-
-    padFile.figure = ToFigure(mDs.readUint32());
-
-    padFile.characters = mDs.readStrZeroTerm4BytePad();
+    padFile.drillSymbol = readSymbol();
 
     // backdrill
 
@@ -593,12 +612,7 @@ PadFile Parser::readPadFile(unknownParam uparam)
     // mDs.printUnknownData(std::cout, 12, "unknown - 19");
     mDs.assumeZero(8, "unknown - 19");
 
-    padFile.back_drill_figure_width  = mDs.readUint32();
-    padFile.back_drill_figure_height = mDs.readUint32();
-
-    padFile.back_drill_figure = ToFigure(mDs.readUint32());
-
-    padFile.back_drill_characters = mDs.readStrZeroTerm4BytePad();
+    padFile.backDrillSymbol = readSymbol();
 
     // counterboresink
 
@@ -620,7 +634,9 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     for(size_t i = 0u; i < layerLst.size(); ++i)
     {
-        padFile.preDefLayers.push_back(readPad(i, false, padFile, uparam));
+        Pad pad = readPad(i, false, padFile, uparam);
+
+        padFile.preDefLayers.push_back(pad);
     }
 
     for(size_t i = 0u; i < uparam.numUserLayers; ++i)

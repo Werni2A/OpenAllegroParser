@@ -16,6 +16,7 @@
 #include "HoleType.hpp"
 #include "Pad.hpp"
 #include "PadstackUsage.hpp"
+#include "Symbol.hpp"
 #include "Units.hpp"
 
 
@@ -101,20 +102,12 @@ public:
     int32_t slothole_positivetolerancey;
     int32_t slothole_negativetolerancey;
 
-    uint32_t width;
-    uint32_t height;
-
-    Figure figure;
-    std::string characters;
+    Symbol drillSymbol;
 
     uint32_t diameter;
 
-    uint32_t back_drill_figure_width;
-    uint32_t back_drill_figure_height;
+    Symbol backDrillSymbol;
 
-    Figure back_drill_figure;
-
-    std::string back_drill_characters;
 
     // counterdrill
 
@@ -190,19 +183,12 @@ static std::string to_string(const PadFile& padFile)
     str += indent(1) + "slothole_positivetolerancey = " + std::to_string(padFile.slothole_positivetolerancey) + newLine();
     str += indent(1) + "slothole_negativetolerancey = " + std::to_string(padFile.slothole_negativetolerancey) + newLine();
 
-    str += indent(1) + "width             = " + std::to_string(padFile.width) + newLine();
-    str += indent(1) + "height            = " + std::to_string(padFile.height) + newLine();
+    str += indent(1) + "drillSymbol     = " + to_string(padFile.drillSymbol) + newLine();
 
-    str += indent(1) + "figure            = " + to_string(padFile.figure) + newLine();
-    str += indent(1) + "characters        = " + padFile.characters + newLine();
+    str += indent(1) + "diameter        = " + std::to_string(padFile.diameter) + newLine();
 
-    str += indent(1) + "diameter          = " + std::to_string(padFile.diameter) + newLine();
+    str += indent(1) + "backDrillSymbol = " + to_string(padFile.backDrillSymbol) + newLine();
 
-    str += indent(1) + "back_drill_figure_width  = " + std::to_string(padFile.back_drill_figure_width) + newLine();
-    str += indent(1) + "back_drill_figure_height = " + std::to_string(padFile.back_drill_figure_height) + newLine();
-
-    str += indent(1) + "back_drill_figure        = " + to_string(padFile.back_drill_figure) + newLine();
-    str += indent(1) + "back_drill_characters    = " + padFile.back_drill_characters + newLine();
 
     str += indent(1) + "counter_drill_diameter          = " + std::to_string(padFile.counter_drill_diameter) + newLine();
     str += indent(1) + "counter_drill_positivetolerance = " + std::to_string(padFile.counter_drill_positivetolerance) + newLine();
