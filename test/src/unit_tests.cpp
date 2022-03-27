@@ -1259,14 +1259,14 @@ TEST_CASE("0054: Check User defined Mask Layers - Complex", "[Complex]")
 
     PadFile padFile = parser.readPadFile(uparam);
 
-    // USER_MASK - USR_STR
+    // USER_MASK - USER_STR
     REQUIRE(padFile.usrDefLayers.at(0).mUsrStr == "FOO_TOP");
     REQUIRE(padFile.usrDefLayers.at(0).getFigure()  == Figure::SHAPE_SYMBOL);
     REQUIRE(padFile.usrDefLayers.at(0).getShapeSymbolName() == "sha_sot89");
     REQUIRE(padFile.usrDefLayers.at(0).getWidth()   == 41);
     REQUIRE(padFile.usrDefLayers.at(0).getHeight()  == 17);
 
-    // USER_MASK - USR_STR
+    // USER_MASK - USER_STR
     REQUIRE(padFile.usrDefLayers.at(1).mUsrStr == "FOO_BOTTOM");
     REQUIRE(padFile.usrDefLayers.at(1).getFigure()  == Figure::CIRCLE);
     REQUIRE(padFile.usrDefLayers.at(1).getWidth()   == 167);
@@ -1274,7 +1274,7 @@ TEST_CASE("0054: Check User defined Mask Layers - Complex", "[Complex]")
     REQUIRE(padFile.usrDefLayers.at(1).getOffsetX() == 0);
     REQUIRE(padFile.usrDefLayers.at(1).getOffsetY() == 0);
 
-    // USER_MASK - USR_STR
+    // USER_MASK - USER_STR
     REQUIRE(padFile.usrDefLayers.at(2).mUsrStr == "BAR_TOP");
     REQUIRE(padFile.usrDefLayers.at(2).getFigure()  == Figure::SHAPE_SYMBOL);
     REQUIRE(padFile.usrDefLayers.at(2).getShapeSymbolName() == "sha_sot89msk");

@@ -64,7 +64,7 @@ enum class Layer
     BACKDRILL_SOLDERMASK,
     BACKDRILL_START,
     BACKDRILL_CLEARANCE,
-    USR_STR,
+    USER_STR,
     UNKNOWN // @todo remove
 };
 
@@ -92,7 +92,7 @@ static std::string to_string(const Layer& layer)
         case Layer::BACKDRILL_SOLDERMASK:   str = "BACKDRILL_SOLDERMASK";   break;
         case Layer::BACKDRILL_START:        str = "BACKDRILL_START";        break;
         case Layer::BACKDRILL_CLEARANCE:    str = "BACKDRILL_CLEARANCE";    break;
-        case Layer::USR_STR:                str = "USR_STR";                break;
+        case Layer::USER_STR:                str = "USER_STR";                break;
         case Layer::UNKNOWN:                str = "UNKNOWN";                break; // @todo remove
         default:
             std::string errorMsg = "Layer " + std::to_string(static_cast<size_t>(layer))

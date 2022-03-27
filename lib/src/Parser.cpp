@@ -278,7 +278,7 @@ Pad Parser::readPad(size_t aIdx, bool aIsUsrLayer, const PadFile& aPadFile, unkn
     else
     {
         type  = Type::USER_MASK;
-        layer = Layer::USR_STR;
+        layer = Layer::USER_STR;
     }
 
     Pad pad{type, layer};
