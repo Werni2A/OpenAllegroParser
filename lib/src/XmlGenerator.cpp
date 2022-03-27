@@ -61,17 +61,23 @@ void XmlGenerator::appendSymbol(XMLElement* aParent, const Symbol& aObj)
     eFigure->SetText(to_string(aObj.figure).c_str());
     aParent->InsertEndChild(eFigure);
 
-    XMLElement* eCharacters = mXml.NewElement("characters");
-    eCharacters->SetText(aObj.characters.c_str());
-    aParent->InsertEndChild(eCharacters);
+    if(!aObj.characters.empty())
+    {
+        XMLElement* eCharacters = mXml.NewElement("characters");
+        eCharacters->SetText(aObj.characters.c_str());
+        aParent->InsertEndChild(eCharacters);
+    }
 
     XMLElement* eWidth = mXml.NewElement("width");
     eWidth->SetText(fmt::sprintf(float_format, new_to_fp(aObj.width, mPadFile)).c_str());
     aParent->InsertEndChild(eWidth);
 
-    XMLElement* eHeight = mXml.NewElement("height");
-    eHeight->SetText(fmt::sprintf(float_format, new_to_fp(aObj.height, mPadFile)).c_str());
-    aParent->InsertEndChild(eHeight);
+    if(aObj.height != 0u)
+    {
+        XMLElement* eHeight = mXml.NewElement("height");
+        eHeight->SetText(fmt::sprintf(float_format, new_to_fp(aObj.height, mPadFile)).c_str());
+        aParent->InsertEndChild(eHeight);
+    }
 }
 
 
@@ -423,6 +429,14 @@ void XmlGenerator::generateXml()
             const std::string lockLayerSpan = mPadFile.lock_layer_span ? "Y" : "N";
             eLockLayerSpan->SetText(lockLayerSpan.c_str());
             eOptions->InsertEndChild(eLockLayerSpan);
+        }
+
+        if(!mPadFile.not_suppress_nc_internal_pads)
+        {
+            XMLElement* eSupressUnconnected = mXml.NewElement("supress_unconnected");
+            const std::string polyVia = !mPadFile.not_suppress_nc_internal_pads ? "Y" : "N";
+            eSupressUnconnected->SetText(polyVia.c_str());
+            eOptions->InsertEndChild(eSupressUnconnected);
         }
     }
 }
