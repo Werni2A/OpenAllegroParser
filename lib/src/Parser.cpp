@@ -376,7 +376,54 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     mDs.assumeData({0x03, 0x00, 0x00, 0x00}, "Start Sequence - 2");
 
-    mDs.printUnknownData(std::cout, 32, "unknown - 1");
+    const uint32_t someStringIndexSize = mDs.readUint32();
+    std::cout << "someStringIndexSize = " << someStringIndexSize << std::endl;
+    std::cout << "Expect " << someStringIndexSize - 13 << " user design layers";
+
+    mDs.assumeData({0x0a, 0x0d, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x02}, "unknown - 0.f");
+
+    const uint32_t fileSize = mDs.readUint32();
+
+    if(fileSize != mInputFileSize)
+    {
+        throw std::runtime_error{fmt::format("File size is {} but got {} Byte!", mInputFileSize, fileSize)};
+    }
+
+    const uint32_t probably_crc = mDs.readUint32();
+    std::cout << fmt::format("probably_crc = {0:d} = {0:#b}", probably_crc) << std::endl;
+
+    auto get_ones = [] (uint32_t aVal) -> uint32_t
+        {
+            uint32_t ctr = 0u;
+            for(size_t i = 0u; i < 32u; ++i)
+            {
+                ctr += (aVal >> (31 - i)) & 0x01;
+            }
+            return ctr;
+        };
+
+    auto get_zeros = [] (uint32_t aVal) -> uint32_t
+        {
+            uint32_t ctr = 0u;
+            for(size_t i = 0u; i < 32u; ++i)
+            {
+                ctr += (((aVal >> (31 - i)) & 0x01) + 1) % 2;
+            }
+            return ctr;
+        };
+
+    std::cout << " zeros = " << get_zeros(probably_crc) << "; ones = " << get_ones(probably_crc) << std::endl;
+    const uint32_t some_val = mDs.readUint32();
+    std::cout << "some_val = " << some_val << std::endl;
+
+    if(some_val != 0x14 && some_val != 0x13)
+    {
+        throw std::runtime_error("Unexpected value for some_val, got " + std::to_string(some_val));
+    }
+
+    mDs.assumeZero(8, "unknown - 1");
+
+    // mDs.printUnknownData(std::cout, 8, "unknown - 1");
 
     // @todo This relates maybe to the standard layers in the padstack as we
     // have 25 of them and 1 of them is just rubbish, and can be ignored
