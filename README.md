@@ -72,7 +72,7 @@ cmake --build build
 
 Pad files have some structures with dynamic size where I haven't found a way to calculate those sizes. A workaround to this issue is to brute force all combinations and see when the parser runs without errors. Brute force sounds like a tedious job to do. However, it's quite fast because the amount of possible combinations is relatively low.
 
-Therefore, modify the path to your pad in `findUnknownParameterSet.py` and run it with `python3 findUnknownParameterSet.py`. Hopefully there is a parameter set found that works for your file, and you will see an output similar to the following.
+Therefore, modify the path to your pad in `find_parameter_set.py` and run it with `python3 find_parameter_set.py`. Hopefully there is a parameter set found that works for your file, and you will see an output similar to the following.
 
 ```text
 ---------------------------------------------
