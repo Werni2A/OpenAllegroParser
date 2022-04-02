@@ -402,7 +402,7 @@ void XmlGenerator::generateXml()
 
     for(const auto& pad : mPadFile.usrDefLayers)
     {
-        if(pad.getFigure() != Figure::NONE && pad.getType() != Type::UNKNOWN)
+        if(!pad.mUsrStr.empty())
         {
             XMLElement* ePad = mXml.NewElement("pad");
             ePadstack->InsertEndChild(ePad);
