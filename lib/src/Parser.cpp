@@ -613,11 +613,15 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     // @todo padstackusage is probably a bit field where the first two
     //       bits are something different. See PadstackUsage.hpp for more info.
+    //       First bit might be a bool indicating if user defined design masks are used
     const uint8_t tmpPadstackusage = mDs.readUint8();
+
+    // @todo figure out if this is really true
+    const bool probUserDesignLayerPresent = static_cast<bool>(tmpPadstackusage & 0x01);
 
     if(tmpPadstackusage & 0x03 != 0x02)
     {
-        throw std::runtime_error("New bit field value found in tmpPadstackusage");
+        // throw std::runtime_error(fmt::format("New bit field value found in tmpPadstackusage = {:#04x}", tmpPadstackusage));
     }
 
     padFile.padstackusage = ToPadstackUsage(tmpPadstackusage);
@@ -666,12 +670,21 @@ PadFile Parser::readPadFile(unknownParam uparam)
         throw std::runtime_error("Unknown bit in bit_field2 set! 0x" + ToHex(bit_field2, 2));
     }
 
-    mDs.printUnknownData(std::cout, 8, "unknown - 15");
+    // @todo This should be relatively easy to figure out as soon
+    //       as we find a pad where this values are not equal to 0.
+    // mDs.printUnknownData(std::cout, 6, "unknown - 15");
+    mDs.assumeZero(6, "unknown - 15");
 
     // multidrill
 
     padFile.drill_rows    = mDs.readUint16();
     padFile.drill_columns = mDs.readUint16();
+
+    // @todo figure out why -2. Maybe it counts more than just the user design layers?
+    //       E.g. additionally the Begin and End layer
+    const uint16_t someVal77 = mDs.readUint16();
+    const uint16_t numUserDesignLayers = (int)someVal77 - 2 < 0 ? 0 : someVal77 - 2;
+    spdlog::critical("numUserDesignLayers = {}", numUserDesignLayers);
 
     const uint8_t lock_layer_span = mDs.readUint8();
     padFile.lock_layer_span = static_cast<bool>(lock_layer_span);
@@ -761,6 +774,8 @@ PadFile Parser::readPadFile(unknownParam uparam)
     mDs.printUnknownData(std::cout, 10, "unknown - 22d");
 
     mDs.assumeData({0x68, 0x00}, "unknown - 22.f");
+
+    // @todo not sure about this one. Looks like the name becomes truncated
     const size_t usernameLen = mDs.readUint32();
 
     // mDs.printUnknownData(std::cout, 2, "unknown - 23");

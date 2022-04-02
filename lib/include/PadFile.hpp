@@ -131,8 +131,9 @@ public:
 
     int32_t counterangle;
 
-    std::vector<Pad> preDefLayers;
-    std::vector<Pad> usrDefLayers;
+    // @todo Where do User Defined Design Layers belong to?
+    std::vector<Pad> preDefLayers; // @todo Predefined Design and Mask Layers
+    std::vector<Pad> usrDefLayers; // @todo User Defined Mask Layers
 
     time_t dateTime1;
 
