@@ -17,16 +17,6 @@ namespace fs = std::filesystem;
 using namespace tinyxml2;
 
 
-// @todo move to Function in General
-// @todo Name           FixedPtToFloatPt(unsigned aAccuracy, uint32_t aFixedPt)
-// @todo implement also FloatPtToFixedPt(unsigned aAccuracy, uint32_t aFloatPt)
-template<typename T>
-double new_to_fp(T aVal, const PadFile& aPadFile)
-{
-    return static_cast<double>(aVal) / std::pow(10.0, static_cast<double>(aPadFile.accuracy));
-};
-
-
 // Is hole type symmetrical along x- and y-axis.
 bool is_xy_sym(const HoleType& aHoleType)
 {
@@ -69,13 +59,13 @@ void XmlGenerator::appendSymbol(XMLElement* aParent, const Symbol& aObj)
     }
 
     XMLElement* eWidth = mXml.NewElement("width");
-    eWidth->SetText(fmt::sprintf(float_format, new_to_fp(aObj.width, mPadFile)).c_str());
+    eWidth->SetText(fmt::sprintf(float_format, mPadFile.FixedPtToFloatPt(aObj.width)).c_str());
     aParent->InsertEndChild(eWidth);
 
     if(aObj.height != 0u)
     {
         XMLElement* eHeight = mXml.NewElement("height");
-        eHeight->SetText(fmt::sprintf(float_format, new_to_fp(aObj.height, mPadFile)).c_str());
+        eHeight->SetText(fmt::sprintf(float_format, mPadFile.FixedPtToFloatPt(aObj.height)).c_str());
         aParent->InsertEndChild(eHeight);
     }
 }
@@ -83,13 +73,6 @@ void XmlGenerator::appendSymbol(XMLElement* aParent, const Symbol& aObj)
 
 void XmlGenerator::appendPad(XMLElement* aParent, const Pad& aObj, bool aUsrLayer)
 {
-    // @todo move outside into a function get_float_format
-    // Fixed floating point accuracy
-    const std::string float_fmt_fix_acc = fmt::sprintf("%%.%df", mPadFile.accuracy);
-    // Adjusted floating point accuracy
-    const std::string float_fmt_adj_acc = "%g";
-
-
     XMLElement* eType = mXml.NewElement("type");
     eType->SetText(to_string(aObj.getType()).c_str());
     aParent->InsertEndChild(eType);
