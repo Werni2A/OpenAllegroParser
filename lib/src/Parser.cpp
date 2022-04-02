@@ -442,7 +442,9 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     padFile.swVersion = mDs.readStrZeroTermBlock(60u);
 
-    mDs.printUnknownData(std::cout, 58, "unknown - 3");
+    // mDs.printUnknownData(std::cout, 58, "unknown - 3");
+    mDs.assumeData({0x02}, "unknown - 3a");
+    mDs.assumeZero(57, "unknown - 3b");
 
     padFile.accuracy = mDs.readUint16();
 
@@ -515,17 +517,25 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     mDs.assumeZero(449, "unknown - 6");
 
-    mDs.printUnknownData(std::cout, 36, "unknown - 7");
+    mDs.assumeData({0x15, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}, "unknown - 7a");
+    mDs.assumeData({0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}, "unknown - 7b");
+    mDs.assumeData({0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}, "unknown - 7c");
+    mDs.assumeData({0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}, "unknown - 7d");
+    mDs.assumeData({0x09, 0x00, 0x00, 0x00}, "unknown - 7e");
 
     for(size_t i = 0u; i < 20u; ++i)
     {
-        const uint32_t sth0 = mDs.readUint32();
-        const uint32_t sth1 = mDs.readUint32();
+        const uint32_t sth_first  = mDs.readUint32();
+        const uint32_t sth_second = mDs.readUint32();
 
-        std::cout << "sth0 = " << sth0 << "; sth1 = " << sth1 << std::endl;
+        spdlog::info("[{:>2}]: sth_first = {:>3}; sth_second = {:>3}", i, sth_first, sth_second);
     }
 
-    mDs.printUnknownData(std::cout, 20, "unknown - 8");
+    mDs.assumeData({0x00, 0x00, 0x00, 0x00}, "unknown - 8.0");
+    mDs.assumeData({0x0c, 0x00, 0x00, 0x00}, "unknown - 8.1");
+    mDs.assumeData({0x00, 0x00, 0x00, 0x00}, "unknown - 8.2");
+    mDs.assumeData({0x14, 0x00, 0x00, 0x00}, "unknown - 8.3");
+    mDs.assumeData({0x00, 0x00, 0x00, 0x00}, "unknown - 8.4");
 
     mDs.assumeZero(248, "unknown - 9");
 
@@ -587,10 +597,12 @@ PadFile Parser::readPadFile(unknownParam uparam)
     //       drills, backdrills or multiple drill rows/columns
     if(uparam.bool1)
     {
-        mDs.printUnknownData(std::cout, 8, "unknown - 11");
+        mDs.assumeData({0x1c, 0x00}, "unknown - 11.0");
+        mDs.printUnknownData(std::cout, 6, "unknown - 11");
     }
 
-    mDs.printUnknownData(std::cout, 4, "unknown - 12");
+    mDs.assumeData({0x07, 0x00, 0x00, 0x00}, "unknown - 12");
+    // mDs.printUnknownData(std::cout, 4, "unknown - 12");
 
     padFile.strIdxPadName       = mDs.readUint32();
     padFile.idxUnknown          = mDs.readUint32();
@@ -740,12 +752,19 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     padFile.dateTime1 = ToTime(mDs.readUint32());
 
-    mDs.printUnknownData(std::cout, 18, "unknown - 22");
+    mDs.printUnknownData(std::cout, 2, "unknown - 22a");
 
-    // @todo not sure about this one
+    mDs.assumeData({0xdc, 0x02}, "unknown - 22.b");
+
+    mDs.printUnknownData(std::cout, 2, "unknown - 22c");
+
+    mDs.printUnknownData(std::cout, 10, "unknown - 22d");
+
+    mDs.assumeData({0x68, 0x00}, "unknown - 22.f");
     const size_t usernameLen = mDs.readUint32();
 
-    mDs.printUnknownData(std::cout, 2, "unknown - 23");
+    // mDs.printUnknownData(std::cout, 2, "unknown - 23");
+    mDs.assumeData({0x00, 0x00}, "unknown - 23");
 
     padFile.username = mDs.readStrZeroTerm4BytePad();
 
@@ -754,7 +773,10 @@ PadFile Parser::readPadFile(unknownParam uparam)
         throw std::runtime_error("Expected different username text length!");
     }
 
-    mDs.printUnknownData(std::cout, 32, "unknown - 24");
+    mDs.printUnknownData(std::cout, 28, "unknown - 24");
+
+    const std::vector<uint8_t> unknown_identifier = {0x3b, 0x00, 0x00, 0x00};
+    mDs.assumeData(unknown_identifier, "unknown - 24.a");
 
     const size_t specificationLen = mDs.readUint32();
 
@@ -791,7 +813,9 @@ PadFile Parser::readPadFile(unknownParam uparam)
         throw std::runtime_error("Expected different specification text length!");
     }
 
-    mDs.printUnknownData(std::cout, 8, "unknown - 25");
+    mDs.assumeData(unknown_identifier, "unknown - 24.f");
+
+    mDs.printUnknownData(std::cout, 4, "unknown - 25");
 
     const std::string quickViewGraph = mDs.readStrZeroTermBlock(128);
 
@@ -805,7 +829,12 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     sanityCheckSectionTimeDiff(padFile.dateTime2, padFile.dateTime3, maxTimeDiff);
 
-    mDs.printUnknownData(std::cout, 36, "unknown - 26");
+    mDs.assumeData({0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00}, "unknown - 25.a");
+    mDs.assumeData({0x01, 0x00, 0x09, 0x00, 0x00, 0x03, 0x0c, 0x00}, "unknown - 25.b");
+    mDs.assumeData({0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00}, "unknown - 25.c");
+    mDs.assumeData({0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00}, "unknown - 25.d");
+
+    mDs.assumeData(unknown_identifier, "unknown - 25.e");
 
     const size_t zipSize = mDs.readUint32();
 
@@ -827,7 +856,10 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     mDs.padTo4ByteBoundary();
 
-    mDs.printUnknownData(std::cout, 8, "unknown - 28");
+    const std::vector<uint8_t> unknown_identifier2 = {0x3b, 0x00, 0x01, 0x00};
+    mDs.assumeData(unknown_identifier2, "unknown - 27.1");
+
+    mDs.printUnknownData(std::cout, 4, "unknown - 28");
 
     const std::string newDbFeatures = mDs.readStrZeroTermBlock(160);
 
@@ -839,7 +871,9 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     mDs.assumeZero(12, "unknown - 28.5");
 
-    mDs.printUnknownData(std::cout, 8, "unknown - 29");
+    mDs.assumeData(unknown_identifier2, "unknown - 28.6");
+
+    mDs.printUnknownData(std::cout, 4, "unknown - 29");
 
     const std::string allegroDesignWasLastSaved = mDs.readStrZeroTermBlock(160);
 
