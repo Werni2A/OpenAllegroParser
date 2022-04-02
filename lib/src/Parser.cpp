@@ -624,7 +624,12 @@ PadFile Parser::readPadFile(unknownParam uparam)
         // throw std::runtime_error(fmt::format("New bit field value found in tmpPadstackusage = {:#04x}", tmpPadstackusage));
     }
 
-    padFile.padstackusage = ToPadstackUsage(tmpPadstackusage);
+    padFile.padstackusage = ToPadstackUsage((tmpPadstackusage & 0xfc) >> 2);
+
+    if(tmpPadstackusage & 0x03 != 0x02)
+    {
+        throw std::runtime_error(fmt::format("New bit field value found in tmpPadstackusage = {:#04x}", tmpPadstackusage));
+    }
 
     padFile.drillmethod = ToDrillmethod(mDs.readUint8());
 
