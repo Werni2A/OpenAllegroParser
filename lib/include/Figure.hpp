@@ -22,9 +22,8 @@ enum class Figure
     SQUARE              =  5,
     RECTANGLE           =  6,
     DIAMOND             =  7,
-    // OBLONG              = 11,
-    OBLONGX             = 11,
-    OBLONGY             = 12,
+    OBLONGX             = 11, // Just named `OBLONG` in *.pxml
+    OBLONGY             = 12, // Just named `OBLONG` in *.pxml
     HEXAGONX            = 15,
     HEXAGONY            = 16,
     TRIANGLE            = 18,
@@ -44,10 +43,27 @@ static constexpr Figure ToFigure(uint32_t aVal)
 }
 
 
+// If `aSimplifyOblong` is set, `OBLONGX` and `OBLONGY` will be returned as `OBLONG`.
 [[maybe_unused]]
-static std::string to_string(const Figure& aVal)
+static std::string to_string(const Figure& aVal, bool aSimplifyOblong = false)
 {
-    return std::string{magic_enum::enum_name<decltype(aVal)>(aVal)};
+    std::string str = std::string{magic_enum::enum_name<decltype(aVal)>(aVal)};
+
+    if(aSimplifyOblong)
+    {
+        switch(aVal)
+        {
+            case Figure::OBLONGX:
+            case Figure::OBLONGY:
+                str = "OBLONG";
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    return str;
 }
 
 

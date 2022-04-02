@@ -58,7 +58,7 @@ void XmlGenerator::appendSymbol(XMLElement* aParent, const Symbol& aObj)
     const std::string float_format = "%g";
 
     XMLElement* eFigure = mXml.NewElement("figure");
-    eFigure->SetText(to_string(aObj.figure).c_str());
+    eFigure->SetText(to_string(aObj.figure, true).c_str());
     aParent->InsertEndChild(eFigure);
 
     if(!aObj.characters.empty())
@@ -100,7 +100,7 @@ void XmlGenerator::appendPad(XMLElement* aParent, const Pad& aObj, bool aUsrLaye
     aParent->InsertEndChild(eLayer);
 
     XMLElement* eFigure = mXml.NewElement("figure");
-    std::string figure = (aObj.getFigure() == Figure::OBLONGX) ? "OBLONG" : to_string(aObj.getFigure());
+    std::string figure = to_string(aObj.getFigure(), true);
     eFigure->SetText(figure.c_str());
     aParent->InsertEndChild(eFigure);
 
