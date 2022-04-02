@@ -9,6 +9,10 @@
 #include <string>
 #include <vector>
 
+#include <magic_enum.hpp>
+
+#include "General.hpp"
+
 
 enum class Type
 {
@@ -21,28 +25,25 @@ enum class Type
 };
 
 
-// @todo shift operator
 [[maybe_unused]]
-static std::string to_string(const Type& type)
+static constexpr Type ToType(uint32_t aVal)
 {
-    std::string str;
+    return ToEnum<Type, decltype(aVal)>(aVal);
+}
 
-    switch(type)
-    {
-        case Type::REGULAR_PAD: str = "REGULAR_PAD"; break;
-        case Type::THERMAL_PAD: str = "THERMAL_PAD"; break;
-        case Type::ANTIPAD_PAD: str = "ANTIPAD_PAD"; break;
-        case Type::KEEPOUT:     str = "KEEPOUT";     break;
-        case Type::USER_MASK:   str = "USER_MASK";   break;
-        case Type::UNKNOWN:     str = "UNKNOWN";     break; // @todo remove
-        default:
-            std::string errorMsg = "Type " + std::to_string(static_cast<size_t>(type))
-                                 + " is not implemented!";
-            throw std::invalid_argument(errorMsg);
-            break;
-    }
 
-    return str;
+[[maybe_unused]]
+static std::string to_string(const Type& aVal)
+{
+    return std::string{magic_enum::enum_name<decltype(aVal)>(aVal)};
+}
+
+
+[[maybe_unused]]
+static std::ostream& operator<<(std::ostream& aOs, const Type& aVal)
+{
+    aOs << to_string(aVal);
+    return aOs;
 }
 
 
@@ -69,51 +70,58 @@ enum class Layer
 };
 
 
-// @todo implement shift operator
 [[maybe_unused]]
-static std::string to_string(const Layer& layer)
+static constexpr Layer ToLayer(uint32_t aVal)
 {
-    std::string str;
-
-    switch(layer)
-    {
-        case Layer::BEGIN_LAYER:            str = "BEGIN_LAYER";            break;
-        case Layer::DEFAULT_INTERNAL:       str = "DEFAULT_INTERNAL";       break;
-        case Layer::END_LAYER:              str = "END_LAYER";              break;
-        case Layer::ADJACENT_KEEPOUT:       str = "ADJACENT_KEEPOUT";       break;
-        case Layer::TOP_SOLDER_MASK_PAD:    str = "TOP_SOLDER_MASK_PAD";    break;
-        case Layer::BOTTOM_SOLDER_MASK_PAD: str = "BOTTOM_SOLDER_MASK_PAD"; break;
-        case Layer::TOP_PASTE_MASK_PAD:     str = "TOP_PASTE_MASK_PAD";     break;
-        case Layer::BOTTOM_PASTE_MASK_PAD:  str = "BOTTOM_PASTE_MASK_PAD";  break;
-        case Layer::TOP_FILM_MASK_PAD:      str = "TOP_FILM_MASK_PAD";      break;
-        case Layer::BOTTOM_FILM_MASK_PAD:   str = "BOTTOM_FILM_MASK_PAD";   break;
-        case Layer::TOP_COVERLAY_PAD:       str = "TOP_COVERLAY_PAD";       break;
-        case Layer::BOTTOM_COVERLAY_PAD:    str = "BOTTOM_COVERLAY_PAD";    break;
-        case Layer::BACKDRILL_SOLDERMASK:   str = "BACKDRILL_SOLDERMASK";   break;
-        case Layer::BACKDRILL_START:        str = "BACKDRILL_START";        break;
-        case Layer::BACKDRILL_CLEARANCE:    str = "BACKDRILL_CLEARANCE";    break;
-        case Layer::USER_STR:                str = "USER_STR";                break;
-        case Layer::UNKNOWN:                str = "UNKNOWN";                break; // @todo remove
-        default:
-            std::string errorMsg = "Layer " + std::to_string(static_cast<size_t>(layer))
-                                 + " is not implemented!";
-            throw std::invalid_argument(errorMsg);
-            break;
-    }
-
-    return str;
+    return ToEnum<Layer, decltype(aVal)>(aVal);
 }
 
 
-struct padTypeLayer
+[[maybe_unused]]
+static std::string to_string(const Layer& aVal)
+{
+    return std::string{magic_enum::enum_name<decltype(aVal)>(aVal)};
+}
+
+
+[[maybe_unused]]
+static std::ostream& operator<<(std::ostream& aOs, const Layer& aVal)
+{
+    aOs << to_string(aVal);
+    return aOs;
+}
+
+
+struct PadTypeLayer
 {
     Type  type;
     Layer layer;
 };
 
 
-extern const std::vector<padTypeLayer> layerLst1;
-extern const std::vector<padTypeLayer> layerLst2;
+[[maybe_unused]]
+static std::string to_string(const PadTypeLayer& aObj)
+{
+    std::string str;
+
+    str += std::string(nameof::nameof_type<decltype(aObj)>()) + ":" + newLine();
+    str += indent(1) + "type  = " + to_string(aObj.type) + newLine();
+    str += indent(1) + "layer = " + to_string(aObj.layer) + newLine();
+
+    return str;
+}
+
+
+[[maybe_unused]]
+static std::ostream& operator<<(std::ostream& aOs, const PadTypeLayer& aObj)
+{
+    aOs << to_string(aObj);
+    return aOs;
+}
+
+
+extern const std::vector<PadTypeLayer> layerLst1;
+extern const std::vector<PadTypeLayer> layerLst2;
 
 
 #endif // LAYERSTUFF_HPP

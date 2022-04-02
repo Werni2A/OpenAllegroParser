@@ -8,6 +8,7 @@
     "libzippp",
     "magic-enum",
     "nameof",
+    "spdlog",
     "tinyxml2"
   ]
 }

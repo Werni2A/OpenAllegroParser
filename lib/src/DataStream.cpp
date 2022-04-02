@@ -3,6 +3,8 @@
 #include <fstream>
 #include <string>
 
+#include <spdlog/spdlog.h>
+
 #include "../include/DataStream.hpp"
 #include "../include/General.hpp"
 
@@ -158,14 +160,14 @@ std::string DataStream::readStrZeroTermBlock(size_t aBlockSize)
 }
 
 
+// @todo remove aOs
 std::ostream& DataStream::printUnknownData(std::ostream& aOs, size_t aLen, const std::string& aComment)
 {
     const auto data = readBytes(aLen);
 
     if(aLen > 0u)
     {
-        aOs << aComment << '\n';
-        printData(aOs, data);
+        spdlog::warn(fmt::format("Reading {} Byte: {}\n{}", aLen, aComment, getStrFromData(data)));
     }
 
     return aOs;
@@ -218,7 +220,7 @@ std::ostream& DataStream::printCurrentOffset(std::ostream& aOs)
 };
 
 
-std::ostream& DataStream::printData(std::ostream& aOs, const std::vector<uint8_t>& aData)
+std::string DataStream::getStrFromData(const std::vector<uint8_t>& aData)
 {
     const unsigned int line_width = 16u;
     const std::string hex_spacing = " ";
@@ -268,9 +270,7 @@ std::ostream& DataStream::printData(std::ostream& aOs, const std::vector<uint8_t
         }
     }
 
-    aOs << output;
-
-    return aOs;
+    return output;
 }
 
 
@@ -287,15 +287,15 @@ void DataStream::assumeData(const std::vector<uint8_t>& aExpectedData, const std
 
     if(!std::all_of(data.cbegin(), data.cend(), checkByte))
     {
-        std::ostringstream expectedDataStr;
-        printData(expectedDataStr, aExpectedData);
+        const std::string expectedDataStr = getStrFromData(aExpectedData);
+        spdlog::error(expectedDataStr);
 
-        std::ostringstream actualDataStr;
-        printData(actualDataStr, data);
+        const std::string actualDataStr = getStrFromData(data);
+        spdlog::error(actualDataStr);
 
         throw std::runtime_error("Assumption failed: " + aComment + '\n'
-            + "Expected:\n" + expectedDataStr.str() +
-            + "but got:\n" + actualDataStr.str());
+            + "Expected:\n" + expectedDataStr +
+            + "but got:\n" + actualDataStr);
     }
 }
 

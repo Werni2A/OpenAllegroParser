@@ -179,7 +179,7 @@ public:
 
     std::ostream& printCurrentOffset(std::ostream& aOs);
 
-    std::ostream& printData(std::ostream& aOs, const std::vector<uint8_t>& aData);
+    std::string getStrFromData(const std::vector<uint8_t>& aData);
 
     /**
      * @brief Assume that the expected bytes will be read.

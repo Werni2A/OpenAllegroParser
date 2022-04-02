@@ -7,7 +7,7 @@
 //       is not enough space in the data structure that BEGIN_LAYER can also
 //       be stored. Therefore some new structure is appended?
 
-const std::vector<padTypeLayer> layerLst1 = {
+const std::vector<PadTypeLayer> layerLst1 = {
     // @todo figure out. This one is weird.
     //       Maybe its not a pad but some other info?
     { Type::UNKNOWN,     Layer::UNKNOWN                }, // Index  0
@@ -50,7 +50,7 @@ const std::vector<padTypeLayer> layerLst1 = {
 
 
 
-const std::vector<padTypeLayer> layerLst2 = {
+const std::vector<PadTypeLayer> layerLst2 = {
     // @todo figure out. This one is weird.
     //       Maybe its not a pad but some other info?
     { Type::UNKNOWN,     Layer::UNKNOWN                }, // Index  0

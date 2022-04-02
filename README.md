@@ -58,6 +58,7 @@ cmake --build build
 - [libzippp](https://github.com/ctabin/libzippp)
 - [Magic Enum](https://github.com/Neargye/magic_enum)
 - [Nameof](https://github.com/Neargye/magic_enum)
+- [spdlog](https://github.com/gabime/spdlog)
 - [TinyXML2](https://github.com/leethomason/tinyxml2)
 - [vcpkg](https://vcpkg.io/en/index.html)
 
@@ -78,17 +79,17 @@ Therefore, modify the path to your pad in `findUnknownParameterSet.py` and run i
 ------- Found valid Parameter Set -----------
 ---------------------------------------------
 
-./build/OpenAllegroParser -i simple_example.pad --numUserLayers 5 --unknownFlag
+./build/OpenAllegroParser -i simple_example.pad --numUserLayers 5 --bool1
 ```
 
-Add the flag `-p` to the command from above and run it as `./build/OpenAllegroParser -i simple_example.pad --numUserLayers 5 --unknownFlag -p` and you will see a similar output with all the pad's information like the one below. At the beginning a lot of debug output is shown that might be not as interesting for you, as for me. Just scroll down to the more important pad information.
+Add the flag `-p` to the command from above and run it as `./build/OpenAllegroParser -i simple_example.pad --numUserLayers 5 --bool1 -p` and you will see a similar output with all the pad's information like the one below. At the beginning a lot of debug output is shown that might be not as interesting for you, as for me. Just scroll down to the more important pad information.
 
 <details>
 <summary>Click to expand</summary>
 
 ```text
 
-./build/OpenAllegroParser -i simple_example.pad --numUserLayers 5 --unknownFlag -p
+./build/OpenAllegroParser -i simple_example.pad --numUserLayers 5 --bool1 -p
 
 Opening file: "simple_example.pad"
 File contains 5020 byte.

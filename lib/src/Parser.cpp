@@ -8,7 +8,9 @@
 #include <utility>
 #include <vector>
 
+#include <fmt/core.h>
 #include <libzippp.h>
+#include <spdlog/spdlog.h>
 
 #include "../include/DataStream.hpp"
 #include "../include/Drillmethod.hpp"
@@ -268,7 +270,7 @@ Pad Parser::readPad(size_t aIdx, bool aIsUsrLayer, const PadFile& aPadFile, unkn
     Type  type;
     Layer layer;
 
-    const std::vector<padTypeLayer>& layerLst = (uparam.unknownFlag2 ? layerLst2 : layerLst1);
+    const std::vector<PadTypeLayer>& layerLst = (uparam.bool2 ? layerLst2 : layerLst1);
 
     if(!aIsUsrLayer)
     {
@@ -291,6 +293,7 @@ Pad Parser::readPad(size_t aIdx, bool aIsUsrLayer, const PadFile& aPadFile, unkn
     }
 
     pad.setFigure(mDs.readUint16());
+
     pad.setSpecialCorners(mDs.readUint16());
 
     pad.setNsides(mDs.readUint32());
@@ -369,7 +372,7 @@ PadFile Parser::readPadFile(unknownParam uparam)
         const uint32_t some_idx = mDs.readUint32();
         const uint32_t some_val = mDs.readUint32();
 
-        std::cout << "some_idx = " << some_idx << "; some_val = " << some_val << std::endl;
+        spdlog::info("[{:>2}]: some_idx = {:>2}; some_val = {:>3}", i, some_idx, some_val);
     }
 
     // @todo probably always number 1 and represents idx = 1?
@@ -452,8 +455,7 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
         padFile.idxStrPairLst.push_back(std::make_pair(idx, str));
 
-        std::cout << "idxStrPairLst[" << std::to_string(padFile.idxStrPairLst.size()) << "] : "
-                  << "idx = " << idx << "; str = " << str << std::endl;
+        spdlog::info("idxStrPairLst[{:>2}]: idx = {:>2}; str = {}", i, idx, str);
     }
 
     // Sanity check
@@ -473,8 +475,7 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
         padFile.idxStrPairLst.push_back(std::make_pair(idx, str));
 
-        std::cout << "idxStrPairLst[" << std::to_string(padFile.idxStrPairLst.size()) << "] : "
-                  << "idx = " << idx << "; str = " << str << std::endl;
+        spdlog::info("idxStrPairLst[{:>2}]: idx = {:>2}; str = {}", padFile.idxStrPairLst.size() - 1, idx, str);
     }
 
     // drillinfo
@@ -486,8 +487,7 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
         padFile.idxStrPairLst.push_back(std::make_pair(idx, str));
 
-        std::cout << "idxStrPairLst[" << std::to_string(padFile.idxStrPairLst.size()) << "] : "
-                  << "idx = " << idx << "; str = " << str << std::endl;
+        spdlog::info("idxStrPairLst[{:>2}]: idx = {:>2}; str = {}", padFile.idxStrPairLst.size() - 1, idx, str);
     }
 
     // @todo Maybe Add the above two indicies and strings to the loop and increase the
@@ -495,7 +495,7 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     // @todo figure out, when it is set. It think it is somehow related to
     //       drills, backdrills or multiple drill rows/columns
-    if(uparam.unknownFlag)
+    if(uparam.bool1)
     {
         mDs.printUnknownData(std::cout, 8, "unknown - 11");
     }
@@ -630,11 +630,11 @@ PadFile Parser::readPadFile(unknownParam uparam)
     mDs.assumeZero(32, "unknown - 20");
     // mDs.printUnknownData(std::cout, 32, "unknown - 20");
 
-    const std::vector<padTypeLayer>& layerLst = (uparam.unknownFlag2 ? layerLst2 : layerLst1);
+    const std::vector<PadTypeLayer>& layerLst = (uparam.bool2 ? layerLst2 : layerLst1);
 
     for(size_t i = 0u; i < layerLst.size(); ++i)
     {
-        Pad pad = readPad(i, false, padFile, uparam);
+        const Pad pad = readPad(i, false, padFile, uparam);
 
         padFile.preDefLayers.push_back(pad);
     }

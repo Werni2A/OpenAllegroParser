@@ -1,6 +1,9 @@
 # Add Catch2 dependency
 find_package(Catch2 CONFIG REQUIRED)
 
+# Add fmt dependency
+find_package(fmt CONFIG REQUIRED)
+
 # Add Magic Enum dependency
 find_package(magic_enum CONFIG REQUIRED)
 
@@ -32,6 +35,7 @@ target_include_directories(${NAME_TEST} PRIVATE
 target_link_libraries(${NAME_TEST} PRIVATE
                       Catch2::Catch2
                       Catch2::Catch2WithMain
+                      fmt::fmt
                       magic_enum::magic_enum
                       nameof::nameof
                       ${NAME_LIB}

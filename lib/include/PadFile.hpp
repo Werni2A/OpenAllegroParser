@@ -10,6 +10,8 @@
 #include <utility>
 #include <vector>
 
+#include <fmt/core.h>
+
 #include "Drillmethod.hpp"
 #include "Figure.hpp"
 #include "General.hpp"
@@ -35,7 +37,7 @@ public:
 
         if(it == idxStrPairLst.cend())
         {
-            throw std::runtime_error("Index " + std::to_string(aIdx) + " was not found in idxStrPairLst!");
+            throw std::runtime_error(fmt::format("Index {} was not found in idxStrPairLst!", aIdx));
         }
 
         return it->second;
