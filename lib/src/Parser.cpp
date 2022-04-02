@@ -292,6 +292,20 @@ Pad Parser::readPad(size_t aIdx, bool aIsUsrLayer, const PadFile& aPadFile, unkn
                           //       in the returned Pad object
     }
 
+    if(aIsUsrLayer)
+    {
+        pad.mIdxUsrLayerName = mDs.readUint32();
+    }
+
+    if(pad.mIdxUsrLayerName)
+    {
+        pad.mUsrStr = aPadFile.getStrLstEntryByIdx(pad.mIdxUsrLayerName.value());
+    }
+    else
+    {
+        pad.mUsrStr = "";
+    }
+
     pad.setFigure(mDs.readUint16());
 
     pad.setSpecialCorners(mDs.readUint16());
@@ -417,11 +431,40 @@ PadFile Parser::readPadFile(unknownParam uparam)
     padFile.unit = ToUnits(mDs.readUint16());
 
     // @todo somehow related to user defined layers with symbol/flash
-    mDs.printUnknownData(std::cout, 227, "unknown - 4");
+    mDs.printUnknownData(std::cout, 46, "unknown - 4");
+
+    size_t userStrCtr = 0u;
+
+    // A maximum of 32 user mask layers is allowed.
+    // Try to insert more than 32 in the padstack_editor.exe and
+    // observe the error message.
+    std::vector<size_t> userLayerStrIdxLst;
+    for(size_t i = 0u; i < 32u; ++i)
+    {
+        // Index represents first element in idxStrPairLst tuple
+        // I.e. it represents the name of the user mask layer
+        const uint32_t user_layer_idx = mDs.readUint32();
+        userLayerStrIdxLst.push_back(user_layer_idx);
+
+        if(user_layer_idx != 0u)
+        {
+            userStrCtr++;
+        }
+
+        spdlog::info("userLayerStrIdxLst[{:>2}]: {:>2} = {}", i, userStrCtr, user_layer_idx);
+    }
+
+    mDs.printUnknownData(std::cout, 53, "unknown - 4");
 
     const uint16_t additionalStr = mDs.readUint16();
 
-    mDs.printUnknownData(std::cout, 8, "unknown - 5");
+    // @todo
+    assert(additionalStr == userStrCtr);
+
+
+    mDs.assumeData({0x00, 0x01, 0x00, 0x00}, "unknown - 5a");
+
+    mDs.printUnknownData(std::cout, 4, "unknown - 5");
 
     mDs.assumeZero(449, "unknown - 6");
 
@@ -541,10 +584,10 @@ PadFile Parser::readPadFile(unknownParam uparam)
     }
 
     // @todo it's either 0x0100 or 0x0500
-    //       Somehow related to numUserLayers as its always 5 when
-    //       numUserLayers > 0. Maybe just a flag to indicate when user layers
+    //       Somehow related to userStrCtr as its always 5 when
+    //       userStrCtr > 0. Maybe just a flag to indicate when user layers
     //       are present?
-    uint16_t foo = mDs.readUint16();
+    const uint16_t foo = mDs.readUint16();
 
     if(foo != 0x0100 && foo != 0x0500)
     {
@@ -639,13 +682,9 @@ PadFile Parser::readPadFile(unknownParam uparam)
         padFile.preDefLayers.push_back(pad);
     }
 
-    for(size_t i = 0u; i < uparam.numUserLayers; ++i)
+    for(size_t i = 0u; i < userStrCtr; ++i)
     {
-        const uint32_t idxLayerName = mDs.readUint32();
-
-        Pad pad = readPad(i, true, padFile, uparam);
-
-        pad.mUsrStr = padFile.getStrLstEntryByIdx(idxLayerName);
+        const Pad pad = readPad(i, true, padFile, uparam);
 
         padFile.usrDefLayers.push_back(pad);
     }
