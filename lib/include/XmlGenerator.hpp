@@ -25,6 +25,10 @@ public:
     XmlGenerator(const PadFile& aPadFile) : mPadFile{aPadFile}, mXml{}
     { }
 
+    std::string getFloatFmtForTuple() const;
+
+    std::string getFloatFmtForScalar() const;
+
     void generateXml();
 
     void exportToXml(const fs::path& aPathOut);

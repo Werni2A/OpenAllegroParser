@@ -26,6 +26,18 @@ class PadFile
 {
 public:
 
+    template<typename T>
+    double FixedPtToFloatPt(T aFixedPt) const
+    {
+        return static_cast<double>(aFixedPt) / std::pow(10.0, static_cast<double>(accuracy));
+    };
+
+    template<typename T>
+    int32_t FloatPtToFixedPt(T aFloatPt) const
+    {
+        return static_cast<int32_t>(static_cast<double>(aFloatPt) * std::pow(10.0, static_cast<double>(accuracy)) + 0.5);
+    };
+
     std::string getStrLstEntryByIdx(size_t aIdx) const
     {
         const auto findEntry = [aIdx] (std::pair<int, std::string> aIdxStrPair) -> bool
