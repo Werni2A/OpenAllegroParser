@@ -616,24 +616,21 @@ PadFile Parser::readPadFile(unknownParam uparam)
     // mDs.assumeZero(4, "unknown - 13");
     mDs.printUnknownData(4, "unknown - 13");
 
-    // @todo padstackusage is probably a bit field where the first two
-    //       bits are something different. See PadstackUsage.hpp for more info.
-    //       First bit might be a bool indicating if user defined design masks are used
-    const uint8_t tmpPadstackusage = mDs.readUint8();
+    // Bit 0: probUserDesignLayerPresent
+    // Bit 1: Some unknown flag that is set when bit 0 is clear @todo
+    // Bit 2 to 7: padstackusage
+    const uint8_t tmp_bitfield = mDs.readUint8();
 
-    // @todo figure out if this is really true
-    const bool probUserDesignLayerPresent = static_cast<bool>(tmpPadstackusage & 0x01);
 
-    if(tmpPadstackusage & 0x03 != 0x02)
+    const bool probUserDesignLayerPresent = static_cast<bool>(tmp_bitfield & 0x01); // @todo Check correctness
+    const bool unknown_flag2              = static_cast<bool>(tmp_bitfield & 0x02); // @todo Figure out the meaning
+    padFile.padstackusage = ToPadstackUsage((tmp_bitfield & 0xfc) >> 2);
+
+    spdlog::info("unknown_flag2 = {}", unknown_flag2);
+
+    if(probUserDesignLayerPresent && unknown_flag2)
     {
-        // throw std::runtime_error(fmt::format("New bit field value found in tmpPadstackusage = {:#04x}", tmpPadstackusage));
-    }
-
-    padFile.padstackusage = ToPadstackUsage((tmpPadstackusage & 0xfc) >> 2);
-
-    if(tmpPadstackusage & 0x03 != 0x02)
-    {
-        throw std::runtime_error(fmt::format("New bit field value found in tmpPadstackusage = {:#04x}", tmpPadstackusage));
+        throw std::runtime_error(fmt::format("Unexpected bit field value found in tmp_bitfield = {:#04x}", tmp_bitfield));
     }
 
     padFile.drillmethod = ToDrillmethod(mDs.readUint8());
