@@ -17,7 +17,7 @@ class UnknownParameter:
         self.bool1: bool = False
         self.bool2: bool = False
         self.int0:  int  = 0
-        self.numUserLayers:  int = 0
+        self.numUserLayers:  int = 0  # @todo not required anymore
         self.additionalStr2: int = 0
 
 
@@ -31,10 +31,13 @@ def permute_unknown_parameters():
         for bool2 in [True, False]:
             param_set.bool2 = bool2
 
-            for additionalStr2 in range(45):
-                param_set.additionalStr2 = additionalStr2
+            for int0 in range(17):
+                param_set.int0 = int0
 
-                yield param_set
+                for additionalStr2 in range(45):
+                    param_set.additionalStr2 = additionalStr2
+
+                    yield param_set
 
 def print_found(result: Tuple[str, str, bool]) -> None:
     print(Fore.GREEN)
@@ -89,7 +92,8 @@ if __name__ == '__main__':
     if os.path.isdir(args.path):
         path_pads = Path(args.path).rglob('*.pad')
 
-    # List of tuples with pad path, command and wether a working command was found
+    # List of tuples with pad path, command and whether
+    # a working command was found
     results: List[Tuple[str, str, bool]] = []
 
     for path_pad in path_pads:
@@ -122,6 +126,7 @@ if __name__ == '__main__':
             if param_set.additionalStr2 > 0:
                 tmp_cmd += ['--additionalStr2', str(param_set.additionalStr2)]
 
+            # Shows progress
             print('.', end='', flush=True)
 
             proc = subprocess.run(tmp_cmd, capture_output=True)
@@ -129,6 +134,7 @@ if __name__ == '__main__':
             if proc.returncode == 0:
                 found_param_set = True
                 cmd = tmp_cmd.copy()
+                break
 
         results += [(path_pad, ' '.join(cmd), found_param_set)]
 
