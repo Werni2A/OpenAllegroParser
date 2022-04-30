@@ -574,7 +574,8 @@ PadFile Parser::readPadFile(unknownParam uparam)
     {
         const uint32_t idx    = mDs.readUint32();
 
-        mDs.printUnknownData(4, "unknown - 10");
+        // mDs.printUnknownData(4, "unknown - 10");
+        const std::string str = mDs.readStrZeroTerm4BytePad();
 
         padFile.idxStrPairLst.push_back(std::make_pair(idx, str));
 
