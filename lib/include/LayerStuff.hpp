@@ -122,6 +122,7 @@ static std::ostream& operator<<(std::ostream& aOs, const PadTypeLayer& aObj)
 
 extern const std::vector<PadTypeLayer> layerLst1;
 extern const std::vector<PadTypeLayer> layerLst2;
+extern const std::vector<PadTypeLayer> exportLayerLst;
 
 
 #endif // LAYERSTUFF_HPP

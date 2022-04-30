@@ -255,7 +255,8 @@ void XmlGenerator::generateXml()
             eHoletype->SetText(to_string(mPadFile.holeType).c_str());
             eSlothole->InsertEndChild(eHoletype);
 
-            if(mPadFile.plated)
+            // @todo might be version dependent or dependent on the holetype
+            // if(mPadFile.plated)
             {
                 XMLElement* ePlating = mXml.NewElement("plating");
                 const std::string yes_no = mPadFile.plated ? "Y" : "N";
@@ -263,15 +264,17 @@ void XmlGenerator::generateXml()
                 eSlothole->InsertEndChild(ePlating);
             }
 
+            // @todo for slotholes that are not symmetrical we might need slothole_width and slothole_height
             XMLElement* eWidth = mXml.NewElement("width");
-            eWidth->SetText(fmt::sprintf(getFloatFmtForScalar(), mPadFile.FixedPtToFloatPt(mPadFile.slothole_width)).c_str());
+            eWidth->SetText(fmt::sprintf(getFloatFmtForScalar(), mPadFile.FixedPtToFloatPt(mPadFile.finished_size)).c_str());
             eSlothole->InsertEndChild(eWidth);
 
+            // @todo this condition might have been introduced in later/older exporter version
             // For symmetrical holes we need only the length in one dimension.
-            if(mPadFile.holeType != HoleType::NONE && !is_xy_sym(mPadFile.holeType))
+            // if(mPadFile.holeType != HoleType::NONE && !is_xy_sym(mPadFile.holeType))
             {
                 XMLElement* eHeight = mXml.NewElement("height");
-                eHeight->SetText(fmt::sprintf(getFloatFmtForScalar(), mPadFile.FixedPtToFloatPt(mPadFile.slothole_height)).c_str());
+                eHeight->SetText(fmt::sprintf(getFloatFmtForScalar(), mPadFile.FixedPtToFloatPt(mPadFile.finished_size)).c_str());
                 eSlothole->InsertEndChild(eHeight);
             }
 
@@ -386,33 +389,71 @@ void XmlGenerator::generateXml()
             eDiameter->SetText(fmt::sprintf(getFloatFmtForScalar(), mPadFile.FixedPtToFloatPt(mPadFile.counter_drill_diameter)).c_str());
             eCounterboresink->InsertEndChild(eDiameter);
 
-            if(mPadFile.counter_drill_positivetolerance != 0)
+            XMLElement* ePositivetolerance = mXml.NewElement("positivetolerance");
+            ePositivetolerance->SetText(fmt::sprintf(getFloatFmtForScalar(), mPadFile.FixedPtToFloatPt(mPadFile.counter_drill_positivetolerance)).c_str());
+
+            if(mExportVersion == 1)
             {
-                XMLElement* ePositivetolerance = mXml.NewElement("positivetolerance");
-                ePositivetolerance->SetText(fmt::sprintf(getFloatFmtForScalar(), mPadFile.FixedPtToFloatPt(mPadFile.counter_drill_positivetolerance)).c_str());
                 eCounterboresink->InsertEndChild(ePositivetolerance);
+
+            }
+            else
+            {
+                if(mPadFile.counter_drill_positivetolerance != 0)
+                {
+                    eCounterboresink->InsertEndChild(ePositivetolerance);
+                }
             }
 
-            if(mPadFile.counter_drill_negativetolerance != 0)
+            XMLElement* eNegativetolerance = mXml.NewElement("negativetolerance");
+            eNegativetolerance->SetText(fmt::sprintf(getFloatFmtForScalar(), mPadFile.FixedPtToFloatPt(mPadFile.counter_drill_negativetolerance)).c_str());
+
+            if(mExportVersion == 1)
             {
-                XMLElement* eNegativetolerance = mXml.NewElement("negativetolerance");
-                eNegativetolerance->SetText(fmt::sprintf(getFloatFmtForScalar(), mPadFile.FixedPtToFloatPt(mPadFile.counter_drill_negativetolerance)).c_str());
                 eCounterboresink->InsertEndChild(eNegativetolerance);
+
+            }
+            else
+            {
+                if(mPadFile.counter_drill_negativetolerance != 0)
+                {
+                    eCounterboresink->InsertEndChild(eNegativetolerance);
+                }
             }
 
             XMLElement* eCounterangle = mXml.NewElement("counterangle");
             eCounterangle->SetText(fmt::sprintf(getFloatFmtForScalar(), mPadFile.FixedPtToFloatPt(mPadFile.counterangle)).c_str());
-            eCounterboresink->InsertEndChild(eCounterangle);
 
             XMLElement* eCounterdepth = mXml.NewElement("counterdepth");
             // @todo figur out where counterdepth is stored
             // eCounterdepth->SetText(fmt::sprintf(getFloatFmtForScalar(), mPadFile.FixedPtToFloatPt(mPadFile.counterdepth)).c_str());
-            eCounterboresink->InsertEndChild(eCounterdepth);
+
+            if(mExportVersion == 0)
+            {
+                eCounterboresink->InsertEndChild(eCounterangle);
+                eCounterboresink->InsertEndChild(eCounterdepth);
+            }
+            else
+            {
+                eCounterboresink->InsertEndChild(eCounterdepth);
+                eCounterboresink->InsertEndChild(eCounterangle);
+            }
         }
     }
 
-    for(const auto& pad : mPadFile.preDefLayers)
+    for(int i = 0; i < mPadFile.preDefLayers.size(); ++i)
     {
+
+        const auto result = std::find_if(mPadFile.preDefLayers.begin(), mPadFile.preDefLayers.end(),
+            [i](const Pad& aPad) { return aPad.getLayer() == exportLayerLst[i].layer && aPad.getType() == exportLayerLst[i].type; } );
+
+        if(result == mPadFile.preDefLayers.end())
+        {
+            continue;
+        }
+
+        const Pad& pad = *result;
+
         if(pad.getFigure() != Figure::NONE && pad.getType() != Type::UNKNOWN)
         {
             XMLElement* ePad = mXml.NewElement("pad");
@@ -446,20 +487,20 @@ void XmlGenerator::generateXml()
             eOptions->InsertEndChild(ePolyVia);
         }
 
-        if(mPadFile.lock_layer_span)
-        {
-            XMLElement* eLockLayerSpan = mXml.NewElement("lock_layer_span");
-            const std::string lockLayerSpan = mPadFile.lock_layer_span ? "Y" : "N";
-            eLockLayerSpan->SetText(lockLayerSpan.c_str());
-            eOptions->InsertEndChild(eLockLayerSpan);
-        }
-
         if(!mPadFile.not_suppress_nc_internal_pads)
         {
             XMLElement* eSupressUnconnected = mXml.NewElement("supress_unconnected");
             const std::string polyVia = !mPadFile.not_suppress_nc_internal_pads ? "Y" : "N";
             eSupressUnconnected->SetText(polyVia.c_str());
             eOptions->InsertEndChild(eSupressUnconnected);
+        }
+
+        if(mPadFile.lock_layer_span)
+        {
+            XMLElement* eLockLayerSpan = mXml.NewElement("lock_layer_span");
+            const std::string lockLayerSpan = mPadFile.lock_layer_span ? "Y" : "N";
+            eLockLayerSpan->SetText(lockLayerSpan.c_str());
+            eOptions->InsertEndChild(eLockLayerSpan);
         }
     }
 }
