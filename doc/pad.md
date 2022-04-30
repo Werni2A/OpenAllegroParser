@@ -2,6 +2,29 @@
 
 Looks like the file is mostly structured as a list of identifiers (increased one by one) with its trailing information. The information itself is then zero padded to 4 byte boundaries.
 
+## Official Documentation
+
+Not everything needs to reverse engineered, some information is already available after installing Allegro.
+
+Example `*.pad` files:
+
+- `C:\Cadence\SPB_17.4\share\pcb\pcb_lib\symbols`
+
+Example `*.pxml` files:
+
+- `C:\Cadence\SPB_17.4\share\pcb\examples\padstack_xml`
+
+Description of `*.pxml` content/structure:
+
+- `C:\Cadence\SPB_17.4\share\pcb\xml-formats\cdn_padstack.dtd`
+- `C:\Cadence\SPB_17.4\share\pcb\xml-formats\cdn_padstack_multi.dtd`
+- `C:\Cadence\SPB_17.4\share\pcb\examples\padstack_xml\padstack_xml.docx`
+
+Documentation for `padstack_editor.exe` (previously called `pad_designer.exe`)
+
+- `C:\Cadence\SPB_17.4\share\pcb\batchhelp\pad_designer.txt`
+- `C:\Cadence\SPB_17.4\share\pcb\examples\padstack_xml\padstack_xml.docx`
+
 ## Automation
 
 `Padstack Editor` allows XML import/export of the padstack as a `*.pxml` file.

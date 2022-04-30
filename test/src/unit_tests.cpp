@@ -15,7 +15,7 @@ TEST_CASE("Check PadstackUsage - THRU_PIN", "[PadstackUsage]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -33,7 +33,7 @@ TEST_CASE("Check PadstackUsage - SMD_PIN", "[PadstackUsage]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -51,7 +51,7 @@ TEST_CASE("Check PadstackUsage - VIA", "[PadstackUsage]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -69,7 +69,7 @@ TEST_CASE("Check PadstackUsage - BBVIA", "[PadstackUsage]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -87,7 +87,7 @@ TEST_CASE("Check PadstackUsage - MICROVIA", "[PadstackUsage]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -105,7 +105,7 @@ TEST_CASE("Check PadstackUsage - SLOT", "[PadstackUsage]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -123,7 +123,7 @@ TEST_CASE("Check PadstackUsage - MECH_HOLE", "[PadstackUsage]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -141,7 +141,7 @@ TEST_CASE("Check PadstackUsage - TOOL_HOLE", "[PadstackUsage]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -159,7 +159,7 @@ TEST_CASE("Check PadstackUsage - MOUNT_HOLE", "[PadstackUsage]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -177,7 +177,7 @@ TEST_CASE("Check PadstackUsage - FIDUCIAL", "[PadstackUsage]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -195,7 +195,7 @@ TEST_CASE("Check PadstackUsage - BOND_FINGER", "[PadstackUsage]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -213,7 +213,7 @@ TEST_CASE("Check PadstackUsage - DIE_PAD", "[PadstackUsage]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -231,7 +231,7 @@ TEST_CASE("Check DrillOffset - x", "[DrillOffset]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -249,7 +249,7 @@ TEST_CASE("Check DrillOffset - y", "[DrillOffset]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -267,7 +267,7 @@ TEST_CASE("Check Drill Characters", "[Drill Characters]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -285,7 +285,7 @@ TEST_CASE("Check Drill Figure Width", "[Drill Figure Width]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -303,7 +303,7 @@ TEST_CASE("Check Drill Figure Width", "[Drill Figure Width]")
 //     unknownParam uparam;
 
 //     uparam.numUserLayers  = 0;
-//     uparam.unknownFlag    = false;
+//     uparam.bool1    = false;
 //     uparam.additionalStr2 = 0;
 
 //     Parser parser{inputFile};
@@ -321,7 +321,7 @@ TEST_CASE("Check Drill - DrillHole - Complex", "[DrillHole]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = true;
+    uparam.bool1    = true;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -342,7 +342,7 @@ TEST_CASE("Check Drill - DrillHole - Complex", "[DrillHole]")
 //     unknownParam uparam;
 
 //     uparam.numUserLayers  = 0;
-//     uparam.unknownFlag    = false;
+//     uparam.bool1    = false;
 //     uparam.additionalStr2 = 1;
 
 //     Parser parser{inputFile};
@@ -372,7 +372,7 @@ TEST_CASE("Check Unit - Mils", "[Unit]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -390,7 +390,7 @@ TEST_CASE("Check Unit - Inch", "[Unit]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -408,7 +408,7 @@ TEST_CASE("Check Unit - Millimeter", "[Unit]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -426,7 +426,7 @@ TEST_CASE("Check Unit - Centimeter", "[Unit]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -444,7 +444,7 @@ TEST_CASE("Check Unit - Micron", "[Unit]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -462,7 +462,7 @@ TEST_CASE("Check Accuracy - 0", "[Accuracy]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -480,7 +480,7 @@ TEST_CASE("Check Accuracy - 1", "[Accuracy]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -498,7 +498,7 @@ TEST_CASE("Check Accuracy - 2", "[Accuracy]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -516,7 +516,7 @@ TEST_CASE("Check Accuracy - 3", "[Accuracy]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -534,7 +534,7 @@ TEST_CASE("Check Accuracy - 4", "[Accuracy]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -552,7 +552,7 @@ TEST_CASE("Check Accuracy - 4", "[Accuracy]")
 //     unknownParam uparam;
 
 //     uparam.numUserLayers  = 0;
-//     uparam.unknownFlag    = true;
+//     uparam.bool1    = true;
 //     uparam.additionalStr2 = 0;
 
 //     Parser parser{inputFile};
@@ -572,7 +572,7 @@ TEST_CASE("Check Accuracy - 4", "[Accuracy]")
 //     unknownParam uparam;
 
 //     uparam.numUserLayers  = 0;
-//     uparam.unknownFlag    = false;
+//     uparam.bool1    = false;
 //     uparam.additionalStr2 = 0;
 
 //     Parser parser{inputFile};
@@ -594,7 +594,7 @@ TEST_CASE("Check Drill Symbol Figure Type - None", "[Drill Symbol Figure Type]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -612,7 +612,7 @@ TEST_CASE("Check Drill Symbol Figure Type - Circle", "[Drill Symbol Figure Type]
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -630,7 +630,7 @@ TEST_CASE("Check Drill Symbol Figure Type - Square", "[Drill Symbol Figure Type]
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -648,7 +648,7 @@ TEST_CASE("Check Drill Symbol Figure Type - Hexagon x", "[Drill Symbol Figure Ty
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -666,7 +666,7 @@ TEST_CASE("Check Drill Symbol Figure Type - Hexagon y", "[Drill Symbol Figure Ty
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -684,7 +684,7 @@ TEST_CASE("Check Drill Symbol Figure Type - Octagon", "[Drill Symbol Figure Type
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -702,7 +702,7 @@ TEST_CASE("Check Drill Symbol Figure Type - Cross", "[Drill Symbol Figure Type]"
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -720,7 +720,7 @@ TEST_CASE("Check Drill Symbol Figure Type - Diamond", "[Drill Symbol Figure Type
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -738,7 +738,7 @@ TEST_CASE("Check Drill Symbol Figure Type - Triangle", "[Drill Symbol Figure Typ
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -758,7 +758,7 @@ TEST_CASE("Check Drill Symbol Figure Type - Triangle", "[Drill Symbol Figure Typ
 //     unknownParam uparam;
 
 //     uparam.numUserLayers  = 0;
-//     uparam.unknownFlag    = false;
+//     uparam.bool1    = false;
 //     uparam.additionalStr2 = 0;
 
 //     Parser parser{inputFile};
@@ -776,7 +776,7 @@ TEST_CASE("Check Drill Symbol Figure Type - Oblong y", "[Drill Symbol Figure Typ
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -794,7 +794,7 @@ TEST_CASE("Check Drill Symbol Figure Type - Rectangle", "[Drill Symbol Figure Ty
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -812,7 +812,7 @@ TEST_CASE("Check Drill Hole Type - None", "[Drill Hole Type]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -830,7 +830,7 @@ TEST_CASE("Check Drill Hole Type - Circle", "[Drill Hole Type]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -848,7 +848,7 @@ TEST_CASE("Check Drill Hole Type - Square", "[Drill Hole Type]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -866,7 +866,7 @@ TEST_CASE("Check Drill Hole Type - Oval Slot", "[Drill Hole Type]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -884,7 +884,7 @@ TEST_CASE("Check Drill Hole Type - Rectangular Slot", "[Drill Hole Type]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -902,7 +902,7 @@ TEST_CASE("Check Drill Hole Type - Rectangular Slot - Complex", "[Complex]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -928,7 +928,7 @@ TEST_CASE("Check Drill Hole Type - Oval Slot - Complex", "[Complex]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -954,7 +954,7 @@ TEST_CASE("0052: Check Predefined Layers - Complex", "[Complex]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -1089,7 +1089,7 @@ TEST_CASE("0053: Check - Complex", "[Complex]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 0;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 0;
 
     Parser parser{inputFile};
@@ -1252,7 +1252,7 @@ TEST_CASE("0054: Check User defined Mask Layers - Complex", "[Complex]")
     unknownParam uparam;
 
     uparam.numUserLayers  = 3;
-    uparam.unknownFlag    = false;
+    uparam.bool1    = false;
     uparam.additionalStr2 = 2;
 
     Parser parser{inputFile};

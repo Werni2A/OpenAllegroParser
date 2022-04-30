@@ -22,12 +22,15 @@ namespace fs = std::filesystem;
 //       workaround one can pass hardcoded values for e.g. testcases.
 struct unknownParam
 {
-    unknownParam() : unknownFlag{false}, unknownFlag2{false},
-                     numUserLayers{0}, additionalStr2{0}
+    unknownParam() : bool0{false}, bool1{false}, bool2{false},
+                     int0{0}, numUserLayers{0}, additionalStr2{0}
     { }
 
-    bool   unknownFlag;
-    bool   unknownFlag2;
+    bool   bool0;
+    bool   bool1;
+    bool   bool2;
+
+    int    int0;
     size_t numUserLayers;
     size_t additionalStr2;
 };
@@ -99,7 +102,7 @@ private:
      */
     void exportZip(const fs::path& aOutputPath, size_t aComprZipSize = 0u);
 
-    Pad readPad(size_t aIdx, bool aIsUsrLayer, const PadFile& aPadFile, unknownParam uparam);
+    Pad readPad(size_t aIdx, bool aIsUsrLayer, const PadFile& aPadFile);
 
     FileType mFileType;
     FileFormatVersion mFileFormatVersion;
@@ -109,6 +112,7 @@ private:
 
     DataStream mDs;
 
+    unknownParam uparam; // @todo Remove later
 };
 
 

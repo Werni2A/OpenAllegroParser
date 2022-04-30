@@ -10,6 +10,9 @@ find_package(magic_enum CONFIG REQUIRED)
 # Add Nameof dependency
 find_package(nameof CONFIG REQUIRED)
 
+# Add spdlog dependency
+find_package(spdlog CONFIG REQUIRED)
+
 # Add TinyXML2 dependency
 find_package(tinyxml2 CONFIG REQUIRED)
 
@@ -54,5 +57,7 @@ target_link_libraries(${NAME_LIB} PRIVATE
                       libzippp::libzippp
                       magic_enum::magic_enum
                       nameof::nameof
+                      spdlog::spdlog
+                      spdlog::spdlog_header_only
                       tinyxml2::tinyxml2
 )

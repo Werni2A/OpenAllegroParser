@@ -10,6 +10,8 @@
 #include <utility>
 #include <vector>
 
+#include <fmt/core.h>
+
 #include "Drillmethod.hpp"
 #include "Figure.hpp"
 #include "General.hpp"
@@ -24,6 +26,18 @@ class PadFile
 {
 public:
 
+    template<typename T>
+    double FixedPtToFloatPt(T aFixedPt) const
+    {
+        return static_cast<double>(aFixedPt) / std::pow(10.0, static_cast<double>(accuracy));
+    };
+
+    template<typename T>
+    int32_t FloatPtToFixedPt(T aFloatPt) const
+    {
+        return static_cast<int32_t>(static_cast<double>(aFloatPt) * std::pow(10.0, static_cast<double>(accuracy)) + 0.5);
+    };
+
     std::string getStrLstEntryByIdx(size_t aIdx) const
     {
         const auto findEntry = [aIdx] (std::pair<int, std::string> aIdxStrPair) -> bool
@@ -35,7 +49,7 @@ public:
 
         if(it == idxStrPairLst.cend())
         {
-            throw std::runtime_error("Index " + std::to_string(aIdx) + " was not found in idxStrPairLst!");
+            throw std::runtime_error(fmt::format("Index {} was not found in idxStrPairLst!", aIdx));
         }
 
         return it->second;
@@ -117,8 +131,9 @@ public:
 
     int32_t counterangle;
 
-    std::vector<Pad> preDefLayers;
-    std::vector<Pad> usrDefLayers;
+    // @todo Where do User Defined Design Layers belong to?
+    std::vector<Pad> preDefLayers; // @todo Predefined Design and Mask Layers
+    std::vector<Pad> usrDefLayers; // @todo User Defined Mask Layers
 
     time_t dateTime1;
 

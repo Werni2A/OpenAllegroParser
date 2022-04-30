@@ -23,22 +23,22 @@ See [OrCAD Allegro Files Extension and their Contents](https://vjguptapcb.blogsp
 
 # Documentation
 
-1. `*.brd` Board Database
-2. `*.mdd` Module Definition
-3. `*.dra` Drawing
-4. `*.psm` Package Symbol
-5. `*.ssm` Shape Symbol
-6. `*.fsm` Flash Symbol
-7. `*.osm` Format Symbol
-8. `*.bsm` Mechanical Symbol
-9. [`*.pad` Padstack](doc/pad.md)
+- File Formats
+  1. `*.brd` Board Database
+  2. `*.mdd` Module Definition
+  3. `*.dra` Drawing
+  4. `*.psm` Package Symbol
+  5. `*.ssm` Shape Symbol
+  6. `*.fsm` Flash Symbol
+  7. `*.osm` Format Symbol
+  8. `*.bsm` Mechanical Symbol
+  9. [`*.pad` Padstack](doc/pad.md)
 
 ---
 
-# Current State &mdash; March 2022
+# Current State &mdash; April 2022
 
-- Working on padstack parser.
-- Setting up padstack unit tests.
+- Working on padstack to XML exporter
 
 ---
 
@@ -58,6 +58,7 @@ cmake --build build
 - [libzippp](https://github.com/ctabin/libzippp)
 - [Magic Enum](https://github.com/Neargye/magic_enum)
 - [Nameof](https://github.com/Neargye/magic_enum)
+- [spdlog](https://github.com/gabime/spdlog)
 - [TinyXML2](https://github.com/leethomason/tinyxml2)
 - [vcpkg](https://vcpkg.io/en/index.html)
 
@@ -71,24 +72,24 @@ cmake --build build
 
 Pad files have some structures with dynamic size where I haven't found a way to calculate those sizes. A workaround to this issue is to brute force all combinations and see when the parser runs without errors. Brute force sounds like a tedious job to do. However, it's quite fast because the amount of possible combinations is relatively low.
 
-Therefore, modify the path to your pad in `findUnknownParameterSet.py` and run it with `python3 findUnknownParameterSet.py`. Hopefully there is a parameter set found that works for your file, and you will see an output similar to the following.
+Therefore, modify the path to your pad in `find_parameter_set.py` and run it with `python3 find_parameter_set.py`. Hopefully there is a parameter set found that works for your file, and you will see an output similar to the following.
 
 ```text
 ---------------------------------------------
 ------- Found valid Parameter Set -----------
 ---------------------------------------------
 
-./build/OpenAllegroParser -i simple_example.pad --numUserLayers 5 --unknownFlag
+./build/OpenAllegroParser -i simple_example.pad --numUserLayers 5 --bool1
 ```
 
-Add the flag `-p` to the command from above and run it as `./build/OpenAllegroParser -i simple_example.pad --numUserLayers 5 --unknownFlag -p` and you will see a similar output with all the pad's information like the one below. At the beginning a lot of debug output is shown that might be not as interesting for you, as for me. Just scroll down to the more important pad information.
+Add the flag `-p` to the command from above and run it as `./build/OpenAllegroParser -i simple_example.pad --numUserLayers 5 --bool1 -p` and you will see a similar output with all the pad's information like the one below. At the beginning a lot of debug output is shown that might be not as interesting for you, as for me. Just scroll down to the more important pad information.
 
 <details>
 <summary>Click to expand</summary>
 
 ```text
 
-./build/OpenAllegroParser -i simple_example.pad --numUserLayers 5 --unknownFlag -p
+./build/OpenAllegroParser -i simple_example.pad --numUserLayers 5 --bool1 -p
 
 Opening file: "simple_example.pad"
 File contains 5020 byte.
@@ -332,18 +333,24 @@ Closing file: "simple_example.pad"
 </br>
 
 ```bash
-./OpenAllegroParser --help
+./build/cli/OpenAllegroParser-cli --help
 Allowed options:
   -h [ --help ]         produce help message
   -p [ --print ]        print file content to terminal
   -e [ --extract ]      extract files from within the binary
   -i [ --input ] arg    input file to parse
   -o [ --output ] arg   output path (required iff extract is set)
-  --unknownFlag         activate some dynamic feature in the file
+  -x [ --export ]       export XML file
+  -v [ --verbose ]      verbose output
+  --export-version arg  Version of padstack_editor.exe used for pxml export
+  --bool0               bool0
+  --bool1               bool1
+  --bool2               bool2
+  --int0 arg            int0
   --numUserLayers arg   number of user layers
-  --additionalStr2 arg  number of additional strings in list
+  --additionalStr2 arg  number of additional strings e.g. symbol names
 
-./OpenAllegroParser --input file.pad --extract --output out/
+./build/cli/OpenAllegroParser-cli --input file.pad --extract --output out/
 Opening file: file.pad
 File contains 4960 byte.
 File found at 0x00000abc: file.zip

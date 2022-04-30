@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <iostream>
+#include <optional>
 #include <ostream>
 #include <stdexcept>
 #include <string>
@@ -111,7 +112,10 @@ private:
 
 // @todo fix
 public:
-    std::string mUsrStr; // Name of layer, when it's user specific
+    // @todo somehow remove mUsrStr and just provide a function to retrieve the string from the index
+    //       It is only set for user mask layers. Probably rename to mIdxUserMaskLayerName
+    std::optional<uint32_t> mIdxUsrLayerName;
+    std::string mUsrStr; // User mask layer name
 private:
 
     Figure   mFigure;

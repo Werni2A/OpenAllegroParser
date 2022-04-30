@@ -2,6 +2,7 @@
 #include <string>
 
 #include <boost/program_options.hpp>
+#include <spdlog/spdlog.h>
 
 #include <Parser.hpp>
 #include <XmlGenerator.hpp>
@@ -11,8 +12,25 @@ namespace fs = std::filesystem;
 namespace po = boost::program_options;
 
 
-void parseArgs(int argc, char* argv[], fs::path& input, bool& print, bool& extract, fs::path& output, bool& exportXml, unknownParam& uparam)
+struct Args
 {
+    bool     print;
+    bool     extract;
+    bool     exportXml;
+    bool     verbose;
+    unsigned export_version;
+
+    fs::path input;
+    fs::path output;
+
+    unknownParam uparam;
+};
+
+
+Args parseArgs(int argc, char* argv[])
+{
+    Args args;
+
     po::options_description desc("Allowed options");
     desc.add_options()
         ("help,h",                                             "produce help message")
@@ -21,10 +39,14 @@ void parseArgs(int argc, char* argv[], fs::path& input, bool& print, bool& extra
         ("input,i",   po::value<std::string>(),                "input file to parse")
         ("output,o",  po::value<std::string>(),                "output path (required iff extract is set)")
         ("export,x",  po::bool_switch()->default_value(false), "export XML file")
+        ("verbose,v",  po::bool_switch()->default_value(false), "verbose output")
+        ("export-version", po::value<int>(), "Version of padstack_editor.exe used for pxml export")
 
-        ("unknownFlag",    po::bool_switch()->default_value(false), "flag for some unknown parameter 1")
-        ("unknownFlag2",   po::bool_switch()->default_value(false), "flag for some unknown parameter 2")
-        ("numUserLayers",  po::value<int>(),                        "number of user layers")
+        ("bool0", po::bool_switch()->default_value(false), "bool0")
+        ("bool1", po::bool_switch()->default_value(false), "bool1")
+        ("bool2", po::bool_switch()->default_value(false), "bool2")
+        ("int0",  po::value<int>(),                        "int0")
+        ("numUserLayers",  po::value<int>(),                        "number of user layers") // @todo Not required anymore, remove
         ("additionalStr2", po::value<int>(),                        "number of additional strings e.g. symbol names")
     ;
 
@@ -32,12 +54,12 @@ void parseArgs(int argc, char* argv[], fs::path& input, bool& print, bool& extra
     po::store(po::parse_command_line(argc, argv, desc), vm);
     po::notify(vm);
 
-
-    uparam.unknownFlag    = vm.count("unknownFlag")    ? vm["unknownFlag"].as<bool>()   : false;
-    uparam.unknownFlag2   = vm.count("unknownFlag2")   ? vm["unknownFlag2"].as<bool>()  : false;
-    uparam.numUserLayers  = vm.count("numUserLayers")  ? vm["numUserLayers"].as<int>()  : 0u;
-    uparam.additionalStr2 = vm.count("additionalStr2") ? vm["additionalStr2"].as<int>() : 0u;
-
+    args.uparam.bool0 = vm.count("bool0") ? vm["bool0"].as<bool>() : false;
+    args.uparam.bool1 = vm.count("bool1") ? vm["bool1"].as<bool>() : false;
+    args.uparam.bool2 = vm.count("bool2") ? vm["bool2"].as<bool>() : false;
+    args.uparam.int0  = vm.count("int0") ? vm["int0"].as<int>() : 0u;
+    args.uparam.numUserLayers  = vm.count("numUserLayers")  ? vm["numUserLayers"].as<int>()  : 0u;
+    args.uparam.additionalStr2 = vm.count("additionalStr2") ? vm["additionalStr2"].as<int>() : 0u;
 
     if(vm.count("help"))
     {
@@ -45,23 +67,25 @@ void parseArgs(int argc, char* argv[], fs::path& input, bool& print, bool& extra
         std::exit(1);
     }
 
-    print     = vm.count("print") ? vm["print"].as<bool>() : false;
-    extract   = vm.count("extract") ? vm["extract"].as<bool>() : false;
-    exportXml = vm.count("export") ? vm["export"].as<bool>() : false;
+    args.print     = vm.count("print") ? vm["print"].as<bool>() : false;
+    args.extract   = vm.count("extract") ? vm["extract"].as<bool>() : false;
+    args.exportXml = vm.count("export") ? vm["export"].as<bool>() : false;
+    args.verbose   = vm.count("verbose") ? vm["verbose"].as<bool>() : false;
+    args.export_version = vm.count("export-version") ? vm["export-version"].as<int>() : 0u;
 
     if(vm.count("input"))
     {
-        input = fs::path{vm["input"].as<std::string>()};
-        if(!fs::exists(input))
+        args.input = fs::path{vm["input"].as<std::string>()};
+        if(!fs::exists(args.input))
         {
-            std::cout << "The following input file was not found: " << input.string() << std::endl;
+            std::cout << "The following input file was not found: " << args.input.string() << std::endl;
             std::cout << desc << std::endl;
             std::exit(1);
         }
 
-        if(!fs::is_regular_file(input))
+        if(!fs::is_regular_file(args.input))
         {
-            std::cout << "The following input is not a file: " << input.string() << std::endl;
+            std::cout << "The following input is not a file: " << args.input.string() << std::endl;
             std::cout << desc << std::endl;
             std::exit(1);
         }
@@ -73,21 +97,21 @@ void parseArgs(int argc, char* argv[], fs::path& input, bool& print, bool& extra
         std::exit(1);
     }
 
-    if(extract)
+    if(args.extract)
     {
         if(vm.count("output"))
         {
-            output = fs::path{vm["output"].as<std::string>()};
-            if(!fs::exists(output))
+            args.output = fs::path{vm["output"].as<std::string>()};
+            if(!fs::exists(args.output))
             {
-                std::cout << "The following directory was not found: " << output.string() << std::endl;
+                std::cout << "The following directory was not found: " << args.output.string() << std::endl;
                 std::cout << desc << std::endl;
                 std::exit(1);
             }
 
-            if(!fs::is_directory(output))
+            if(!fs::is_directory(args.output))
             {
-                std::cout << "The following path is not a directory: " << output << std::endl;
+                std::cout << "The following path is not a directory: " << args.output << std::endl;
                 std::cout << desc << std::endl;
                 std::exit(1);
             }
@@ -99,24 +123,29 @@ void parseArgs(int argc, char* argv[], fs::path& input, bool& print, bool& extra
             std::exit(1);
         }
     }
+
+    return args;
 }
 
 
 int main(int argc, char* argv[])
 {
-    fs::path inputFile;
-    bool     print;
-    bool     extract;
-    bool     exportXml;
-    fs::path outputPath;
+    Args args = parseArgs(argc, argv);
 
-    unknownParam uparam;
+    if(!args.verbose)
+    {
+        spdlog::set_level(spdlog::level::off);
+    }
+    else
+    {
+        spdlog::set_level(spdlog::level::debug);
+    }
 
-    parseArgs(argc, argv, inputFile, print, extract, outputPath, exportXml, uparam);
+    spdlog::set_pattern("[%^%l%$] %v");
 
     try
     {
-        Parser parser{inputFile};
+        Parser parser{args.input};
 
         const auto files = parser.getFilesInBinary();
 
@@ -128,17 +157,17 @@ int main(int argc, char* argv[])
             std::cout << "File found at 0x" << ToHex(offset, 8) << ": " << name << std::endl;
         }
 
-        if(extract)
+        if(args.extract)
         {
-            parser.exportZipFiles(outputPath);
+            parser.exportZipFiles(args.output);
         }
         else
         {
             try
             {
-                PadFile padFile = parser.readPadFile(uparam);
+                PadFile padFile = parser.readPadFile(args.uparam);
 
-                if(print)
+                if(args.print)
                 {
                     std::cout << "\r\n-----------------------------------------------" << std::endl;
                     std::cout << "--------------- File Content ------------------" << std::endl;
@@ -146,13 +175,13 @@ int main(int argc, char* argv[])
                     std::cout << padFile << std::endl;
                 }
 
-                if(exportXml)
+                if(args.exportXml)
                 {
-                    const fs::path pathXmlRef    = inputFile.parent_path() / fs::path{inputFile.stem().string() + ".pxml"};
-                    const fs::path pathXmlOutput = inputFile.parent_path() / fs::path{inputFile.stem().string() + "_export.pxml"};
+                    const fs::path pathXmlRef    = args.input.parent_path() / fs::path{args.input.stem().string() + ".pxml"};
+                    const fs::path pathXmlOutput = args.input.parent_path() / fs::path{args.input.stem().string() + "_export.pxml"};
                     std::cout << "Exporting XML to " << pathXmlOutput << " ..." << std::endl;
 
-                    XmlGenerator xmlGenerator{padFile};
+                    XmlGenerator xmlGenerator{padFile, args.export_version};
                     xmlGenerator.generateXml();
                     xmlGenerator.exportToXml(pathXmlOutput);
                 }

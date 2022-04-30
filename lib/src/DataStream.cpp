@@ -3,6 +3,8 @@
 #include <fstream>
 #include <string>
 
+#include <spdlog/spdlog.h>
+
 #include "../include/DataStream.hpp"
 #include "../include/General.hpp"
 
@@ -111,9 +113,14 @@ std::string DataStream::readStringLenZeroTerm()
 
     if(str.length() != len)
     {
-        throw std::runtime_error("Zero terminated string lenght (" + std::to_string(str.length())
-                                 + ") does not match the preceeding length ("
-                                 + std::to_string(len) + ") definition!");
+        const std::string msg = fmt::format("String has preceeding"
+            " length definition of {} characters but terminates"
+            " after {} characters!",
+            len, str.length());
+
+        spdlog::error(msg);
+
+        throw std::runtime_error(msg);
     }
 
     return str;
@@ -147,7 +154,12 @@ std::string DataStream::readStrZeroTermBlock(size_t aBlockSize)
 
     if(str.length() >= aBlockSize)
     {
-        throw std::runtime_error("String is too long to fit into specified block size!");
+        const std::string msg = fmt::format("String with {} Byte is"
+            " too long to fit into a block size of {} Byte!", str.length(), aBlockSize);
+
+        spdlog::error(msg);
+
+        throw std::runtime_error(msg);
     }
 
     const size_t padLen = aBlockSize - (stopOffset - startOffset);
@@ -158,17 +170,14 @@ std::string DataStream::readStrZeroTermBlock(size_t aBlockSize)
 }
 
 
-std::ostream& DataStream::printUnknownData(std::ostream& aOs, size_t aLen, const std::string& aComment)
+void DataStream::printUnknownData(size_t aLen, const std::string& aComment)
 {
     const auto data = readBytes(aLen);
 
     if(aLen > 0u)
     {
-        aOs << aComment << '\n';
-        printData(aOs, data);
+        spdlog::warn(fmt::format("Reading {} Byte: {}\n{}", aLen, aComment, getStrFromData(data)));
     }
-
-    return aOs;
 }
 
 
@@ -188,15 +197,7 @@ void DataStream::padRest(size_t aStartOffset, size_t aBlockSize, bool aPadIsZero
 
     if(aPadIsZero)
     {
-        for(size_t i = 0u; i < paddingLen; ++i)
-        {
-            const uint8_t padByte = readUint8();
-
-            if(padByte != 0x00u)
-            {
-                throw std::runtime_error("Padding byte is expected to be 0x00!");
-            }
-        }
+        assumeZero(paddingLen, "Padding byte is expected to be 0x00!");
     }
     else
     {
@@ -218,7 +219,7 @@ std::ostream& DataStream::printCurrentOffset(std::ostream& aOs)
 };
 
 
-std::ostream& DataStream::printData(std::ostream& aOs, const std::vector<uint8_t>& aData)
+std::string DataStream::getStrFromData(const std::vector<uint8_t>& aData)
 {
     const unsigned int line_width = 16u;
     const std::string hex_spacing = " ";
@@ -268,9 +269,7 @@ std::ostream& DataStream::printData(std::ostream& aOs, const std::vector<uint8_t
         }
     }
 
-    aOs << output;
-
-    return aOs;
+    return output;
 }
 
 
@@ -287,32 +286,28 @@ void DataStream::assumeData(const std::vector<uint8_t>& aExpectedData, const std
 
     if(!std::all_of(data.cbegin(), data.cend(), checkByte))
     {
-        std::ostringstream expectedDataStr;
-        printData(expectedDataStr, aExpectedData);
+        const std::string expectedDataStr = getStrFromData(aExpectedData);
+        const std::string actualDataStr   = getStrFromData(data);
 
-        std::ostringstream actualDataStr;
-        printData(actualDataStr, data);
+        const auto msg = fmt::format("Assumption failed ({} Byte): {}\n"
+            "Expected:\n"
+            "{}"
+            "but got:\n"
+            "{}",
+            aExpectedData.size(), aComment, expectedDataStr, actualDataStr);
 
-        throw std::runtime_error("Assumption failed: " + aComment + '\n'
-            + "Expected:\n" + expectedDataStr.str() +
-            + "but got:\n" + actualDataStr.str());
+        spdlog::error(msg);
+
+        throw std::runtime_error(msg);
     }
 }
 
 
 void DataStream::assumeZero(size_t aLen, const std::string& aComment)
 {
-    // @todo use assumeData with a zero vector for better error reports.
+    std::vector<uint8_t> zeros;
 
-    for(size_t i = 0u; i < aLen; ++i)
-    {
-        const uint8_t byte = readUint8();
+    zeros.assign(aLen, 0x00);
 
-        if(byte != 0x00)
-        {
-            throw std::runtime_error("Assumption failed: " + aComment + '\n'
-                + "Expected 0x00 but got " + ToHex(byte, 2) + " at offset "
-                + ToHex(getCurrentOffset(), 8) + "!");
-        }
-    }
+    assumeData(zeros, aComment);
 }

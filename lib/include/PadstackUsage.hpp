@@ -13,24 +13,20 @@
 #include "General.hpp"
 
 
-// @todo It's strange that the suffix is always b10.
-//       Probably a bit field where the lower 2 bits
-//       are something different?
 enum class PadstackUsage
 {
-                      // First two bits are always b10, therefore discard them here -> bit field
-    THRU_PIN    =  6, //  1,
-    SMD_PIN     = 10, //  2,
-    VIA         = 14, //  3,
-    BBVIA       = 18, //  4,
-    MICROVIA    = 22, //  5,
-    DIE_PAD     = 26, //  6,
-    BOND_FINGER = 30, //  7,
-    FIDUCIAL    = 34, //  8,
-    SLOT        = 38, //  9,
-    MECH_HOLE   = 42, // 10,
-    TOOL_HOLE   = 46, // 11,
-    MOUNT_HOLE  = 50  // 12
+    THRU_PIN    =  1,
+    SMD_PIN     =  2,
+    VIA         =  3,
+    BBVIA       =  4,
+    MICROVIA    =  5,
+    DIE_PAD     =  6,
+    BOND_FINGER =  7,
+    FIDUCIAL    =  8,
+    SLOT        =  9,
+    MECH_HOLE   = 10,
+    TOOL_HOLE   = 11,
+    MOUNT_HOLE  = 12
 };
 
 

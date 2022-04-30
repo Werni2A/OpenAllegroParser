@@ -2,6 +2,9 @@
 find_package(Boost COMPONENTS program_options REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 
+# Add fmt dependency
+find_package(fmt CONFIG REQUIRED)
+
 # Add Magic Enum dependency
 find_package(magic_enum CONFIG REQUIRED)
 
@@ -28,6 +31,7 @@ target_link_libraries(${NAME_CLI} PRIVATE
                       ${NAME_LIB}
                       Boost::boost
                       Boost::program_options
+                      fmt::fmt
                       magic_enum::magic_enum
                       nameof::nameof
 )
