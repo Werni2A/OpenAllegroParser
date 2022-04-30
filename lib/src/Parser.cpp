@@ -574,9 +574,7 @@ PadFile Parser::readPadFile(unknownParam uparam)
     {
         const uint32_t idx    = mDs.readUint32();
 
-        mDs.printUnknownData(std::cout, 4, "unknown - 10");
-
-        const std::string str = "";
+        mDs.printUnknownData(4, "unknown - 10");
 
         padFile.idxStrPairLst.push_back(std::make_pair(idx, str));
 
@@ -790,7 +788,7 @@ PadFile Parser::readPadFile(unknownParam uparam)
         padFile.usrDefLayers.push_back(pad);
     }
 
-    mDs.printUnknownData(std::cout, 56, "unknown - 21");
+    mDs.printUnknownData(56, "unknown - 21");
 
     padFile.dateTime1 = ToTime(mDs.readUint32());
 
