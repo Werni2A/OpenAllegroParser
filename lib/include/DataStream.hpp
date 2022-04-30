@@ -165,7 +165,7 @@ public:
      */
     std::string readStrZeroTermBlock(size_t aBlockSize);
 
-    std::ostream& printUnknownData(std::ostream& aOs, size_t aLen, const std::string& aComment = "");
+    void printUnknownData(size_t aLen, const std::string& aComment = "");
 
     /**
      * @brief Pad stream such that the whole block size is read.

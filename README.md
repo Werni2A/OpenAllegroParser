@@ -23,22 +23,22 @@ See [OrCAD Allegro Files Extension and their Contents](https://vjguptapcb.blogsp
 
 # Documentation
 
-1. `*.brd` Board Database
-2. `*.mdd` Module Definition
-3. `*.dra` Drawing
-4. `*.psm` Package Symbol
-5. `*.ssm` Shape Symbol
-6. `*.fsm` Flash Symbol
-7. `*.osm` Format Symbol
-8. `*.bsm` Mechanical Symbol
-9. [`*.pad` Padstack](doc/pad.md)
+- File Formats
+  1. `*.brd` Board Database
+  2. `*.mdd` Module Definition
+  3. `*.dra` Drawing
+  4. `*.psm` Package Symbol
+  5. `*.ssm` Shape Symbol
+  6. `*.fsm` Flash Symbol
+  7. `*.osm` Format Symbol
+  8. `*.bsm` Mechanical Symbol
+  9. [`*.pad` Padstack](doc/pad.md)
 
 ---
 
-# Current State &mdash; March 2022
+# Current State &mdash; April 2022
 
-- Working on padstack parser.
-- Setting up padstack unit tests.
+- Working on padstack to XML exporter
 
 ---
 
@@ -333,18 +333,24 @@ Closing file: "simple_example.pad"
 </br>
 
 ```bash
-./OpenAllegroParser --help
+./build/cli/OpenAllegroParser-cli --help
 Allowed options:
   -h [ --help ]         produce help message
   -p [ --print ]        print file content to terminal
   -e [ --extract ]      extract files from within the binary
   -i [ --input ] arg    input file to parse
   -o [ --output ] arg   output path (required iff extract is set)
-  --unknownFlag         activate some dynamic feature in the file
+  -x [ --export ]       export XML file
+  -v [ --verbose ]      verbose output
+  --export-version arg  Version of padstack_editor.exe used for pxml export
+  --bool0               bool0
+  --bool1               bool1
+  --bool2               bool2
+  --int0 arg            int0
   --numUserLayers arg   number of user layers
-  --additionalStr2 arg  number of additional strings in list
+  --additionalStr2 arg  number of additional strings e.g. symbol names
 
-./OpenAllegroParser --input file.pad --extract --output out/
+./build/cli/OpenAllegroParser-cli --input file.pad --extract --output out/
 Opening file: file.pad
 File contains 4960 byte.
 File found at 0x00000abc: file.zip

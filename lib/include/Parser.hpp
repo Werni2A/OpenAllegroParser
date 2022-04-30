@@ -102,7 +102,7 @@ private:
      */
     void exportZip(const fs::path& aOutputPath, size_t aComprZipSize = 0u);
 
-    Pad readPad(size_t aIdx, bool aIsUsrLayer, const PadFile& aPadFile, unknownParam uparam);
+    Pad readPad(size_t aIdx, bool aIsUsrLayer, const PadFile& aPadFile);
 
     FileType mFileType;
     FileFormatVersion mFileFormatVersion;
@@ -112,6 +112,7 @@ private:
 
     DataStream mDs;
 
+    unknownParam uparam; // @todo Remove later
 };
 
 

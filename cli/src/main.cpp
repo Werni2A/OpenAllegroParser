@@ -18,6 +18,7 @@ struct Args
     bool     extract;
     bool     exportXml;
     bool     verbose;
+    unsigned export_version;
 
     fs::path input;
     fs::path output;
@@ -39,6 +40,7 @@ Args parseArgs(int argc, char* argv[])
         ("output,o",  po::value<std::string>(),                "output path (required iff extract is set)")
         ("export,x",  po::bool_switch()->default_value(false), "export XML file")
         ("verbose,v",  po::bool_switch()->default_value(false), "verbose output")
+        ("export-version", po::value<int>(), "Version of padstack_editor.exe used for pxml export")
 
         ("bool0", po::bool_switch()->default_value(false), "bool0")
         ("bool1", po::bool_switch()->default_value(false), "bool1")
@@ -69,6 +71,7 @@ Args parseArgs(int argc, char* argv[])
     args.extract   = vm.count("extract") ? vm["extract"].as<bool>() : false;
     args.exportXml = vm.count("export") ? vm["export"].as<bool>() : false;
     args.verbose   = vm.count("verbose") ? vm["verbose"].as<bool>() : false;
+    args.export_version = vm.count("export-version") ? vm["export-version"].as<int>() : 0u;
 
     if(vm.count("input"))
     {
@@ -133,6 +136,10 @@ int main(int argc, char* argv[])
     {
         spdlog::set_level(spdlog::level::off);
     }
+    else
+    {
+        spdlog::set_level(spdlog::level::debug);
+    }
 
     spdlog::set_pattern("[%^%l%$] %v");
 
@@ -174,7 +181,7 @@ int main(int argc, char* argv[])
                     const fs::path pathXmlOutput = args.input.parent_path() / fs::path{args.input.stem().string() + "_export.pxml"};
                     std::cout << "Exporting XML to " << pathXmlOutput << " ..." << std::endl;
 
-                    XmlGenerator xmlGenerator{padFile};
+                    XmlGenerator xmlGenerator{padFile, args.export_version};
                     xmlGenerator.generateXml();
                     xmlGenerator.exportToXml(pathXmlOutput);
                 }

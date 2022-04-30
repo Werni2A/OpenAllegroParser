@@ -265,7 +265,7 @@ void Parser::exportZip(const fs::path& aOutputPath, size_t aComprZipSize)
 }
 
 
-Pad Parser::readPad(size_t aIdx, bool aIsUsrLayer, const PadFile& aPadFile, unknownParam uparam)
+Pad Parser::readPad(size_t aIdx, bool aIsUsrLayer, const PadFile& aPadFile)
 {
     Type  type;
     Layer layer;
@@ -363,6 +363,8 @@ Symbol Parser::readSymbol()
 
 PadFile Parser::readPadFile(unknownParam uparam)
 {
+    this->uparam = uparam;
+
     PadFile padFile;
 
     // Specifies how many seconds are allowed to pass
@@ -370,7 +372,7 @@ PadFile Parser::readPadFile(unknownParam uparam)
     const double maxTimeDiff = 2.0;
 
     mDs.assumeData({0x00, 0x05, 0x14, 0x00, 0x03, 0x00, 0x00, 0x00}, "Start Sequence - 0");
-    // mDs.printUnknownData(std::cout, 8, "unknown - 0");
+    // mDs.printUnknownData(8, "unknown - 0");
 
     mDs.assumeData({0x04, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00}, "Start Sequence - 1");
 
@@ -423,7 +425,7 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     mDs.assumeZero(8, "unknown - 1");
 
-    // mDs.printUnknownData(std::cout, 8, "unknown - 1");
+    // mDs.printUnknownData(8, "unknown - 1");
 
     // @todo This relates maybe to the standard layers in the padstack as we
     // have 25 of them and 1 of them is just rubbish, and can be ignored
@@ -437,12 +439,12 @@ PadFile Parser::readPadFile(unknownParam uparam)
     }
 
     // @todo probably always number 1 and represents idx = 1?
-    // mDs.printUnknownData(std::cout, 4, "unkown - 2");
+    // mDs.printUnknownData(4, "unkown - 2");
     mDs.assumeData({0x01, 0x00, 0x00, 0x00}, "unknown - 2");
 
     padFile.swVersion = mDs.readStrZeroTermBlock(60u);
 
-    // mDs.printUnknownData(std::cout, 58, "unknown - 3");
+    // mDs.printUnknownData(58, "unknown - 3");
     mDs.assumeData({0x02}, "unknown - 3a");
     mDs.assumeZero(57, "unknown - 3b");
 
@@ -480,7 +482,7 @@ PadFile Parser::readPadFile(unknownParam uparam)
     padFile.unit = ToUnits(mDs.readUint16());
 
     // @todo somehow related to user defined layers with symbol/flash
-    mDs.printUnknownData(std::cout, 46, "unknown - 4");
+    mDs.printUnknownData(46, "unknown - 4");
 
     size_t userStrCtr = 0u;
 
@@ -503,17 +505,20 @@ PadFile Parser::readPadFile(unknownParam uparam)
         spdlog::info("userLayerStrIdxLst[{:>2}]: {:>2} = {}", i, userStrCtr, user_layer_idx);
     }
 
-    mDs.printUnknownData(std::cout, 53, "unknown - 4");
+    mDs.printUnknownData(53, "unknown - 4");
 
+    // @todo Figure out which exact strings are counted
     const uint16_t additionalStr = mDs.readUint16();
 
-    // @todo
-    assert(additionalStr == userStrCtr);
-
+    if(additionalStr != userStrCtr)
+    {
+        throw std::runtime_error(fmt::format("Expected additionalStr = {} is equal userStrCtr = {}!",
+            additionalStr, userStrCtr));
+    }
 
     mDs.assumeData({0x00, 0x01, 0x00, 0x00}, "unknown - 5a");
 
-    mDs.printUnknownData(std::cout, 4, "unknown - 5");
+    mDs.printUnknownData(4, "unknown - 5");
 
     mDs.assumeZero(449, "unknown - 6");
 
@@ -598,18 +603,18 @@ PadFile Parser::readPadFile(unknownParam uparam)
     if(uparam.bool1)
     {
         mDs.assumeData({0x1c, 0x00}, "unknown - 11.0");
-        mDs.printUnknownData(std::cout, 6, "unknown - 11");
+        mDs.printUnknownData(6, "unknown - 11.5");
     }
 
-    mDs.assumeData({0x07, 0x00, 0x00, 0x00}, "unknown - 12");
-    // mDs.printUnknownData(std::cout, 4, "unknown - 12");
+    mDs.printUnknownData(4, "unknown - 12");
+    // mDs.assumeData({0x07, 0x00, 0x00, 0x00}, "unknown - 12");
 
     padFile.strIdxPadName       = mDs.readUint32();
     padFile.idxUnknown          = mDs.readUint32();
     padFile.strIdxDrillToolSize = mDs.readUint32(); // Is 0 when no DrillToolSize is specified (empty string)
 
-    // mDs.printUnknownData(std::cout, 4, "unknown - 13");
-    mDs.assumeZero(4, "unknown - 13");
+    // mDs.assumeZero(4, "unknown - 13");
+    mDs.printUnknownData(4, "unknown - 13");
 
     // @todo padstackusage is probably a bit field where the first two
     //       bits are something different. See PadstackUsage.hpp for more info.
@@ -632,6 +637,7 @@ PadFile Parser::readPadFile(unknownParam uparam)
     }
 
     padFile.drillmethod = ToDrillmethod(mDs.readUint8());
+    spdlog::debug("drillmethod = {}", to_string(padFile.drillmethod));
 
     // Bit 0 - 2 = Drill Hole Type
     // Bit     3 = @todo Unknown flag
@@ -677,13 +683,15 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     // @todo This should be relatively easy to figure out as soon
     //       as we find a pad where this values are not equal to 0.
-    // mDs.printUnknownData(std::cout, 6, "unknown - 15");
+    // mDs.printUnknownData(6, "unknown - 15");
     mDs.assumeZero(6, "unknown - 15");
 
     // multidrill
 
     padFile.drill_rows    = mDs.readUint16();
+    spdlog::debug("drill_rows    = {}", padFile.drill_rows);
     padFile.drill_columns = mDs.readUint16();
+    spdlog::debug("drill_columns = {}", padFile.drill_columns);
 
     // @todo figure out why -2. Maybe it counts more than just the user design layers?
     //       E.g. additionally the Begin and End layer
@@ -700,68 +708,87 @@ PadFile Parser::readPadFile(unknownParam uparam)
     }
 
     mDs.assumeZero(1, "unknown - 16");
-    // mDs.printUnknownData(std::cout, 1, "unknown - 16");
+    // mDs.printUnknownData(1, "unknown - 16");
 
     padFile.offsetX = mDs.readInt32();
+    spdlog::debug("offsetX = {}", padFile.offsetX);
     padFile.offsetY = mDs.readInt32();
+    spdlog::debug("offsetY = {}", padFile.offsetY);
 
     padFile.clearance_columns = mDs.readUint32();
+    spdlog::debug("clearance_columns = {}", padFile.clearance_columns);
     padFile.clearance_rows    = mDs.readUint32();
+    spdlog::debug("clearance_rows = {}", padFile.clearance_rows);
 
     padFile.finished_size     = mDs.readInt32();
+    spdlog::debug("finished_size = {}", padFile.finished_size);
 
     // For holeType == (OVAL_SLOT || RECT_SLOT) this is
     // the tolerance on x-axis. Otherwise for symmetric
     // holes this is the tolerance on x- and y-axis.
     padFile.positivetolerance = mDs.readInt32();
+    spdlog::debug("positivetolerance = {}", padFile.positivetolerance);
     padFile.negativetolerance = mDs.readInt32();
+    spdlog::debug("negativetolerance = {}", padFile.negativetolerance);
 
     // The values should always be zero when
     // holeType != (OVAL_SLOT || RECT_SLOT)
     padFile.slothole_width  = mDs.readUint32();
+    spdlog::debug("slothole_width = {}", padFile.slothole_width);
     padFile.slothole_height = mDs.readUint32();
+    spdlog::debug("slothole_height = {}", padFile.slothole_height);
     padFile.slothole_positivetolerancey = mDs.readInt32();
+    spdlog::debug("slothole_positivetolerancey = {}", padFile.slothole_positivetolerancey);
     padFile.slothole_negativetolerancey = mDs.readInt32();
+    spdlog::debug("slothole_negativetolerancey = {}", padFile.slothole_negativetolerancey);
 
     padFile.drillSymbol = readSymbol();
+    spdlog::debug("drillSymbol = {}", to_string(padFile.drillSymbol));
 
     // backdrill
 
     padFile.diameter = mDs.readUint32();
+    spdlog::debug("diameter = {}", padFile.diameter);
 
-    // mDs.printUnknownData(std::cout, 12, "unknown - 19");
+    // mDs.printUnknownData(12, "unknown - 19");
     mDs.assumeZero(8, "unknown - 19");
 
     padFile.backDrillSymbol = readSymbol();
+    spdlog::debug("backDrillSymbol = {}", to_string(padFile.backDrillSymbol));
 
     // counterboresink
 
     padFile.counter_drill_diameter = mDs.readInt32();
+    spdlog::debug("counter_drill_diameter = {}", padFile.counter_drill_diameter);
     padFile.counter_drill_positivetolerance = mDs.readInt32();
+    spdlog::debug("counter_drill_positivetolerance = {}", padFile.counter_drill_positivetolerance);
     padFile.counter_drill_negativetolerance = mDs.readInt32();
+    spdlog::debug("counter_drill_negativetolerance = {}", padFile.counter_drill_negativetolerance);
 
     padFile.counterangle = mDs.readInt32();
     // @todo maybe the scaling factor 1/10000 depends on the factors defined at the beginning of the method
     //       10,000 * 10^accuracy?
-    // std::cout << "counterangle = " << std::to_string(padFile.counterangle / 10000u) << std::endl;
+    spdlog::warn("counterangle = {}", padFile.counterangle / 10000u);
+    spdlog::debug("counterangle = {}", padFile.counterangle);
 
-    mDs.printUnknownData(std::cout, 8, "Something with counterdepth");
+    mDs.printUnknownData(8, "Something with counterdepth");
 
     mDs.assumeZero(32, "unknown - 20");
-    // mDs.printUnknownData(std::cout, 32, "unknown - 20");
+    // mDs.printUnknownData(32, "unknown - 20");
 
     const std::vector<PadTypeLayer>& layerLst = (uparam.bool2 ? layerLst2 : layerLst1);
 
     for(size_t i = 0u; i < layerLst.size(); ++i)
     {
-        const Pad pad = readPad(i, false, padFile, uparam);
+        const Pad pad = readPad(i, false, padFile);
 
         padFile.preDefLayers.push_back(pad);
     }
 
+    // @todo probably rename userStrCtr
     for(size_t i = 0u; i < userStrCtr; ++i)
     {
-        const Pad pad = readPad(i, true, padFile, uparam);
+        const Pad pad = readPad(i, true, padFile);
 
         padFile.usrDefLayers.push_back(pad);
     }
@@ -770,20 +797,20 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     padFile.dateTime1 = ToTime(mDs.readUint32());
 
-    mDs.printUnknownData(std::cout, 2, "unknown - 22a");
+    mDs.printUnknownData(2, "unknown - 22a");
 
     mDs.assumeData({0xdc, 0x02}, "unknown - 22.b");
 
-    mDs.printUnknownData(std::cout, 2, "unknown - 22c");
+    mDs.printUnknownData(2, "unknown - 22c");
 
-    mDs.printUnknownData(std::cout, 10, "unknown - 22d");
+    mDs.printUnknownData(10, "unknown - 22d");
 
     mDs.assumeData({0x68, 0x00}, "unknown - 22.f");
 
     // @todo not sure about this one. Looks like the name becomes truncated
     const size_t usernameLen = mDs.readUint32();
 
-    // mDs.printUnknownData(std::cout, 2, "unknown - 23");
+    // mDs.printUnknownData(2, "unknown - 23");
     mDs.assumeData({0x00, 0x00}, "unknown - 23");
 
     padFile.username = mDs.readStrZeroTerm4BytePad();
@@ -793,7 +820,7 @@ PadFile Parser::readPadFile(unknownParam uparam)
         throw std::runtime_error("Expected different username text length!");
     }
 
-    mDs.printUnknownData(std::cout, 28, "unknown - 24");
+    mDs.printUnknownData(28, "unknown - 24");
 
     const std::vector<uint8_t> unknown_identifier = {0x3b, 0x00, 0x00, 0x00};
     mDs.assumeData(unknown_identifier, "unknown - 24.a");
@@ -835,7 +862,7 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     mDs.assumeData(unknown_identifier, "unknown - 24.f");
 
-    mDs.printUnknownData(std::cout, 4, "unknown - 25");
+    mDs.printUnknownData(4, "unknown - 25");
 
     const std::string quickViewGraph = mDs.readStrZeroTermBlock(128);
 
@@ -870,7 +897,7 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     sanityCheckSectionTimeDiff(padFile.dateTime3, padFile.dateTime4, maxTimeDiff);
 
-    mDs.printUnknownData(std::cout, 8, "unknown - 27");
+    mDs.printUnknownData(8, "unknown - 27");
 
     exportZip(fs::temp_directory_path() / "OpenAllegroParser", zipSize);
 
@@ -879,7 +906,7 @@ PadFile Parser::readPadFile(unknownParam uparam)
     const std::vector<uint8_t> unknown_identifier2 = {0x3b, 0x00, 0x01, 0x00};
     mDs.assumeData(unknown_identifier2, "unknown - 27.1");
 
-    mDs.printUnknownData(std::cout, 4, "unknown - 28");
+    mDs.printUnknownData(4, "unknown - 28");
 
     const std::string newDbFeatures = mDs.readStrZeroTermBlock(160);
 
@@ -893,7 +920,7 @@ PadFile Parser::readPadFile(unknownParam uparam)
 
     mDs.assumeData(unknown_identifier2, "unknown - 28.6");
 
-    mDs.printUnknownData(std::cout, 4, "unknown - 29");
+    mDs.printUnknownData(4, "unknown - 29");
 
     const std::string allegroDesignWasLastSaved = mDs.readStrZeroTermBlock(160);
 

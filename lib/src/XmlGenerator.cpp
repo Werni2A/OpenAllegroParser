@@ -43,10 +43,6 @@ bool is_xy_sym(const HoleType& aHoleType)
 
 void XmlGenerator::appendSymbol(XMLElement* aParent, const Symbol& aObj)
 {
-    // @todo move outside into a function get_float_format
-    // const std::string float_format = fmt::sprintf("%%.%dg", aPadFile.accuracy);
-    const std::string float_format = "%g";
-
     XMLElement* eFigure = mXml.NewElement("figure");
     eFigure->SetText(to_string(aObj.figure, true).c_str());
     aParent->InsertEndChild(eFigure);
@@ -59,13 +55,13 @@ void XmlGenerator::appendSymbol(XMLElement* aParent, const Symbol& aObj)
     }
 
     XMLElement* eWidth = mXml.NewElement("width");
-    eWidth->SetText(fmt::sprintf(float_format, mPadFile.FixedPtToFloatPt(aObj.width)).c_str());
+    eWidth->SetText(fmt::sprintf(getFloatFmtForScalar(), mPadFile.FixedPtToFloatPt(aObj.width)).c_str());
     aParent->InsertEndChild(eWidth);
 
     if(aObj.height != 0u)
     {
         XMLElement* eHeight = mXml.NewElement("height");
-        eHeight->SetText(fmt::sprintf(float_format, mPadFile.FixedPtToFloatPt(aObj.height)).c_str());
+        eHeight->SetText(fmt::sprintf(getFloatFmtForScalar(), mPadFile.FixedPtToFloatPt(aObj.height)).c_str());
         aParent->InsertEndChild(eHeight);
     }
 }
@@ -166,25 +162,51 @@ void XmlGenerator::appendPad(XMLElement* aParent, const Pad& aObj, bool aUsrLaye
 }
 
 
-std::string XmlGenerator::getFloatFmtForTuple() const
+std::string XmlGenerator::getFloatFmtFixAccuracy() const
 {
     // Fixed floating point accuracy
-    const std::string float_fmt_fix_acc = fmt::sprintf("%%.%df", mPadFile.accuracy);
-    // Adjusted floating point accuracy
-    const std::string float_fmt_adj_acc = "%g";
+    return fmt::sprintf("%%.%df", mPadFile.accuracy);
+}
 
-    return float_fmt_fix_acc;
+
+std::string XmlGenerator::getFloatFmtAdjAccuracy() const
+{
+    // Adjusted floating point accuracy
+    return "%g";
+}
+
+
+std::string XmlGenerator::getFloatFmtForTuple() const
+{
+    std::string ret_format;
+
+    if(mExportVersion == 0u)
+    {
+        ret_format = getFloatFmtFixAccuracy();
+    }
+    else
+    {
+        ret_format = getFloatFmtAdjAccuracy();
+    }
+
+    return ret_format;
 }
 
 
 std::string XmlGenerator::getFloatFmtForScalar() const
 {
-    // Fixed floating point accuracy
-    const std::string float_fmt_fix_acc = fmt::sprintf("%%.%df", mPadFile.accuracy);
-    // Adjusted floating point accuracy
-    const std::string float_fmt_adj_acc = "%g";
+    std::string ret_format;
 
-    return float_fmt_fix_acc;
+    if(mExportVersion == 0u)
+    {
+        ret_format = getFloatFmtFixAccuracy();
+    }
+    else
+    {
+        ret_format = getFloatFmtAdjAccuracy();
+    }
+
+    return ret_format;
 }
 
 

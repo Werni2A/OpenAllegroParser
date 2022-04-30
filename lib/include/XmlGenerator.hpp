@@ -22,8 +22,12 @@ class XmlGenerator
 {
 public:
 
-    XmlGenerator(const PadFile& aPadFile) : mPadFile{aPadFile}, mXml{}
+    XmlGenerator(const PadFile& aPadFile, unsigned aExportVersion)
+        : mExportVersion{aExportVersion}, mPadFile{aPadFile}, mXml{}
     { }
+
+    std::string getFloatFmtFixAccuracy() const;
+    std::string getFloatFmtAdjAccuracy() const;
 
     std::string getFloatFmtForTuple() const;
 
@@ -38,6 +42,10 @@ public:
     void appendPad(XMLElement* aParent, const Pad& aObj, bool aUsrLayer);
 
 private:
+
+    // `padstack_editor.exe` versions, since the exported `*.pxml` file
+    // slightly differs, depending on the software version.
+    unsigned mExportVersion;
 
     const PadFile& mPadFile;
     XMLDocument mXml;
