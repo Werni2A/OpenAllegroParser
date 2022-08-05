@@ -10,5 +10,6 @@
     "nameof",
     "spdlog",
     "tinyxml2"
-  ]
+  ],
+  "builtin-baseline": "b3e88649a2d57f1d728c4c242b583a77a43a9b22"
 }
