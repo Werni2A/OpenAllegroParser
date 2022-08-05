@@ -45,6 +45,8 @@ set(HEADERS
 
 include(GenerateExportHeader)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 # Create library file from sources
 add_library(${NAME_LIB} SHARED ${SOURCES} ${HEADERS})
 
