@@ -10,5 +10,9 @@
     "nameof",
     "spdlog",
     "tinyxml2"
-  ]
+  ],
+  "overrides": [
+    {"name": "libzippp", "version": "5.0-1.8.0#1"}
+  ],
+  "builtin-baseline": "9b22b40c6c61bf0da2d46346dd44a11e90972cc9"
 }
